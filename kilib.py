@@ -1,5 +1,6 @@
 from kiconst import KiConst
 from kiutil import KiUtil
+# Data structure model of a pin
 class KiPin:
         def __init__(self):
                 self.name = ""
@@ -17,6 +18,7 @@ class KiPin:
                 s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + self.dir + " " + self.style + " " + "\n"
                 return s
 
+# Data structure model of a symbol
 class KiSymbol:
         def __init__(self):
                 self.name = ""
@@ -46,6 +48,7 @@ class KiSymbol:
                         s = s + self.pins[i].info(depth + 1, i + 1)
                 return s
 
+# Data structure model of a library
 class KiLib:
         def __init__(self):
                 self.name = ""
