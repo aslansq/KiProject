@@ -10,7 +10,7 @@ class KiPrj:
                 self.numOfLibs = 0
                 self.libs = [] # class KiLib type
 
-        def parse(self, csvFilePath):
+        def parseFromCsv(self, csvFilePath):
                 self.name = str(os.path.basename(csvFilePath)).replace(".csv", "")
                 with open(csvFilePath, newline='') as csvFile:
                         csvReader = csv.reader(csvFile)
@@ -40,7 +40,7 @@ class KiPrj:
 
                         for i in range(self.numOfLibs):
                                 # parsing library with entry and exit boundary
-                                self.libs[i].parse(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
+                                self.libs[i].parseFromCsv(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
 
 
         def info(self, depth, pos):

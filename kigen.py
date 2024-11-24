@@ -51,7 +51,7 @@ if g_args["outFolderPath"] == None:
        exit(1)
 
 kiPrj = KiPrj()
-kiPrj.parse(g_args["csvFilePath"])
+kiPrj.parseFromCsv(g_args["csvFilePath"])
 if g_args["infoFlag"]:
         with open(os.path.join(g_args["outFolderPath"], "info.txt"), "w") as infoFile:
                 infoFile.write(kiPrj.info(0, 1))

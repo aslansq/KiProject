@@ -8,7 +8,7 @@ class KiPin:
                 # inverted_clock, inverted, line, clock
                 self.style = ""
         
-        def parse(self, pin):
+        def parseFromCsv(self, pin):
                 self.name = pin[KiConst.CSV_COL_PIN_NAME]
                 self.dir = pin[KiConst.CSV_COL_PIN_DIR]
                 self.style = pin[KiConst.CSV_COL_PIN_STYLE]
@@ -24,7 +24,7 @@ class KiSymbol:
                 self.numOfPins = 0
                 self.pins = [] # class KiLib.Pin type
 
-        def parse(self, symbol):
+        def parseFromCsv(self, symbol):
                 # if empty just return
                 if len(symbol) == 0:
                         return
@@ -35,9 +35,9 @@ class KiSymbol:
                 self.numOfPins = len(symbol)
 
                 for i in range(self.numOfPins):
-                        # create a pin and parse it
+                        # create a pin and parseFromCsv it
                         kiPin = KiPin()
-                        kiPin.parse(symbol[i])
+                        kiPin.parseFromCsv(symbol[i])
                         self.pins.append(kiPin)
         
         def info(self, depth, pos):
@@ -52,7 +52,7 @@ class KiLib:
                 self.numOfSymbols = 0
                 self.symbols = [] # class Symbol type
 
-        def parse(self, lib):
+        def parseFromCsv(self, lib):
                 # if empty library just return
                 if len(lib) == 0:
                         return
@@ -80,7 +80,7 @@ class KiLib:
 
                 for i in range(self.numOfSymbols):
                         # parsing symbols with entry and exist boundary
-                        self.symbols[i].parse(lib[lastLibIdx[i] : lastLibIdx[i+1]])
+                        self.symbols[i].parseFromCsv(lib[lastLibIdx[i] : lastLibIdx[i+1]])
 
         def info(self, depth, pos):
                 s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + "\n"
