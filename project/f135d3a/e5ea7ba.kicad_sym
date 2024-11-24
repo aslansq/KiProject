@@ -54,7 +54,7 @@
 		)
 		(symbol "a87e18d_1_1"
 			(pin input line
-				(at 0 -3.81 0)
+				(at 0 -22.86 0)
 				(length 2.54)
 				(name "f5f9a4a"
 					(effects

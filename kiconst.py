@@ -22,7 +22,7 @@ class KiConst:
                 "pinBackToPinName"      : 3  ,
                 "spaceBetweenInNOutPin" : 4,
                 "heightBetweenPins"     : 1.8,
-                "firstPinyOffset"       : 2.5, # char height + 20
+                "firstPinyOffset"       : 3,
         }
 
         invertedUniqDict = {v: k for k, v in uniqDict.items()}

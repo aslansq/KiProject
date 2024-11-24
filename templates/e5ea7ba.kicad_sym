@@ -56,7 +56,7 @@
 		(symbol "{{symbol.sym.name}}_1_1"
 {%	for pin in symbol.pins %} {# KiSymEditPin type #}
 			(pin input line
-				(at 0 -3.81 0)
+				(at {{pin.x}} {{pin.y}} {{pin.deg}})
 				(length 2.54)
 				(name "{{pin.pin.name}}"
 					(effects
