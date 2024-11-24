@@ -31,9 +31,26 @@ class KiSymEditPin:
 
                 if self.pin.dir == "output":
                         self.deg = 180
-                        self.x = (self.dirMaxNameLenAll["input"] + self.dirMaxNameLenAll["output"]) * KiConst.symEdit["charWidth"]
-                        self.x = self.x + KiConst.symEdit["lenPin"] * 2 + KiConst.symEdit["spaceBetweenInNOutPin"]
-
+                        isInPinExist = False
+                        if self.dirMaxNameLenAll["input"] != 0:
+                                isInPinExist = True
+                        #   |---------------------------------------------------------|
+                        #   |  lenPin                                                 |
+                        #   |  ↓                                                      |
+                        # ----->                                                   <-----
+                        #   |   ↑maxInNameLen↑ spaceBetweenInNOutPin ↑maxOutNameLen↑  |
+                        #   |---------------------------------------------------------|
+                        if isInPinExist:
+                                self.x = self.x + KiConst.symEdit["lenPin"] + \
+                                         KiConst.symEdit["pinEndToPinName"] + \
+                                         (self.dirMaxNameLenAll["input"] * KiConst.symEdit["charWidth"]) + \
+                                         KiConst.symEdit["spaceBetweenInNOutPin"]
+                        else:
+                                self.x = self.x + KiConst.symEdit["spaceBetweenBoxNPinName"]
+                        self.x = self.x + \
+                                (self.dirMaxNameLenAll["output"] * KiConst.symEdit["charWidth"]) + \
+                                KiConst.symEdit["pinEndToPinName"] + \
+                                (KiConst.symEdit["lenPin"]-KiConst.symEdit["pinToBoxWidth"])
 
         def info(self, depth, pos):
                 s = KiUtil.getInfoDepthStr(depth, pos) + self.pin.name + " x " + str(self.x) + " y " + str(self.y) 
@@ -44,9 +61,19 @@ class KiSymEditSym:
         def __init__(self):
                 self.sym = None # class KiSymbol type
                 self.pins = [] # class KiSymEditPin type
+                # box edge positions
+                self.x0 = 0
+                self.x1 = 0
+                self.y0 = 0
+                self.y1 = 0
                 # including ic name and box and pins
                 self.width = 0
                 self.height = 0
+                # just the box
+                self.boxWidth = 0
+                self.boxHeight = 0
+                self.isInPinExist = False
+                self.isOutPinExist = False
 
         def parse(self, sym):
                 self.sym = sym
@@ -54,6 +81,42 @@ class KiSymEditSym:
                         kiSymEditPin = KiSymEditPin()
                         kiSymEditPin.parse(sym.pins[i])
                         self.pins.append(kiSymEditPin)
+
+        def __calcBoxWidthHeight(self, dirIdx, dirMaxNameLen):
+                #   |-------------------------------------------------------------|
+                #   |lenPin-pinToBoxWidth                                         |
+                #   |↓ ↓                                                          |
+                # ----->                                                          |
+                #   |   ↑ pinEndToPinName ↑ maxInNameLen ↑ spaceBetweenBoxNPinName|
+                #   |-------------------------------------------------------------|
+                self.isInPinExist = False
+                self.isOutPinExist = False
+                if dirIdx["input"] > 0:
+                        self.isInPinExist = True
+                if dirIdx["output"] > 0:
+                        self.isOutPinExist = True
+                # workaround characters are not monospaced, it is very hard to calculate width of the box
+                # if output pin exist I just align edge of the box to output pin and recalculate box width
+                # in case there is no output pin, this is going to be used
+                if not self.isOutPinExist:
+                        self.boxWidth = KiConst.symEdit["lenPin"] - KiConst.symEdit["pinToBoxWidth"] + \
+                                        KiConst.symEdit["pinEndToPinName"] + \
+                                        (dirMaxNameLen["input"] * KiConst.symEdit["charWidth"]) + \
+                                        KiConst.symEdit["spaceBetweenBoxNPinName"]
+                #
+                # IC1
+                # |----------------|   ← pinToBoxHeight
+                # |              ----> ← 
+                # |                |     heightBetweenPins
+                # |              ----> ← 
+                # |----------------|   ← pinToBoxHeight
+                #
+                whoHasMaxPin = "input"
+                if dirIdx["output"] > dirIdx["input"]:
+                        whoHasMaxPin = "output"
+                maxPin = dirIdx[whoHasMaxPin]
+                self.boxHeight = ((maxPin-1) * KiConst.symEdit["heightBetweenPins"]) + \
+                                 (KiConst.symEdit["pinToBoxHeight"] * 2)
 
         def prepareForAutoLayout(self):
                 dirIdx = {
@@ -73,13 +136,54 @@ class KiSymEditSym:
                         self.pins[i].prepareForAutoLayout(dirIdx[self.sym.pins[i].dir],
                                                           dirMaxNameLen)
                         dirIdx[self.sym.pins[i].dir] = dirIdx[self.sym.pins[i].dir] + 1
+                self.__calcBoxWidthHeight(dirIdx, dirMaxNameLen)
+
+        def __calcBoxEdges(self):
+                #    x0
+                #    ↓
+                # y0→|-------------------|
+                #    |                   |
+                #    |                   |
+                #    |-------------------|←y1
+                #                        ↑
+                #                        x1
+                if self.isInPinExist:
+                        self.x0 = KiConst.symEdit["pinToBoxWidth"]
+                else:
+                        self.x0 = 0
+                self.y0 = -KiConst.symEdit["firstPinyOffset"] + KiConst.symEdit["pinToBoxHeight"]
+                if self.isOutPinExist:
+                        for i in range(self.sym.numOfPins):
+                                if self.sym.pins[i].dir == "output":
+                                        self.x1 = self.pins[i].x - KiConst.symEdit["pinToBoxWidth"]
+                                        break
+                        self.boxWidth = self.x1 - self.x0
+                else:
+                        self.x1 = self.x0 + self.boxWidth
+                self.y1 = self.y0 - self.boxHeight
+
+        def __calcSymbolWidthHeight(self):
+                if self.isOutPinExist:
+                        self.width = self.x1 + KiConst.symEdit["pinToBoxWidth"]
+                else:
+                        self.width = self.x1
+                self.height = abs(self.y1 - self.y0)
 
         def autoLayout(self):
                 for i in range(self.sym.numOfPins):
                         self.pins[i].autoLayout()
 
+                self.__calcBoxEdges()
+                self.__calcSymbolWidthHeight()
+
         def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.sym.name +  " w " + str(self.width) + " h " + str(self.height) + "\n"
+                s = KiUtil.getInfoDepthStr(depth, pos) + self.sym.name +  \
+                    " w " + str(self.width) + \
+                    " h " + str(self.height) + \
+                    " x0 " + str(self.x0) + \
+                    " x1 " + str(self.x1) + \
+                    " y0 " + str(self.y0) + \
+                    " y1 " + str(self.y1) + "\n"
                 for i in range(self.sym.numOfPins):
                         s = s + self.pins[i].info(depth + 1, i + 1)
                 return s

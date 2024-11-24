@@ -16,13 +16,17 @@ class KiConst:
 
         # symbol editor constants(only absolute values)
         symEdit = {
-                "charHeight"            : 1.2,
-                "charWidth"             : 1.01,
-                "lenPin"                : 2.54,
-                "pinBackToPinName"      : 3  ,
-                "spaceBetweenInNOutPin" : 4,
-                "heightBetweenPins"     : 1.8,
-                "firstPinyOffset"       : 3,
+                "charHeight"              : 1.27,
+                "charWidth"               : 1.27,
+                "lenPin"                  : 2.54,
+                "pinBackToPinName"        : 3,
+                "spaceBetweenInNOutPin"   : 0.1,
+                "spaceBetweenBoxNPinName" : 1,
+                "heightBetweenPins"       : 1.8,
+                "firstPinyOffset"         : 3,
+                "pinToBoxWidth"           : 1.01,
+                "pinToBoxHeight"          : 1.01,
+                "pinEndToPinName"         : 0.7
         }
 
         invertedUniqDict = {v: k for k, v in uniqDict.items()}

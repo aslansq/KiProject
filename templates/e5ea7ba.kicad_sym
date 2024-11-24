@@ -53,6 +53,19 @@
 				(hide yes)
 			)
 		)
+		(symbol "{{symbol.sym.name}}_0_1"
+			(rectangle
+				(start {{symbol.x0}} {{symbol.y0}})
+				(end {{symbol.x1}} {{symbol.y1}})
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
 		(symbol "{{symbol.sym.name}}_1_1"
 {%	for pin in symbol.pins %} {# KiSymEditPin type #}
 			(pin input line
@@ -61,6 +74,7 @@
 				(name "{{pin.pin.name}}"
 					(effects
 						(font
+							(face "Cascadia Mono")
 							(size 1.27 1.27)
 						)
 					)

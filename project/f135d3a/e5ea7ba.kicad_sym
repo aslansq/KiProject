@@ -52,9 +52,22 @@
 				(hide yes)
 			)
 		)
+		(symbol "a87e18d_0_1"
+			(rectangle
+				(start 1.27 -2.54)
+				(end 29.718 -4.826)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
 		(symbol "a87e18d_1_1"
 			(pin input line
-				(at 0 -22.86 0)
+				(at 0 -3.81 0)
 				(length 2.54)
 				(name "f5f9a4a"
 					(effects
