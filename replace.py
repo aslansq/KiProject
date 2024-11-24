@@ -1,20 +1,8 @@
 import os
 import sys
 import glob
-# purpose of this dictionary :
-# in KiCAD field are name with these certain hashes
-# then this script replaces them and with Jinja magic
-# easy generation
-uniqDict = {
-"f135d3a" : "project.name",
-"e5ea7ba" : "lib.name",
-"a87e18d" : "symbol.name",
-"f151dac" : "symbol.designator",
-"f5f9a4a" : "pin.name",
-"d0035bb" : "pin.type",
-"b4641fc" : "pin.dir",
-"c75eb8b" : "temp"
-}
+from kiconst import KiConst
+
 # where replaced files will be stored
 devFolderPath = os.path.abspath('./dev')
 # where is KiCAD project
@@ -49,7 +37,7 @@ for i in range(len(origFilePaths)):
         with open(origFilePath, "r", encoding="utf8") as inFile:
                 with open(dstFilePath, "w", encoding="utf8") as outFile:
                         for line in inFile:
-                                for key in uniqDict:
-                                        value = uniqDict[key]
+                                for key in KiConst.uniqDict:
+                                        value = KiConst.uniqDict[key]
                                         line = line.replace(key, "{{"+ value + "}}") # put it as jinja var
                                 outFile.write(line)

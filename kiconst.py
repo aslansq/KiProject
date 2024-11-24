@@ -1,4 +1,32 @@
 class KiConst:
+        # purpose of this dictionary :
+        # in KiCAD field are name with these certain hashes
+        # then this script replaces them and with Jinja magic
+        # easy generation
+        uniqDict = {
+                "f135d3a" : "project.name",
+                "e5ea7ba" : "lib.name",
+                "a87e18d" : "symbol.name",
+                "f151dac" : "symbol.designator",
+                "f5f9a4a" : "pin.name",
+                "d0035bb" : "pin.type",
+                "b4641fc" : "pin.dir",
+                "c75eb8b" : "temp"
+        }
+
+        # symbol editor constants(only absolute values)
+        symEdit = {
+                "charHeight"            : 1.2,
+                "charWidth"             : 1.01,
+                "lenPin"                : 2.54,
+                "pinBackToPinName"      : 3  ,
+                "spaceBetweenInNOutPin" : 4,
+                "heightBetweenPins"     : 1.8,
+                "firstPinyOffset"       : 2.5, # char height + 20
+        }
+
+        invertedUniqDict = {v: k for k, v in uniqDict.items()}
+
         INFO_SINGLE_DEPTH_INDENT_LEN = 4
         # never change order of columns
         CSV_COL_LIB_NAME = 0
