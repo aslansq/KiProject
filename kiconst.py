@@ -7,5 +7,5 @@ class KiConst:
         CSV_COL_PIN_NAME = 3
         CSV_COL_PIN_DIR = 4
         CSV_COL_PIN_STYLE = 5
-        CSV_COL_PIN_CONN = 6
+        CSV_COL_PIN_NODES = 6
         CSV_COL_COUNT = 7

@@ -1,5 +1,22 @@
 from kiconst import KiConst
 from kiutil import KiUtil
+
+# maybe this should not be here but it is easy to gather data here
+class KiGlobalConn:
+        def __init__(self):
+                self.nodes = []
+                self.numOfNodes = 0
+        
+        def parseFromCsv(self, conn):
+                self.nodes = conn.split('-')
+                self.numOfNodes = len(self.nodes)
+
+        def info(self, depth, pos):
+                s = KiUtil.getInfoDepthStr(depth, pos)
+                for i in range(self.numOfNodes):
+                        s = s + self.nodes[i] + " "
+                return s
+
 # Data structure model of a pin
 class KiPin:
         def __init__(self):
@@ -8,14 +25,23 @@ class KiPin:
                 self.dir = ""
                 # inverted_clock, inverted, line, clock
                 self.style = ""
+                self.conn = None
+                self.connExist = False
         
         def parseFromCsv(self, pin):
                 self.name = pin[KiConst.CSV_COL_PIN_NAME]
                 self.dir = pin[KiConst.CSV_COL_PIN_DIR]
                 self.style = pin[KiConst.CSV_COL_PIN_STYLE]
-        
+                if pin[KiConst.CSV_COL_PIN_NODES] != "":
+                        self.conn = KiGlobalConn()
+                        self.conn.parseFromCsv(pin[KiConst.CSV_COL_PIN_NODES])
+                        self.connExist = True
+
         def info(self, depth, pos):
                 s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + self.dir + " " + self.style + " " + "\n"
+                if self.connExist:
+                        # if it even exist there is only one always
+                        s = s + self.conn.info(depth + 1, 1) + "\n"
                 return s
 
 # Data structure model of a symbol
