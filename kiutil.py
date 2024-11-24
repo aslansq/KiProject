@@ -2,7 +2,7 @@ from kiconst import KiConst
 
 class KiUtil:
         # used for pretty printing of parsed csv structure
-        def getInfoDepthStr(depth, pos):
+        def getLogDepthStr(depth, pos):
                 s = ""
                 if depth != 0:
                         if depth > 1:

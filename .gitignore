@@ -4,3 +4,4 @@ __pycache__/
 **backup**
 dev/
 examples/custom.csv
+log/**

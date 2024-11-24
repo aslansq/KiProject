@@ -43,9 +43,9 @@ class KiPrj:
                                 self.libs[i].parseFromCsv(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
 
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + str(self.numOfLibs) + "\n"
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + str(self.numOfLibs) + "\n"
                 for i in range(self.numOfLibs):
-                        s = s + self.libs[i].info(depth + 1, i + 1)
+                        s = s + self.libs[i].log(depth + 1, i + 1)
                 return s
 

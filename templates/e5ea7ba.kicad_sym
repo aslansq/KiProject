@@ -68,7 +68,7 @@
 		)
 		(symbol "{{symbol.sym.name}}_1_1"
 {%	for pin in symbol.pins %} {# KiSymEditPin type #}
-			(pin input line
+			(pin {{pin.pin.dir}} {{pin.pin.style}}
 				(at {{pin.x}} {{pin.y}} {{pin.deg}})
 				(length 2.54)
 				(name "{{pin.pin.name}}"

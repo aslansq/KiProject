@@ -11,8 +11,8 @@ class KiGlobalConn:
                 self.nodes = conn.split('-')
                 self.numOfNodes = len(self.nodes)
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos)
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos)
                 for i in range(self.numOfNodes):
                         s = s + self.nodes[i] + " "
                 return s
@@ -37,11 +37,11 @@ class KiPin:
                         self.conn.parseFromCsv(pin[KiConst.CSV_COL_PIN_NODES])
                         self.connExist = True
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + self.dir + " " + self.style + " " + "\n"
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + self.dir + " " + self.style + " " + "\n"
                 if self.connExist:
                         # if it even exist there is only one always
-                        s = s + self.conn.info(depth + 1, 1) + "\n"
+                        s = s + self.conn.log(depth + 1, 1) + "\n"
                 return s
 
 # Data structure model of a symbol
@@ -68,10 +68,10 @@ class KiSymbol:
                         kiPin.parseFromCsv(symbol[i])
                         self.pins.append(kiPin)
         
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + self.designator + " " + "\n"
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + self.designator + " " + "\n"
                 for i in range(self.numOfPins):
-                        s = s + self.pins[i].info(depth + 1, i + 1)
+                        s = s + self.pins[i].log(depth + 1, i + 1)
                 return s
 
 # Data structure model of a library
@@ -111,8 +111,8 @@ class KiLib:
                         # parsing symbols with entry and exist boundary
                         self.symbols[i].parseFromCsv(lib[lastLibIdx[i] : lastLibIdx[i+1]])
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.name + " " + "\n"
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + "\n"
                 for i in range(self.numOfSymbols):
-                        s = s + self.symbols[i].info(depth + 1, i + 1)
+                        s = s + self.symbols[i].log(depth + 1, i + 1)
                 return s

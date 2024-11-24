@@ -16,7 +16,7 @@ do
     for example in $examples
     do
         mkdir -p ./out/${example%.csv}
-        echo python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --info --templateFilePath ./templates/$templateFile
-        python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --info --templateFilePath ./templates/$templateFile
+        echo python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --templateFilePath ./templates/$templateFile
+        python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --templateFilePath ./templates/$templateFile
     done
 done

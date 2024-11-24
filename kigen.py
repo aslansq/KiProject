@@ -9,12 +9,13 @@ from kischedit import KiSchEditPrj
 g_args = {
     "csvFilePath" : None,
     "outFolderPath" : None,
-    "infoFlag" : False,
+    "logFolderPath" : None,
+    "logEnabled"    : False,
     "templateFilePath" : None
 }
 g_argList = sys.argv[1:]
-g_opts = "hic:o:t:"
-g_longOpts = ["help", "info", "csvFilePath=", "outFolderPath=", "templateFilePath="]
+g_opts = "hl:c:o:t:"
+g_longOpts = ["help", "logFolderPath=", "csvFilePath=", "outFolderPath=", "templateFilePath="]
 
 try:
         args, vals = getopt.getopt(g_argList, g_opts, g_longOpts)
@@ -38,8 +39,13 @@ try:
                                 print(str(absPath) + " not exists.")
                                 exit(1)
                         g_args["outFolderPath"] = absPath
-                elif currentArg in ("-o", "--info"):
-                        g_args["infoFlag"] = True
+                elif currentArg in ("-l", "--logFolderPath"):
+                        absPath = os.path.abspath(currentVal)
+                        if not os.path.exists(absPath):
+                                print(str(absPath) + " not exists.")
+                                exit(1)
+                        g_args["logFolderPath"] = absPath
+                        g_args["logEnabled"] = True
                 elif currentArg in ("-t", "--templateFilePath"):
                         absPath = os.path.abspath(currentVal)
                         if not os.path.exists(absPath):
@@ -65,15 +71,15 @@ if g_args["templateFilePath"] == None:
 
 kiPrj = KiPrj()
 kiPrj.parseFromCsv(g_args["csvFilePath"])
-if g_args["infoFlag"]:
-        with open(os.path.join(g_args["outFolderPath"], "info.txt"), "w") as infoFile:
-                infoFile.write(kiPrj.info(0, 1))
+if g_args["logEnabled"]:
+        with open(os.path.join(g_args["logFolderPath"], "log.txt"), "w") as logFile:
+                logFile.write(kiPrj.log(0, 1))
 
 if "kicad_sym" in g_args["templateFilePath"]:
         for i in range(kiPrj.numOfLibs):
                 kiSymEditLib = KiSymEditLib()
                 kiSymEditLib.parse(kiPrj.libs[i])
-                kiSymEditLib.gen(g_args["templateFilePath"], g_args["outFolderPath"])
+                kiSymEditLib.gen(g_args["templateFilePath"], g_args["outFolderPath"], g_args["logEnabled"], g_args["logFolderPath"])
 else:
         kiSchEditPrj = KiSchEditPrj()
         kiSchEditPrj.parse(kiPrj)

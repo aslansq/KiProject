@@ -52,8 +52,8 @@ class KiSymEditPin:
                                 KiConst.symEdit["pinEndToPinName"] + \
                                 (KiConst.symEdit["lenPin"]-KiConst.symEdit["pinToBoxWidth"])
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.pin.name + " x " + str(self.x) + " y " + str(self.y) 
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.pin.name + " x " + str(self.x) + " y " + str(self.y) 
                 s = s + " deg " + str(self.deg) + " dirIdx " + str(self.dirIdx) + " dir " + self.pin.dir + "\n"
                 return s
 
@@ -176,8 +176,8 @@ class KiSymEditSym:
                 self.__calcBoxEdges()
                 self.__calcSymbolWidthHeight()
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.sym.name +  \
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.sym.name +  \
                     " w " + str(self.width) + \
                     " h " + str(self.height) + \
                     " x0 " + str(self.x0) + \
@@ -185,7 +185,7 @@ class KiSymEditSym:
                     " y0 " + str(self.y0) + \
                     " y1 " + str(self.y1) + "\n"
                 for i in range(self.sym.numOfPins):
-                        s = s + self.pins[i].info(depth + 1, i + 1)
+                        s = s + self.pins[i].log(depth + 1, i + 1)
                 return s
 
 class KiSymEditLib:
@@ -210,16 +210,16 @@ class KiSymEditLib:
                 for i in range(self.lib.numOfSymbols):
                         self.symbols[i].autoLayout()
 
-        def info(self, depth, pos):
-                s = KiUtil.getInfoDepthStr(depth, pos) + self.lib.name + "\n"
+        def log(self, depth, pos):
+                s = KiUtil.getLogDepthStr(depth, pos) + self.lib.name + "\n"
                 for i in range(self.lib.numOfSymbols):
-                        s = s + self.symbols[i].info(depth + 1, i + 1)
+                        s = s + self.symbols[i].log(depth + 1, i + 1)
                 return s
 
-        def gen(self, templateFilePath, outFolderPath):
+        def gen(self, templateFilePath, outFolderPath, logFlag, logFolderPath):
                 self.prepareForAutoLayout()
                 self.autoLayout()
-                print(self.info(0, 1))
+
                 templateFileName = os.path.basename(templateFilePath)
                 templateLoader = jinja2.FileSystemLoader(searchpath=os.path.dirname(templateFilePath))
                 templateEnv = jinja2.Environment(loader=templateLoader)
@@ -227,6 +227,11 @@ class KiSymEditLib:
 
                 # change the filename to library name
                 self.outFileName = templateFileName.replace(KiConst.invertedUniqDict["lib.name"], self.lib.name)
+
+                if logFlag:
+                        s = self.log(0, 1)
+                        with open(os.path.join(logFolderPath, self.outFileName.replace(".kicad_sym", "Log.txt")), "w") as f:
+                                f.write(s)
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(symbols = self.symbols,

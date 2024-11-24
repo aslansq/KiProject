@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": ["--csvFilePath", ".\\examples\\custom.csv",
                      "--outFolderPath", ".\\out",
-                     "--info",
+                     "--logFolderPath", ".\\log"
                      "--templateFilePath", ".\\templates\\e5ea7ba.kicad_sym"]
         }
     ]
