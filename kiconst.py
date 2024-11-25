@@ -13,13 +13,26 @@ class KiConst:
                 "b4641fc" : "pin.dir",
                 "c75eb8b" : "temp"
         }
-
+        #                                             pinToBoxWidth
+        #                                                      ↓  ↓
+        #   |--------------------------------------------------|
+        # lenPin                              pinEndToPinName  |
+        # ↓ |  ↓                                        ↓   ↓  |
+        # -----> InPin0                           outPin0    -----> ←
+        #   |           ↑ spaceBetweenInNOutPin ↑              |     pinToBoxHeight
+        #   |--------------------------------------------------|    ←
         # symbol editor constants(only absolute values)
+        #
+        #   |--------------|   ←
+        #   |     OutPin0 ---->←firstPinyOffset
+        #   |↑   ↑         |
+        #   |spaceBetweenBoxNPinName
+        #   |--------------|
+        #
         symEdit = {
                 "charHeight"              : 1.27,
                 "charWidth"               : 1.27,
                 "lenPin"                  : 2.54,
-                "pinBackToPinName"        : 3,
                 "spaceBetweenInNOutPin"   : 0.1,
                 "spaceBetweenBoxNPinName" : 1,
                 "heightBetweenPins"       : 1.8,

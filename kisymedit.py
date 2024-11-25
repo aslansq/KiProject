@@ -29,17 +29,12 @@ class KiSymEditPin:
                         self.y = -KiConst.symEdit["firstPinyOffset"]
                         self.y = self.y - (self.dirIdx * KiConst.symEdit["heightBetweenPins"])
 
+                # see KiConst.symEdit comment to understand this
                 if self.pin.dir == "output":
                         self.deg = 180
                         isInPinExist = False
                         if self.dirMaxNameLenAll["input"] != 0:
                                 isInPinExist = True
-                        #   |---------------------------------------------------------|
-                        #   |  lenPin                                                 |
-                        #   |  ↓                                                      |
-                        # ----->                                                   <-----
-                        #   |   ↑maxInNameLen↑ spaceBetweenInNOutPin ↑maxOutNameLen↑  |
-                        #   |---------------------------------------------------------|
                         if isInPinExist:
                                 self.x = self.x + KiConst.symEdit["lenPin"] + \
                                          KiConst.symEdit["pinEndToPinName"] + \
@@ -95,7 +90,7 @@ class KiSymEditSym:
                         self.isInPinExist = True
                 if dirIdx["output"] > 0:
                         self.isOutPinExist = True
-                # workaround characters are not monospaced, it is very hard to calculate width of the box
+                # workaround characters are not monospaced, it is very hard to calculate width of the box.
                 # if output pin exist I just align edge of the box to output pin and recalculate box width
                 # in case there is no output pin, this is going to be used
                 if not self.isOutPinExist:
