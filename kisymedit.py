@@ -200,13 +200,17 @@ class KiSymEditLib:
                         kiSymEditSym.parse(lib.symbols[i])
                         self.symEditSyms.append(kiSymEditSym)
 
-        def prepareForAutoLayout(self):
+        def __prepareForAutoLayout(self):
                 for i in range(self.lib.numOfSymbols):
                         self.symEditSyms[i].prepareForAutoLayout()
 
-        def autoLayout(self):
+        def __autoLayout(self):
                 for i in range(self.lib.numOfSymbols):
                         self.symEditSyms[i].autoLayout()
+        
+        def autoLayout(self):
+                self.__prepareForAutoLayout()
+                self.__autoLayout()
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + self.lib.name + "\n"
@@ -215,9 +219,6 @@ class KiSymEditLib:
                 return s
 
         def gen(self, templateFilePath, outFolderPath, logFlag, logFolderPath):
-                self.prepareForAutoLayout()
-                self.autoLayout()
-
                 templateFileName = os.path.basename(templateFilePath)
                 templateLoader = jinja2.FileSystemLoader(searchpath=os.path.dirname(templateFilePath))
                 templateEnv = jinja2.Environment(loader=templateLoader)
