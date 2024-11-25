@@ -24,8 +24,8 @@ class KiSchEditPrj:
                 self.symEditLibs = symEditLibs
                 for i in range(len(self.symEditLibs)):
                         symEditLib = self.symEditLibs[i]
-                        for j in range(len(symEditLib.symbols)):
-                                symEditSym = symEditLib.symbols[j] # KiSymEditSym type
+                        for j in range(len(symEditLib.symEditSyms)):
+                                symEditSym = symEditLib.symEditSyms[j] # KiSymEditSym type
                                 schEditSym = KiSchEditSym()
                                 schEditSym.parse(symEditLib.lib.name, symEditSym)
                                 self.schEditSyms.append(schEditSym)

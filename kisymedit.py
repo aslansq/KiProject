@@ -55,7 +55,7 @@ class KiSymEditPin:
 class KiSymEditSym:
         def __init__(self):
                 self.sym = None # class KiSymbol type
-                self.pins = [] # class KiSymEditPin type
+                self.symEditPins = [] # class KiSymEditPin type
                 # box edge positions
                 self.x0 = 0
                 self.x1 = 0
@@ -75,7 +75,7 @@ class KiSymEditSym:
                 for i in range(sym.numOfPins):
                         kiSymEditPin = KiSymEditPin()
                         kiSymEditPin.parse(sym.pins[i])
-                        self.pins.append(kiSymEditPin)
+                        self.symEditPins.append(kiSymEditPin)
 
         def __calcBoxWidthHeight(self, dirIdx, dirMaxNameLen):
                 #   |-------------------------------------------------------------|
@@ -128,8 +128,8 @@ class KiSymEditSym:
                                 dirMaxNameLen[self.sym.pins[i].dir] = nameLen
 
                 for i in range(self.sym.numOfPins):
-                        self.pins[i].prepareForAutoLayout(dirIdx[self.sym.pins[i].dir],
-                                                          dirMaxNameLen)
+                        self.symEditPins[i].prepareForAutoLayout(dirIdx[self.sym.pins[i].dir],
+                                                                 dirMaxNameLen)
                         dirIdx[self.sym.pins[i].dir] = dirIdx[self.sym.pins[i].dir] + 1
                 self.__calcBoxWidthHeight(dirIdx, dirMaxNameLen)
 
@@ -147,10 +147,11 @@ class KiSymEditSym:
                 else:
                         self.x0 = 0
                 self.y0 = -KiConst.symEdit["firstPinyOffset"] + KiConst.symEdit["pinToBoxHeight"]
+                # see workaround comment in __calcBoxWidthHeight to understand why boxWidth is recalculated
                 if self.isOutPinExist:
                         for i in range(self.sym.numOfPins):
                                 if self.sym.pins[i].dir == "output":
-                                        self.x1 = self.pins[i].x - KiConst.symEdit["pinToBoxWidth"]
+                                        self.x1 = self.symEditPins[i].x - KiConst.symEdit["pinToBoxWidth"]
                                         break
                         self.boxWidth = self.x1 - self.x0
                 else:
@@ -162,11 +163,11 @@ class KiSymEditSym:
                         self.width = self.x1 + KiConst.symEdit["pinToBoxWidth"]
                 else:
                         self.width = self.x1
-                self.height = abs(self.y1 - self.y0)
+                self.height = abs(self.y1)
 
         def autoLayout(self):
                 for i in range(self.sym.numOfPins):
-                        self.pins[i].autoLayout()
+                        self.symEditPins[i].autoLayout()
 
                 self.__calcBoxEdges()
                 self.__calcSymbolWidthHeight()
@@ -180,14 +181,14 @@ class KiSymEditSym:
                     " y0 " + str(self.y0) + \
                     " y1 " + str(self.y1) + "\n"
                 for i in range(self.sym.numOfPins):
-                        s = s + self.pins[i].log(depth + 1, i + 1)
+                        s = s + self.symEditPins[i].log(depth + 1, i + 1)
                 return s
 
 class KiSymEditLib:
         def __init__(self):
                 self.lib = None # KiLib type
                 # this one does not have any physical items to be placed
-                self.symbols = [] # class KiSymEditSym type
+                self.symEditSyms = [] # class KiSymEditSym type
                 self.outFileName = "" # just for debugging purposes
         
         def parse(self, lib):
@@ -195,20 +196,20 @@ class KiSymEditLib:
                 for i in range(lib.numOfSymbols):
                         kiSymEditSym = KiSymEditSym()
                         kiSymEditSym.parse(lib.symbols[i])
-                        self.symbols.append(kiSymEditSym)
+                        self.symEditSyms.append(kiSymEditSym)
 
         def prepareForAutoLayout(self):
                 for i in range(self.lib.numOfSymbols):
-                        self.symbols[i].prepareForAutoLayout()
+                        self.symEditSyms[i].prepareForAutoLayout()
 
         def autoLayout(self):
                 for i in range(self.lib.numOfSymbols):
-                        self.symbols[i].autoLayout()
+                        self.symEditSyms[i].autoLayout()
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + self.lib.name + "\n"
                 for i in range(self.lib.numOfSymbols):
-                        s = s + self.symbols[i].log(depth + 1, i + 1)
+                        s = s + self.symEditSyms[i].log(depth + 1, i + 1)
                 return s
 
         def gen(self, templateFilePath, outFolderPath, logFlag, logFolderPath):
@@ -229,7 +230,7 @@ class KiSymEditLib:
                                 f.write(s)
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
-                renderedText = template.render(symbols = self.symbols,
+                renderedText = template.render(symEditSyms = self.symEditSyms,
                                                lib = self.lib)
                 with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
                         f.write(renderedText)

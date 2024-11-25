@@ -17,6 +17,7 @@ g_argList = sys.argv[1:]
 g_opts = "hl:c:o:t:"
 g_longOpts = ["help", "logFolderPath=", "csvFilePath=", "outFolderPath=", "templateFilePath="]
 g_symEditLibs = []
+g_prj = None
 
 try:
         args, vals = getopt.getopt(g_argList, g_opts, g_longOpts)
@@ -70,22 +71,22 @@ if g_args["templateFilePath"] == None:
         print("Template file is not given.")
         exit(1)
 
-kiPrj = KiPrj()
-kiPrj.parseFromCsv(g_args["csvFilePath"])
+g_prj = KiPrj()
+g_prj.parseFromCsv(g_args["csvFilePath"])
 if g_args["logEnabled"]:
         with open(os.path.join(g_args["logFolderPath"], "log.txt"), "w") as logFile:
-                logFile.write(kiPrj.log(0, 1))
+                logFile.write(g_prj.log(0, 1))
 
-# we always parse libraries
-for i in range(kiPrj.numOfLibs):
+# we always parse for symbol editor. even if it is not used directly; sch editor will use it
+for i in range(g_prj.numOfLibs):
         symEditLib = KiSymEditLib()
-        symEditLib.parse(kiPrj.libs[i])
+        symEditLib.parse(g_prj.libs[i])
         g_symEditLibs.append(symEditLib)
 
-if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen libraries
+if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen lib for symbol editor
         for i in range(len(g_symEditLibs)):
                 g_symEditLibs[i].gen(g_args["templateFilePath"], g_args["outFolderPath"], g_args["logEnabled"], g_args["logFolderPath"])
 else:
         schEditPrj = KiSchEditPrj()
-        schEditPrj.parse(kiPrj.name, g_symEditLibs)
+        schEditPrj.parse(g_prj.name, g_symEditLibs)
         schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])

@@ -2,13 +2,13 @@
 	(version 20231120)
 	(generator "kicad_symbol_editor")
 	(generator_version "8.0")
-{% for symbol in symbols %} {# KiSymEditSym type #}
-	(symbol "{{symbol.sym.name}}"
+{% for symEditSym in symEditSyms %} {# KiSymEditSym type #}
+	(symbol "{{symEditSym.sym.name}}"
 		(pin_numbers hide)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(property "Reference" "{{symbol.sym.designator}}"
+		(property "Reference" "{{symEditSym.sym.designator}}"
 			(at 0.254 -0.508 0)
 			(effects
 				(font
@@ -53,10 +53,10 @@
 				(hide yes)
 			)
 		)
-		(symbol "{{symbol.sym.name}}_0_1"
+		(symbol "{{symEditSym.sym.name}}_0_1"
 			(rectangle
-				(start {{symbol.x0}} {{symbol.y0}})
-				(end {{symbol.x1}} {{symbol.y1}})
+				(start {{symEditSym.x0}} {{symEditSym.y0}})
+				(end {{symEditSym.x1}} {{symEditSym.y1}})
 				(stroke
 					(width 0)
 					(type default)
@@ -66,12 +66,12 @@
 				)
 			)
 		)
-		(symbol "{{symbol.sym.name}}_1_1"
-{%	for pin in symbol.pins %} {# KiSymEditPin type #}
-			(pin {{pin.pin.dir}} {{pin.pin.style}}
-				(at {{pin.x}} {{pin.y}} {{pin.deg}})
+		(symbol "{{symEditSym.sym.name}}_1_1"
+{%	for symEditPin in symEditSym.symEditPins %} {# KiSymEditPin type #}
+			(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
+				(at {{symEditPin.x}} {{symEditPin.y}} {{symEditPin.deg}})
 				(length 2.54)
-				(name "{{pin.pin.name}}"
+				(name "{{symEditPin.pin.name}}"
 					(effects
 						(font
 							(face "Cascadia Mono")
@@ -87,8 +87,8 @@
 					)
 				)
 			)
-{% 	endfor %} {# pins #}
+{% 	endfor %} {# symEditPins #}
 		)
 	)
-{% endfor %} {# symbols #}
+{% endfor %} {# symEditSyms #}
 )
