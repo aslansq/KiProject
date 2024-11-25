@@ -36,8 +36,19 @@ for i in range(len(origFilePaths)):
         # start replacing
         with open(origFilePath, "r", encoding="utf8") as inFile:
                 with open(dstFilePath, "w", encoding="utf8") as outFile:
+                        print("#"*120)
+                        print("replacing -> " + str(origFilePath))
+                        lineNumber = 1
                         for line in inFile:
+                                keyFound = False
                                 for key in KiConst.uniqDict:
                                         value = KiConst.uniqDict[key]
-                                        line = line.replace(key, "{{"+ value + "}}") # put it as jinja var
+                                        if key in line:
+                                                line = line.replace(key, "{{"+ value + "}}") # put it as jinja var
+                                                keyFound = True
+                                if keyFound:
+                                        # let me know what do I need replace bare minimum
+                                        print(str(lineNumber) + " " + line.replace(" ", "").replace("\t", ""))
                                 outFile.write(line)
+                                lineNumber = lineNumber + 1
+                        print("\n")

@@ -16,6 +16,7 @@ g_args = {
 g_argList = sys.argv[1:]
 g_opts = "hl:c:o:t:"
 g_longOpts = ["help", "logFolderPath=", "csvFilePath=", "outFolderPath=", "templateFilePath="]
+g_symEditLibs = []
 
 try:
         args, vals = getopt.getopt(g_argList, g_opts, g_longOpts)
@@ -75,12 +76,16 @@ if g_args["logEnabled"]:
         with open(os.path.join(g_args["logFolderPath"], "log.txt"), "w") as logFile:
                 logFile.write(kiPrj.log(0, 1))
 
-if "kicad_sym" in g_args["templateFilePath"]:
-        for i in range(kiPrj.numOfLibs):
-                kiSymEditLib = KiSymEditLib()
-                kiSymEditLib.parse(kiPrj.libs[i])
-                kiSymEditLib.gen(g_args["templateFilePath"], g_args["outFolderPath"], g_args["logEnabled"], g_args["logFolderPath"])
+# we always parse libraries
+for i in range(kiPrj.numOfLibs):
+        symEditLib = KiSymEditLib()
+        symEditLib.parse(kiPrj.libs[i])
+        g_symEditLibs.append(symEditLib)
+
+if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen libraries
+        for i in range(len(g_symEditLibs)):
+                g_symEditLibs[i].gen(g_args["templateFilePath"], g_args["outFolderPath"], g_args["logEnabled"], g_args["logFolderPath"])
 else:
-        kiSchEditPrj = KiSchEditPrj()
-        kiSchEditPrj.parse(kiPrj)
-        kiSchEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])
+        schEditPrj = KiSchEditPrj()
+        schEditPrj.parse(kiPrj.name, g_symEditLibs)
+        schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])

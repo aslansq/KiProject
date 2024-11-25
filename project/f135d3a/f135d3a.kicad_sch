@@ -1,5 +1,164 @@
-(kicad_sch (version 20231120) (generator "eeschema") (generator_version "8.0")
-  (paper "A4")
-  (lib_symbols)
-  (symbol_instances)
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
+	(paper "A4")
+	(lib_symbols
+		(symbol "e5ea7ba:a87e18d"
+			(pin_numbers hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "f151dac"
+				(at 0.254 -0.508 0)
+				(effects
+					(font
+						(face "Cascadia Mono")
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "a87e18d_0_1"
+				(rectangle
+					(start 1.27 -2.54)
+					(end 29.718 -4.826)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "a87e18d_1_1"
+				(pin input line
+					(at 0 -3.81 0)
+					(length 2.54)
+					(name "f5f9a4a"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "e5ea7ba:a87e18d")
+		(at 12.7 15.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
+		(property "Reference" "f151dac1"
+			(at 28.194 13.97 0)
+			(effects
+				(font
+					(face "Cascadia Mono")
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "~"
+			(at 28.194 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 12.7 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 12.7 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 12.7 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "f3a877d8-8ddd-4699-874b-2d6146f3f342")
+		)
+		(instances
+			(project ""
+				(path "/97f17985-da40-43fd-b268-8c96b481a2af"
+					(reference "f151dac1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
 )

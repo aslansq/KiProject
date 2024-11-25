@@ -185,7 +185,7 @@ class KiSymEditSym:
 
 class KiSymEditLib:
         def __init__(self):
-                self.lib = None
+                self.lib = None # KiLib type
                 # this one does not have any physical items to be placed
                 self.symbols = [] # class KiSymEditSym type
                 self.outFileName = "" # just for debugging purposes
@@ -221,7 +221,7 @@ class KiSymEditLib:
                 template = templateEnv.get_template(templateFileName)
 
                 # change the filename to library name
-                self.outFileName = templateFileName.replace(KiConst.invertedUniqDict["lib.name"], self.lib.name)
+                self.outFileName = templateFileName.replace(KiConst.invertedUniqDict["xlib.name"], self.lib.name)
 
                 if logFlag:
                         s = self.log(0, 1)

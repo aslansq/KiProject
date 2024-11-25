@@ -5,3 +5,4 @@ __pycache__/
 dev/
 examples/custom.csv
 log/**
+*.lck

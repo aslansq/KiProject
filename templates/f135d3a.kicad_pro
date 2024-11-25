@@ -28,7 +28,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "{{project.name}}.kicad_pro",
+    "filename": "{{projectName}}.kicad_pro",
     "version": 1
   },
   "net_settings": {
