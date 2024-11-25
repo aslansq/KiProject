@@ -28,12 +28,12 @@ class KiPrj:
                         # deducing entry and exit boundary of a library in csv file
                         for i in range(len(rowList)):
                                 # creating new library for every different library name found in csv file
-                                if rowList[i][KiConst.CSV_COL_LIB_NAME] != lastLibName:
+                                if rowList[i][KiConst.csv["lib"]] != lastLibName:
                                         kiLib = KiLib()
                                         self.libs.append(kiLib)
                                         # storing idx that I found different library name
                                         lastRowIdx.append(i)
-                                        lastLibName = rowList[i][KiConst.CSV_COL_LIB_NAME]
+                                        lastLibName = rowList[i][KiConst.csv["lib"]]
                         self.numOfLibs = len(self.libs)
                         # for loop wont detect last item library name change so added myself
                         lastRowIdx.append(len(rowList))

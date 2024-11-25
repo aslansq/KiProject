@@ -49,13 +49,17 @@ class KiConst:
 
         invertedUniqDict = {v: k for k, v in uniqDict.items()}
 
-        INFO_SINGLE_DEPTH_INDENT_LEN = 4
-        # never change order of columns
-        CSV_COL_LIB_NAME = 0
-        CSV_COL_SYM_NAME = 1
-        CSV_COL_SYM_DESIG = 2
-        CSV_COL_PIN_NAME = 3
-        CSV_COL_PIN_DIR = 4
-        CSV_COL_PIN_STYLE = 5
-        CSV_COL_PIN_NODES = 6
-        CSV_COL_COUNT = 7
+        info = {
+                "depthIndentLen" : 4
+        }
+
+        csv = {
+                "lib"      : 0,
+                "sym"      : 1,
+                "desig"    : 2,
+                "pin"      : 3,
+                "pinDir"   : 4,
+                "pinStyle" : 5,
+                "nodes"    : 6,
+                "count"    : 7
+        }

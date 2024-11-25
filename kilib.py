@@ -29,12 +29,12 @@ class KiPin:
                 self.connExist = False
         
         def parseFromCsv(self, pin):
-                self.name = pin[KiConst.CSV_COL_PIN_NAME]
-                self.dir = pin[KiConst.CSV_COL_PIN_DIR]
-                self.style = pin[KiConst.CSV_COL_PIN_STYLE]
-                if pin[KiConst.CSV_COL_PIN_NODES] != "":
+                self.name = pin[KiConst.csv["pin"]]
+                self.dir = pin[KiConst.csv["pinDir"]]
+                self.style = pin[KiConst.csv["pinStyle"]]
+                if pin[KiConst.csv["nodes"]] != "":
                         self.conn = KiGlobalConn()
-                        self.conn.parseFromCsv(pin[KiConst.CSV_COL_PIN_NODES])
+                        self.conn.parseFromCsv(pin[KiConst.csv["nodes"]])
                         self.connExist = True
 
         def log(self, depth, pos):
@@ -57,8 +57,8 @@ class KiSymbol:
                 if len(symbol) == 0:
                         return
                 # at this point every item in should have same symbol name
-                self.name = symbol[0][KiConst.CSV_COL_SYM_NAME]
-                self.designator = symbol[0][KiConst.CSV_COL_SYM_DESIG]
+                self.name = symbol[0][KiConst.csv["sym"]]
+                self.designator = symbol[0][KiConst.csv["desig"]]
                 # number of pins is just number of items
                 self.numOfPins = len(symbol)
 
@@ -86,23 +86,23 @@ class KiLib:
                 if len(lib) == 0:
                         return
 
-                if len(lib[0]) < KiConst.CSV_COL_COUNT:
+                if len(lib[0]) < KiConst.csv["count"]:
                         print("invalid number of columns(" + str(len(lib[0])) +") in csv")
                         print(lib)
                         exit(1)
-                self.name = lib[0][KiConst.CSV_COL_LIB_NAME]
+                self.name = lib[0][KiConst.csv["lib"]]
 
                 lastSymbolName = ""
                 lastLibIdx = []
                 # deducing entry and exit boundary of symbol in the library
                 for i in range(len(lib)):
                         # creating new library for every different symbol name found in the library
-                        if lib[i][KiConst.CSV_COL_SYM_NAME] != lastSymbolName:
+                        if lib[i][KiConst.csv["sym"]] != lastSymbolName:
                                 kiSymbol = KiSymbol()
                                 self.symbols.append(kiSymbol)
                                 # storing idx that I found different symbol name
                                 lastLibIdx.append(i)
-                                lastSymbolName = lib[i][KiConst.CSV_COL_SYM_NAME]
+                                lastSymbolName = lib[i][KiConst.csv["sym"]]
                 self.numOfSymbols = len(self.symbols)
                 # for loop wont detect last item symbol name change so added myself
                 lastLibIdx.append(len(lib))

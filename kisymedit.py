@@ -13,8 +13,10 @@ class KiSymEditPin:
                 self.deg = 0
                 self.dirIdx = 0
                 # storing copy in every pin is not needed but it makes things very easy
-                self.dirMaxNameLenAll = 0
-
+                self.dirMaxNameLenAll = {
+                        "input" : 0,
+                        "output": 0
+                }
         def parse(self, pin):
                 self.pin = pin
         

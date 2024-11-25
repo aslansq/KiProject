@@ -3,7 +3,7 @@ rm -rf ./out
 mkdir -p ./out
 # generate and collect examples
 cd examples
-python custom.py > custom.csv
+#python custom.py > custom.csv
 examples=$(find . -type f | grep '.csv')
 cd ..
 # collect templates

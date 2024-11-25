@@ -2,10 +2,10 @@ from random import randint
 
 CSV_COL_LIB = 0
 CSV_COL_SYM = 1
-CSV_COL_SYM_DESIG = 2
-CSV_COL_PIN_NAME = 3
-CSV_COL_PIN_DIR = 4
-CSV_COL_PIN_STYLE = 5
+csv["desig"] = 2
+csv["pin"] = 3
+csv["pinDir"] = 4
+csv["pinStyle"] = 5
 CSV_COL_PIN_CONN = 6
 
 countries = {
@@ -98,11 +98,11 @@ for keyCountry in countries:
 
 outputRowIdxs = []
 for r in range(len(rows)):
-        if rows[r][CSV_COL_PIN_DIR] == "output":
+        if rows[r][csv["pinDir"]] == "output":
                 outputRowIdxs.append(r)
 
 for i in range(1, len(rows)):
-        if rows[i][CSV_COL_PIN_DIR] == "output":
+        if rows[i][csv["pinDir"]] == "output":
                 continue
 
         numOfConnection = randint(0,1)
@@ -116,7 +116,7 @@ for i in range(1, len(rows)):
                 if not outRowIdx in choosenOutRowIdxs:
                         choosenOutRowIdxs.append(outRowIdx)
                         
-        newName = rows[i][CSV_COL_SYM] + "_" + rows[i][CSV_COL_PIN_NAME]
+        newName = rows[i][CSV_COL_SYM] + "_" + rows[i][csv["pin"]]
         for choosenOutRowIdx in choosenOutRowIdxs:
                 choosenOutRowConnName = rows[choosenOutRowIdx][CSV_COL_PIN_CONN]
                 choosenOutRowConnNames.append(choosenOutRowConnName)
@@ -134,7 +134,7 @@ for i in range(1, len(rows)):
                         rows[j][CSV_COL_PIN_CONN] = newName
 
 for i in range(1, len(rows)):
-        if rows[i][CSV_COL_PIN_DIR] == "input":
+        if rows[i][csv["pinDir"]] == "input":
                 continue
         isUsed = False
         for j in range(1, len(rows)):
