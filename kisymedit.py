@@ -1,10 +1,11 @@
+# this file is going to be used for auto layout in symbol editor
+# this is a wrapper for KiPrj with layout locations for symbol editor
 import os
 from kiconst import KiConst
 from kiutil import KiUtil
 import jinja2
-# this files is going to be used to auto layout in symbol editor
 
-class KiSymEditPin:
+class _KiSymEditPin:
         def __init__(self):
                 self.pin = None # class KiPin type
                 # positions
@@ -54,10 +55,10 @@ class KiSymEditPin:
                 s = s + " deg " + str(self.deg) + " dirIdx " + str(self.dirIdx) + " dir " + self.pin.dir + "\n"
                 return s
 
-class KiSymEditSym:
+class _KiSymEditSym:
         def __init__(self):
                 self.sym = None # class KiSymbol type
-                self.symEditPins = [] # class KiSymEditPin type
+                self.symEditPins = [] # class _KiSymEditPin type
                 # box edge positions
                 self.x0 = 0
                 self.x1 = 0
@@ -75,7 +76,7 @@ class KiSymEditSym:
         def parse(self, sym):
                 self.sym = sym
                 for i in range(sym.numOfPins):
-                        kiSymEditPin = KiSymEditPin()
+                        kiSymEditPin = _KiSymEditPin()
                         kiSymEditPin.parse(sym.pins[i])
                         self.symEditPins.append(kiSymEditPin)
 
@@ -190,15 +191,8 @@ class KiSymEditLib:
         def __init__(self):
                 self.lib = None # KiLib type
                 # this one does not have any physical items to be placed
-                self.symEditSyms = [] # class KiSymEditSym type
+                self.symEditSyms = [] # class _KiSymEditSym type
                 self.outFileName = "" # just for debugging purposes
-        
-        def parse(self, lib):
-                self.lib = lib
-                for i in range(lib.numOfSymbols):
-                        kiSymEditSym = KiSymEditSym()
-                        kiSymEditSym.parse(lib.symbols[i])
-                        self.symEditSyms.append(kiSymEditSym)
 
         def __prepareForAutoLayout(self):
                 for i in range(self.lib.numOfSymbols):
@@ -207,8 +201,15 @@ class KiSymEditLib:
         def __autoLayout(self):
                 for i in range(self.lib.numOfSymbols):
                         self.symEditSyms[i].autoLayout()
-        
-        def autoLayout(self):
+
+        # KiSymEditLib is suppose to contain data from KiPrj
+        # and do auto layout for them
+        def parse(self, lib):
+                self.lib = lib
+                for i in range(lib.numOfSymbols):
+                        kiSymEditSym = _KiSymEditSym()
+                        kiSymEditSym.parse(lib.symbols[i])
+                        self.symEditSyms.append(kiSymEditSym)
                 self.__prepareForAutoLayout()
                 self.__autoLayout()
 

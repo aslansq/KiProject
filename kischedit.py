@@ -4,7 +4,7 @@ from kiconst import KiConst
 import jinja2
 import os
 
-class KiSchEditSym:
+class _KiSchEditSym:
         def __init__(self):
                 self.symEditSym = None
                 self.libName = ""
@@ -26,7 +26,7 @@ class KiSchEditPrj:
                         symEditLib = self.symEditLibs[i]
                         for j in range(len(symEditLib.symEditSyms)):
                                 symEditSym = symEditLib.symEditSyms[j] # KiSymEditSym type
-                                schEditSym = KiSchEditSym()
+                                schEditSym = _KiSchEditSym()
                                 schEditSym.parse(symEditLib.lib.name, symEditSym)
                                 self.schEditSyms.append(schEditSym)
 

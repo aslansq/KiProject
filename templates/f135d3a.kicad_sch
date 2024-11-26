@@ -58,8 +58,8 @@
 			)
 			(symbol "{{schEditSym.symEditSym.sym.name}}_0_1"
 				(rectangle
-					(start 1.27 -2.54)
-					(end 29.718 -4.826)
+					(start {{schEditSym.symEditSym.x0}} {{schEditSym.symEditSym.y0}})
+					(end {{schEditSym.symEditSym.x1}} {{schEditSym.symEditSym.y1}})
 					(stroke
 						(width 0)
 						(type default)
@@ -70,12 +70,14 @@
 				)
 			)
 			(symbol "{{schEditSym.symEditSym.sym.name}}_1_1"
-				(pin input line
-					(at 0 -3.81 0)
+	{%	for symEditPin in schEditSym.symEditSym.symEditPins %} {# KiSymEditPin type #}
+				(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
+					(at {{symEditPin.x}} {{symEditPin.y}} {{symEditPin.deg}})
 					(length 2.54)
-					(name "pinName"
+					(name "{{symEditPin.pin.name}}"
 						(effects
 							(font
+								(face "Cascadia Mono")
 								(size 1.27 1.27)
 							)
 						)
@@ -88,6 +90,7 @@
 						)
 					)
 				)
+	{% 	endfor %} {# symEditPins #}
 			)
 		)
 {% endfor %}{# schEditSyms #}

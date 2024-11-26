@@ -92,25 +92,25 @@
 	)
 	(symbol
 		(lib_id "e5ea7ba:a87e18d")
-		(at 12.7 15.24 0)
+		(at 0 0 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
 		(property "Reference" "f151dac1"
-			(at 28.194 13.97 0)
+			(at 0 0 0)
 			(effects
 				(font
 					(face "Cascadia Mono")
 					(size 1.27 1.27)
 				)
+				(justify left top)
 			)
 		)
 		(property "Value" "~"
-			(at 28.194 16.51 0)
+			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -118,7 +118,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 12.7 15.24 0)
+			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -127,7 +127,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 12.7 15.24 0)
+			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -136,7 +136,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 12.7 15.24 0)
+			(at 0 0 0)
 			(effects
 				(font
 					(size 1.27 1.27)

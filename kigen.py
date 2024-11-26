@@ -81,7 +81,6 @@ if g_args["logEnabled"]:
 for i in range(g_prj.numOfLibs):
         symEditLib = KiSymEditLib()
         symEditLib.parse(g_prj.libs[i])
-        symEditLib.autoLayout()
         g_symEditLibs.append(symEditLib)
 
 if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen lib for symbol editor
