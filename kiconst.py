@@ -16,6 +16,8 @@ class KiConst:
                 "d58d89a" : "xanotherSymbol.name",
                 "c825b8b" : "xanotherSymbol.designator",
                 "d0f82ea" : "xanotherPin.name",
+                "de51abf" : "xglobalInputLabel.name",
+                "fc9d56b" : "xglobalOutputLabel.name",
                 "c75eb8b" : "xtemp"
         }
         #                                             pinToBoxWidth
@@ -62,4 +64,29 @@ class KiConst:
                 "pinStyle" : 5,
                 "nodes"    : 6,
                 "count"    : 7
+        }
+
+        #  leftToTextWidth
+        #  ↓   ↓
+        #  |----------\  ←
+        #  |   text    >    height
+        #  |----------/  ←
+        #          ↑   ↑
+        #          rightToTexWidth
+        #
+        #                  x
+        #     |----------\ ↓
+        #     |    in     > ← y
+        #     |----------/  ←
+        #
+        #    x                heightBetweenLabelGroups
+        #    ↓|----------\  ←
+        #  y→ |    out    >
+        #     |----------/
+
+        globalLabel = {
+                "leftToTextWidth"          : 1.27,
+                "rightToTexWidth"          : 1.55,
+                "height"                   : 2.54,
+                "heightBetweenLabelGroups" : 1.27
         }

@@ -4,14 +4,47 @@ from kiconst import KiConst
 import jinja2
 import os
 
+class _KiSchEditNode:
+        def __init__(self):
+                self.node = ""
+                self.x = 0
+                self.y = 0
+        
+        def parse(self, node):
+                self.node = node
+
+class _KiSchEditPin:
+        def __init__(self):
+                self.symEditPin = []
+                self.schEditNodes = []
+                self.x = 0
+                self.y = 0
+        
+        def parse(self, symEditPin):
+                self.symEditPin = symEditPin
+
+                # exit if there is no connector
+                if not symEditPin.pin.connExist:
+                        return
+                conn = symEditPin.pin.conn
+                for i in range(conn.numOfNodes):
+                        schEditNode = _KiSchEditNode()
+                        schEditNode.parse(conn.nodes[i])
+                        self.schEditNodes.append(schEditNode)
+
 class _KiSchEditSym:
         def __init__(self):
                 self.symEditSym = None
+                self.schEditPins = []
                 self.libName = ""
         
         def parse(self, libName, symEditSym):
                 self.symEditSym = symEditSym
                 self.libName = libName
+                for i in range(symEditSym.sym.numOfPins):
+                        schEditPin = _KiSchEditPin()
+                        schEditPin.parse(symEditSym.symEditPins[i])
+                        self.schEditPins.append(schEditPin)
 
 class KiSchEditPrj:
         def __init__(self):

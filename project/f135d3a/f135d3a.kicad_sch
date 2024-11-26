@@ -90,6 +90,60 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 24.13 24.13) (xy 30.48 24.13)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+	)
+	(global_label "fc9d56b"
+		(shape output)
+		(at 30.48 24.13 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "dc68fdf5-7047-4402-b18e-91772ec7c508")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 41.206 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "de51abf"
+		(shape input)
+		(at 24.13 24.13 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "eace0e79-bf5f-4d6b-8d9e-e27e74d57971")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 13.4645 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(symbol
 		(lib_id "e5ea7ba:a87e18d")
 		(at 0 0 0)
