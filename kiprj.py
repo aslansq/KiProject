@@ -15,8 +15,8 @@ class _KiGlobalConn:
                 self.nodes = []
                 self.numOfNodes = 0
         
-        def parseFromCsv(self, conn):
-                self.nodes = conn.split('-')
+        def parseFromCsv(self, pin):
+                self.nodes = pin[KiConst.csv["nodes"]].split('-')
                 self.numOfNodes = len(self.nodes)
 
         def log(self, depth, pos):
@@ -33,23 +33,18 @@ class _KiPin:
                 self.dir = ""
                 # inverted_clock, inverted, line, clock
                 self.style = ""
-                self.conn = None
-                self.connExist = False
+                self.conn = _KiGlobalConn()
         
         def parseFromCsv(self, pin):
                 self.name = pin[KiConst.csv["pin"]]
                 self.dir = pin[KiConst.csv["pinDir"]]
                 self.style = pin[KiConst.csv["pinStyle"]]
                 if pin[KiConst.csv["nodes"]] != "":
-                        self.conn = _KiGlobalConn()
-                        self.conn.parseFromCsv(pin[KiConst.csv["nodes"]])
-                        self.connExist = True
+                        self.conn.parseFromCsv(pin)
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + self.dir + " " + self.style + " " + "\n"
-                if self.connExist:
-                        # if it even exist there is only one always
-                        s = s + self.conn.log(depth + 1, 1) + "\n"
+                s = s + self.conn.log(depth + 1, 1) + "\n"
                 return s
 
 # Data structure model of a symbol

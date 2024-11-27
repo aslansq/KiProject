@@ -13,24 +13,30 @@ class _KiSchEditNode:
         def parse(self, node):
                 self.node = node
 
+class _KiSchEditConn:
+        def __init__(self):
+                self.x = 0
+                self.y = 0
+                self.schEditNodes = [] # class _KiSchEditNode type
+                self.conn = None
+        
+        def parse(self, conn):
+                self.conn = conn
+                for i in range(self.conn.numOfNodes):
+                        schEditNode = _KiSchEditNode()
+                        schEditNode.parse(self.conn.nodes[i])
+                        self.schEditNodes.append(schEditNode)
+
 class _KiSchEditPin:
         def __init__(self):
                 self.symEditPin = []
-                self.schEditNodes = []
+                self.schEditConn = _KiSchEditConn()
                 self.x = 0
                 self.y = 0
         
         def parse(self, symEditPin):
                 self.symEditPin = symEditPin
-
-                # exit if there is no connector
-                if not symEditPin.pin.connExist:
-                        return
-                conn = symEditPin.pin.conn
-                for i in range(conn.numOfNodes):
-                        schEditNode = _KiSchEditNode()
-                        schEditNode.parse(conn.nodes[i])
-                        self.schEditNodes.append(schEditNode)
+                self.schEditConn.parse(symEditPin.pin.conn)
 
 class _KiSchEditSym:
         def __init__(self):
