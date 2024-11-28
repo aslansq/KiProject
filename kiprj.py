@@ -14,13 +14,21 @@ class _KiGlobalConn:
         def __init__(self):
                 self.nodes = []
                 self.numOfNodes = 0
+                self.dir = ""
+                self.name = ""
         
         def parseFromCsv(self, pin):
+                self.name = pin[KiConst.csv["sym"]] + "_" + pin[KiConst.csv["pin"]]
                 self.nodes = pin[KiConst.csv["nodes"]].split('-')
+                # remove itself
+                self.nodes.remove(self.name)
+                self.dir = pin[KiConst.csv["pinDir"]]
                 self.numOfNodes = len(self.nodes)
 
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos)
+                if self.numOfNodes == 0:
+                        return ""
+                s = KiUtil.getLogDepthStr(depth, pos) + "Nodes: "
                 for i in range(self.numOfNodes):
                         s = s + self.nodes[i] + " "
                 return s
@@ -43,7 +51,7 @@ class _KiPin:
                         self.conn.parseFromCsv(pin)
 
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + self.dir + " " + self.style + " " + "\n"
+                s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Dir: " + self.dir + " Style: " + self.style + " " + "\n"
                 s = s + self.conn.log(depth + 1, 1) + "\n"
                 return s
 
@@ -72,7 +80,7 @@ class _KiSymbol:
                         self.pins.append(kiPin)
         
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + self.designator + " " + "\n"
+                s = KiUtil.getLogDepthStr(depth, pos) + "SymName: " + self.name + " DesigName" + self.designator + " " + "\n"
                 for i in range(self.numOfPins):
                         s = s + self.pins[i].log(depth + 1, i + 1)
                 return s
@@ -115,7 +123,7 @@ class _KiLib:
                         self.symbols[i].parseFromCsv(lib[lastLibIdx[i] : lastLibIdx[i+1]])
 
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + "\n"
+                s = KiUtil.getLogDepthStr(depth, pos) + "LibName: " + self.name + " " + "\n"
                 for i in range(self.numOfSymbols):
                         s = s + self.symbols[i].log(depth + 1, i + 1)
                 return s
@@ -160,7 +168,7 @@ class KiPrj:
 
 
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + self.name + " " + str(self.numOfLibs) + "\n"
+                s = KiUtil.getLogDepthStr(depth, pos) + "PrjName: "+ self.name + " NumOfLibs" + str(self.numOfLibs) + "\n"
                 for i in range(self.numOfLibs):
                         s = s + self.libs[i].log(depth + 1, i + 1)
                 return s

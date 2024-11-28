@@ -71,11 +71,19 @@ if g_args["templateFilePath"] == None:
         print("Template file is not given.")
         exit(1)
 
+def printLog(processedFilePath, outStr):
+        if g_args["logEnabled"] == False:
+                return
+
+        fileName = os.path.basename(processedFilePath)
+        outFileName = str(fileName) + ".log"
+        outPath = os.path.join(g_args["logFolderPath"], outFileName)
+        with open(outPath, "w") as f:
+                f.write(outStr)
+
 g_prj = KiPrj()
 g_prj.parseFromCsv(g_args["csvFilePath"])
-if g_args["logEnabled"]:
-        with open(os.path.join(g_args["logFolderPath"], "log.txt"), "w") as logFile:
-                logFile.write(g_prj.log(0, 1))
+printLog(g_args["csvFilePath"], g_prj.log(0, 1))
 
 # we always parse for symbol editor. even if it is not used directly; sch editor will use it
 for i in range(g_prj.numOfLibs):
@@ -85,8 +93,11 @@ for i in range(g_prj.numOfLibs):
 
 if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen lib for symbol editor
         for i in range(len(g_symEditLibs)):
-                g_symEditLibs[i].gen(g_args["templateFilePath"], g_args["outFolderPath"], g_args["logEnabled"], g_args["logFolderPath"])
+                g_symEditLibs[i].gen(g_args["templateFilePath"], g_args["outFolderPath"])
+                printLog(str(g_args["templateFilePath"]) + "." + g_symEditLibs[i].lib.name, g_symEditLibs[i].log(0,1))
+
 else:
         schEditPrj = KiSchEditPrj()
         schEditPrj.parse(g_prj.name, g_symEditLibs)
         schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])
+        printLog(g_args["templateFilePath"], schEditPrj.log(0, 1))

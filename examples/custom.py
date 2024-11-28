@@ -1,12 +1,7 @@
 from random import randint
-
-CSV_COL_LIB = 0
-CSV_COL_SYM = 1
-csv["desig"] = 2
-csv["pin"] = 3
-csv["pinDir"] = 4
-csv["pinStyle"] = 5
-CSV_COL_PIN_CONN = 6
+import sys
+sys.path.append("..")
+from kiconst import KiConst
 
 countries = {
     "USA": {
@@ -98,11 +93,11 @@ for keyCountry in countries:
 
 outputRowIdxs = []
 for r in range(len(rows)):
-        if rows[r][csv["pinDir"]] == "output":
+        if rows[r][KiConst.csv["pinDir"]] == "output":
                 outputRowIdxs.append(r)
 
 for i in range(1, len(rows)):
-        if rows[i][csv["pinDir"]] == "output":
+        if rows[i][KiConst.csv["pinDir"]] == "output":
                 continue
 
         numOfConnection = randint(0,1)
@@ -116,35 +111,35 @@ for i in range(1, len(rows)):
                 if not outRowIdx in choosenOutRowIdxs:
                         choosenOutRowIdxs.append(outRowIdx)
                         
-        newName = rows[i][CSV_COL_SYM] + "_" + rows[i][csv["pin"]]
+        newName = rows[i][KiConst.csv["sym"]] + "_" + rows[i][KiConst.csv["pin"]]
         for choosenOutRowIdx in choosenOutRowIdxs:
-                choosenOutRowConnName = rows[choosenOutRowIdx][CSV_COL_PIN_CONN]
+                choosenOutRowConnName = rows[choosenOutRowIdx][KiConst.csv["nodes"]]
                 choosenOutRowConnNames.append(choosenOutRowConnName)
                 newName = newName + "-" + choosenOutRowConnName
                 
-        rows[i][CSV_COL_PIN_CONN] = newName
+        rows[i][KiConst.csv["nodes"]] = newName
 
         for j in range(1, len(rows)):
                 isSame = False
                 for choosenOutRowConnName in choosenOutRowConnNames:
-                        if choosenOutRowConnName == rows[j][CSV_COL_PIN_CONN]:
+                        if choosenOutRowConnName == rows[j][KiConst.csv["nodes"]]:
                                 isSame = True
                                 break
                 if isSame:
-                        rows[j][CSV_COL_PIN_CONN] = newName
+                        rows[j][KiConst.csv["nodes"]] = newName
 
 for i in range(1, len(rows)):
-        if rows[i][csv["pinDir"]] == "input":
+        if rows[i][KiConst.csv["pinDir"]] == "input":
                 continue
         isUsed = False
         for j in range(1, len(rows)):
                 if i == j:
                         continue
-                if rows[i][CSV_COL_PIN_CONN] == rows[j][CSV_COL_PIN_CONN]:
+                if rows[i][KiConst.csv["nodes"]] == rows[j][KiConst.csv["nodes"]]:
                         isUsed = True
                         break
         if not isUsed:
-                rows[i][CSV_COL_PIN_CONN] = ""
+                rows[i][KiConst.csv["nodes"]] = ""
 
 for row in rows:
         s = ""

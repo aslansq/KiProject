@@ -1,11 +1,24 @@
+req=$1
+
 # clear old files
 rm -rf ./out
 mkdir -p ./out
+# clear old log files
+rm -rf ./log
+mkdir -p ./log
+
 # generate and collect examples
 cd examples
-#python custom.py > custom.csv
+python custom.py > custom.csv
 examples=$(find . -type f | grep '.csv')
 cd ..
+
+# if there is specific request do not generate everything
+if [[ ! -z "${req}" ]]
+then
+    examples=${req}
+fi
+
 # collect templates
 cd templates
 templateFiles=$(find . -type f)
