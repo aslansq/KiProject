@@ -21,8 +21,9 @@ class _KiGlobalConn:
                 self.name = pin[KiConst.csv["sym"]] + "_" + pin[KiConst.csv["pin"]]
                 self.nodes = pin[KiConst.csv["nodes"]].split('-')
                 # remove itself
-                self.nodes.remove(self.name)
                 self.dir = pin[KiConst.csv["pinDir"]]
+                if self.dir == "input" and self.name in self.nodes:
+                        self.nodes.remove(self.name)
                 self.numOfNodes = len(self.nodes)
 
         def log(self, depth, pos):
