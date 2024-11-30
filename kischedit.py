@@ -65,14 +65,63 @@ class _KiSchEditConn:
                 for i in range(self.schEditNumOfNodes):
                         self.schEditNodes[i].autoLayout(self.x, self.y)
 
+class _KiSchEditWire:
+        def __init__(self):
+                self.x0 = 0
+                self.x1 = 0
+                self.y0 = 0
+                self.y1 = 0
+                self.len = 0
+                self.o = '' # v(vertical) or h(horizontal)
+
+        def prepareForLayout(self, x, y, o, len):
+                self.x0 = x
+                self.y0 = y
+                self.o = o
+                self.len = len
+                if self.o != 'v' and self.o != 'h':
+                        print("ERROR undefined orientation.")
+                        exit(1)
+                if self.o == 'v':
+                        self.x1 = self.x0 + self.len
+                        self.y1 = self.y0
+                elif self.o == 'h':
+                        self.x1 = self.x0
+                        self.y1 = self.y0 + self.len
+        def autoLayout(self, x, y):
+                self.x0 = self.x0 + x
+                self.y0 = self.y0 + y
+                self.x1 = self.x1 + x
+                self.y1 = self.y1 + y
+
 class _KiSchEditWireCont:
         def __init__(self):
                 self.width = 0
                 self.schEditConns = None
+                self.numOfSchEditConns = 0
+                self.wires = [] # _KiSchEditWire
+                self.dir = ""
+                self.x = 0
+                self.y = 0
 
         def parse(self, schEditConns):
                 self.schEditConns = schEditConns
                 self.numOfSchEditConns = len(self.schEditConns)
+                self.dir = self.schEditConns[0].dir
+
+        def __prepareInWireContainer(self):
+                for i in range(self.numOfSchEditConns):
+                        schEditConn = self.schEditConns[i]
+                        for j in range(len(schEditConn.schEditNodes)):
+                                schEditNode = schEditConn.schEditNodes[j]
+                                wire = _KiSchEditWire()
+                                x = schEditConn.width
+                                y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
+                                    (KiConst.globalLabel["height"] * schEditNode.idx) + \
+                                    (KiConst.globalLabel["height"] / 2)
+                                wire.prepareForLayout(x, y, 'h', KiConst.schEdit["wirexGap"])
+                                self.wires.append(wire)
+
 
         def prepareForLayout(self):
                 connWMultipleNodesExist = False
@@ -83,6 +132,14 @@ class _KiSchEditWireCont:
                 self.width = self.numOfSchEditConns * (KiConst.schEdit["wirexGap"] * 2)
                 if connWMultipleNodesExist:
                         self.width = self.width + (KiConst.schEdit["wirexGap"] * 2)
+                if self.dir == "input":
+                        self.__prepareInWireContainer()
+
+        def autoLayout(self, x, y):
+                self.x = x
+                self.y = y
+                for i in range(len(self.wires)):
+                        self.wires[i].autoLayout(x, y)
 
 class _KiSchEditModule:
         def __init__(self):
@@ -137,8 +194,9 @@ class _KiSchEditModule:
                         self.numOfSchEditConns[dir] = len(self.schEditConns[dir])
                 
                 for dir in ["input", "output"]:
-                        self.schEditWireCont[dir] = _KiSchEditWireCont()
-                        self.schEditWireCont[dir].parse(self.schEditConns[dir])
+                        if self.numOfSchEditConns[dir] != 0:
+                                self.schEditWireCont[dir] = _KiSchEditWireCont()
+                                self.schEditWireCont[dir].parse(self.schEditConns[dir])
 
         def prepareForLayout(self):
                 maxNodeNameLen = {
@@ -161,17 +219,14 @@ class _KiSchEditModule:
                         for i in range(self.numOfSchEditConns[dir]):
                                 if self.schEditConns[dir][i].width > maxWidth:
                                         maxWidth = self.schEditConns[dir][i].width
-                        if dir == "input":
-                                self.symx = maxWidth
                         self.width = self.width + maxWidth
 
 
                 for dir in ["input", "output"]:
-                        self.schEditWireCont[dir].prepareForLayout()
-                        self.width = self.width + self.schEditWireCont[dir].width
-                
-                self.symx = self.symx + self.schEditWireCont["input"].width
-                
+                        if self.numOfSchEditConns[dir] != 0:
+                                self.schEditWireCont[dir].prepareForLayout()
+                                self.width = self.width + self.schEditWireCont[dir].width
+                                
                 self.width = self.width + self.symEditSym.width
 
                 for dir in ["input", "output"]:
@@ -191,14 +246,27 @@ class _KiSchEditModule:
                         self.schEditConns["input"][i].autoLayout(x, y + inConnHeights)
                         inConnHeights = inConnHeights + self.schEditConns["input"][i].height
 
-                self.symx = self.symx + x
-                self.symy = self.symy + y
+                if self.numOfSchEditConns["input"] != 0:
+                        self.schEditWireCont["input"].autoLayout(self.schEditConns["input"][0].x + \
+                                                                 self.schEditConns["input"][0].width, y)
+
+                # if there is input connectors there is also wires
+                if self.numOfSchEditConns["input"] != 0:
+                        self.symx = self.schEditWireCont["input"].x + self.schEditWireCont["input"].width
+                else:
+                        self.symx = x
+
+                self.symy = y
+
                 self.desigx = self.symx + KiConst.schEdit["desigxOffset"]
                 self.desigy = self.symy + KiConst.schEdit["desigyOffset"]
+
+                if self.numOfSchEditConns["output"] != 0:
+                        self.schEditWireCont["output"].autoLayout(self.symx + self.symEditSym.width, y)
+
                 outConnHeights = 0
                 for i in range(self.numOfSchEditConns["output"]):
-                        self.schEditConns["output"][i].autoLayout(self.symx + \
-                                                                  self.symEditSym.width + \
+                        self.schEditConns["output"][i].autoLayout(self.schEditWireCont["output"].x + \
                                                                   self.schEditWireCont["output"].width, y + outConnHeights)
                         outConnHeights = outConnHeights + self.schEditConns["output"][i].height
 
