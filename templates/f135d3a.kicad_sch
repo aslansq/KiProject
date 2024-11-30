@@ -5,13 +5,13 @@
 	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
 	(paper "A4")
 	(lib_symbols
-{% for schEditSym in schEditSyms %} {# KiSchEditSym type #}
-		(symbol "{{schEditSym.libName}}:{{schEditSym.symEditSym.sym.name}}"
+{% for schEditModule in schEditModules %} {# KiSchEditSym type #}
+		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"
 			(pin_numbers hide)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "{{schEditSym.symEditSym.sym.designator}}"
+			(property "Reference" "{{schEditModule.symEditSym.sym.designator}}"
 				(at 0.254 -0.508 0)
 				(effects
 					(font
@@ -56,10 +56,10 @@
 					(hide yes)
 				)
 			)
-			(symbol "{{schEditSym.symEditSym.sym.name}}_0_1"
+			(symbol "{{schEditModule.symEditSym.sym.name}}_0_1"
 				(rectangle
-					(start {{schEditSym.symEditSym.x0}} {{schEditSym.symEditSym.y0}})
-					(end {{schEditSym.symEditSym.x1}} {{schEditSym.symEditSym.y1}})
+					(start {{schEditModule.symEditSym.x0}} {{schEditModule.symEditSym.y0}})
+					(end {{schEditModule.symEditSym.x1}} {{schEditModule.symEditSym.y1}})
 					(stroke
 						(width 0)
 						(type default)
@@ -69,8 +69,8 @@
 					)
 				)
 			)
-			(symbol "{{schEditSym.symEditSym.sym.name}}_1_1"
-	{%	for symEditPin in schEditSym.symEditSym.symEditPins %} {# KiSymEditPin type #}
+			(symbol "{{schEditModule.symEditSym.sym.name}}_1_1"
+	{%	for symEditPin in schEditModule.symEditSym.symEditPins %} {# KiSymEditPin type #}
 				(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
 					(at {{symEditPin.x}} {{symEditPin.y}} {{symEditPin.deg}})
 					(length 2.54)
@@ -93,12 +93,12 @@
 	{% 	endfor %} {# symEditPins #}
 			)
 		)
-{% endfor %}{# schEditSyms #}
+{% endfor %}{# schEditModules #}
 	)
-{% for schEditSym in schEditSyms %} {# KiSchEditSym type #}
+{% for schEditModule in schEditModules %} {# KiSchEditSym type #}
 	(symbol
-		(lib_id "{{schEditSym.libName}}:{{schEditSym.symEditSym.sym.name}}")
-		(at 12.7 15.24 0)
+		(lib_id "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}")
+		(at {{schEditModule.symx}} {{schEditModule.symy}} 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -106,8 +106,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
-		(property "Reference" "{{schEditSym.symEditSym.sym.designator}}1"
-			(at 28.194 13.97 0)
+		(property "Reference" "{{schEditModule.symEditSym.sym.designator}}1"
+			(at {{schEditModule.symx}} {{schEditModule.symy}} 0)
 			(effects
 				(font
 					(face "Cascadia Mono")
@@ -156,13 +156,13 @@
 		(instances
 			(project ""
 				(path "/97f17985-da40-43fd-b268-8c96b481a2af"
-					(reference "{{schEditSym.symEditSym.sym.designator}}1")
+					(reference "{{schEditModule.symEditSym.sym.designator}}1")
 					(unit 1)
 				)
 			)
 		)
 	)
-{% endfor %}{# schEditSyms #}
+{% endfor %}{# schEditModules #}
 	(sheet_instances
 		(path "/"
 			(page "1")

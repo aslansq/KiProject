@@ -101,4 +101,3 @@ else:
         schEditPrj = KiSchEditPrj()
         schEditPrj.parse(g_prj.name, g_symEditLibs)
         schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])
-        printLog(g_args["templateFilePath"] + "." + g_prj.name, schEditPrj.log(0, 1))

@@ -7,151 +7,173 @@ import os
 
 class _KiSchEditNode:
         def __init__(self):
-                self.node = ""
-                self.dir = ""
                 self.x = 0
                 self.y = 0
+                self.dir = ""
+                self.name = ""
                 self.idx = 0
-                self.dirNodeMaxNameLen = {
-                        "input" : 0,
-                        "output": 0
-                }
-        
-        def parse(self, node, dir):
-                self.node = node
-                self.dir = dir
 
-        def prepareForAutoLayout(self, dirNodeMaxNameLen, idx):
-                self.dirNodeMaxNameLen = dirNodeMaxNameLen
+        def parse(self, dir, name, idx):
+                self.name = name
+                self.dir = dir
                 self.idx = idx
 
-        def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + "NodeName: " + self.node + " " + self.dir + " NodeIdx: " + str(self.idx) + "\n"
-                return s
+        def prepareForLayout(self, connWidth):
+                self.y = KiConst.schEdit["connyFirstOffset"] + \
+                         (KiConst.globalLabel["height"] * self.idx)
+                if self.dir == "input":
+                        self.x = connWidth
+        def autoLayout(self, x, y):
+                self.x = self.x + x
+                self.y = self.y + y
 
 class _KiSchEditConn:
         def __init__(self):
                 self.x = 0
                 self.y = 0
-                self.schEditNodes = [] # class _KiSchEditNode type
-                self.conn = None
-                self.idx = 0
-        
-        def parse(self, conn):
-                self.conn = conn
-                for i in range(self.conn.numOfNodes):
+                self.dir = ""
+                self.name = ""
+                self.width = 0
+                self.height = 0
+                self.schEditNodes = []
+                self.schEditNumOfNodes = 0
+
+        def parse(self, name, dir, nodes, idx):
+                self.name = name
+                self.dir = dir
+                self.schEditNumOfNodes = len(nodes)
+                for i in range(self.schEditNumOfNodes):
                         schEditNode = _KiSchEditNode()
-                        schEditNode.parse(self.conn.nodes[i], self.conn.dir)
+                        schEditNode.parse(dir, nodes[i], i)
                         self.schEditNodes.append(schEditNode)
-
-        def prepareForAutoLayout(self, dirNodeMaxNameLen, connIdx):
-                self.idx = connIdx
-                for i in range(self.conn.numOfNodes):
-                        self.schEditNodes[i].prepareForAutoLayout(dirNodeMaxNameLen, i)
-
-        def log(self, depth, pos):
-                if self.conn.numOfNodes == 0:
-                        return ""
-                s = KiUtil.getLogDepthStr(depth, pos) + "ConnName: " + self.conn.name + " ConnIdx: " + str(self.idx) + "\n"
-                for i in range(self.conn.numOfNodes):
-                        s = s + self.schEditNodes[i].log(depth + 1, i + 1)
-                return s
-
-class _KiSchEditPin:
-        def __init__(self):
-                self.symEditPin = None
-                self.schEditConn = _KiSchEditConn()
-                self.x = 0
-                self.y = 0
+                self.idx = idx
         
-        def parse(self, symEditPin):
-                self.symEditPin = symEditPin
-                self.schEditConn.parse(symEditPin.pin.conn)
+        # x, y place in conn column
+        def prepareForLayout(self):
+                self.height = KiConst.globalLabel["height"] * self.schEditNumOfNodes
+                maxNodeName = 0
+                for i in range(self.schEditNumOfNodes):
+                        if len(self.schEditNodes[i].name) > maxNodeName:
+                                maxNodeName = len(self.schEditNodes[i].name)
+                self.width = KiConst.globalLabel["leftToTextWidth"] + \
+                             (maxNodeName * KiConst.globalLabel["charWidth"]) + \
+                             KiConst.globalLabel["rightToTextWidth"]
+                for i in range(self.schEditNumOfNodes):
+                        self.schEditNodes[i].prepareForLayout(self.width)
+                self.y = KiConst.schEdit["connyGap"] * self.idx
 
-        def prepareForAutoLayout(self, dirNodeMaxNameLen, connIdx):
-                self.schEditConn.prepareForAutoLayout(dirNodeMaxNameLen, connIdx)
+        def autoLayout(self, x, y):
+                self.x = self.x + x
+                self.y = self.y + y
+                for i in range(self.schEditNumOfNodes):
+                        self.schEditNodes[i].autoLayout(self.x, self.y)
 
-        def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.symEditPin.pin.name + "\n"
-                s = s + self.schEditConn.log(depth + 1, 1)
-                return s
-
-class _KiSchEditSym:
+class _KiSchEditModule:
         def __init__(self):
+                self.name = ""
                 self.symEditSym = None
-                self.schEditPins = []
                 self.libName = ""
-        
+
+                self.schEditConns = {
+                        "input" : [],
+                        "output" : []
+                }
+
+                self.numOfSchEditConns = {
+                        "input" : 0,
+                        "output" : 0
+                }
+
+                self.width = 0
+                self.height = 0
+                self.symx = 0
+                self.symy = 0
+
         def parse(self, libName, symEditSym):
                 self.symEditSym = symEditSym
+                self.name = symEditSym.sym.name
                 self.libName = libName
-                for i in range(symEditSym.sym.numOfPins):
-                        schEditPin = _KiSchEditPin()
-                        schEditPin.parse(symEditSym.symEditPins[i])
-                        self.schEditPins.append(schEditPin)
-
-        def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + "LibName: " + self.libName + " SymName: " + self.symEditSym.sym.name + "\n"
+                # iterate over pins
                 for i in range(self.symEditSym.sym.numOfPins):
-                        s = s + self.schEditPins[i].log(depth + 1, i + 1)
-                return s
-
-        def prepareForAutoLayout(self):
-                dirNodeMaxNameLen = {
-                        "input" : 0,
-                        "output": 0
-                }
-
-                dirConnIdx = {
-                        "input" : 0,
-                        "output": 0
-                }
-
-                for i in range(self.symEditSym.sym.numOfPins):
+                        # current pin
                         pin = self.symEditSym.sym.pins[i]
-                        for j in range(pin.conn.numOfNodes):
-                                if len(pin.conn.nodes[j]) > dirNodeMaxNameLen[pin.conn.dir]:
-                                        dirNodeMaxNameLen[pin.conn.dir] = len(pin.conn.nodes[j])
+                        # if pins connector have any node, ignore others we do not draw them
+                        if pin.conn.numOfNodes != 0:
+                                # create schEditConn to layout
+                                schEditConn = _KiSchEditConn()
+                                # parsing
+                                schEditConn.parse(pin.conn.name, pin.dir, pin.conn.nodes, i)
+                                # added it modules connectors
+                                self.schEditConns[pin.dir].append(schEditConn)
+                for dir in ["input", "output"]:
+                        self.numOfSchEditConns[dir] = len(self.schEditConns[dir])
 
-                for i in range(self.symEditSym.sym.numOfPins):
-                        if self.symEditSym.sym.pins[i].conn.numOfNodes != 0:
-                                self.schEditPins[i].prepareForAutoLayout(dirNodeMaxNameLen, dirConnIdx[self.symEditSym.sym.pins[i].dir])
-                                dirConnIdx[self.symEditSym.sym.pins[i].dir] = dirConnIdx[self.symEditSym.sym.pins[i].dir] + 1
-                        else:
-                                self.schEditPins[i].prepareForAutoLayout(dirNodeMaxNameLen, KiConst.schEdit["invalidConnIdx"])
+        def prepareForLayout(self):
+                for dir in ["input", "output"]:
+                        for i in range(self.numOfSchEditConns[dir]):
+                                self.schEditConns[dir][i].prepareForLayout()
+                
+                for dir in ["input", "output"]:
+                        maxWidth = 0
+                        for i in range(self.numOfSchEditConns[dir]):
+                                if self.schEditConns[dir][i].width > maxWidth:
+                                        maxWidth = self.schEditConns[dir][i].width
+                        if dir == "input":
+                                self.symx = maxWidth
+                        self.width = self.width + maxWidth
+                
+                self.width = self.width + self.symEditSym.width
+
+                for dir in ["input", "output"]:
+                        totalHeight = 0
+                        for i in range(self.numOfSchEditConns[dir]):
+                                totalHeight = totalHeight + self.schEditConns[dir][i].height
+                                totalHeight = totalHeight + KiConst.schEdit["connyGap"]
+                        if totalHeight > self.height:
+                                self.height = totalHeight
+                
+                if self.symEditSym.height > self.height:
+                        self.height = self.symEditSym.height
+
+        def autoLayout(self, x, y):
+                inConnHeights = 0
+                for i in range(self.numOfSchEditConns["input"]):
+                        self.schEditConns["input"][i].autoLayout(x, y + inConnHeights)
+                        inConnHeights = inConnHeights + self.schEditConns["input"][i].height
+                
+                self.symx = self.symx + x
+                self.symy = self.symy + y
+                outConnHeights = 0
+                for i in range(self.numOfSchEditConns["output"]):
+                        self.schEditConns["output"][i].autoLayout(self.symx + self.symEditSym.width, y + outConnHeights)
+                        outConnHeights = outConnHeights + self.schEditConns["output"][i].height
 
 class KiSchEditPrj:
         def __init__(self):
-                self.symEditLibs = None # KiSymEditLib type
-                self.schEditSyms = []
+                self.schEditModules = []
                 self.projectName = ""
-                self.numOfSchEditSyms = 0
+                self.numOfSchEditModules = 0
+                self.symEditLibs = []
 
-        def __prepareForAutoLayout(self):
-                for i in range(len(self.schEditSyms)):
-                        self.schEditSyms[i].prepareForAutoLayout()
 
         def parse(self, projectName, symEditLibs):
-                self.projectName = projectName
                 self.symEditLibs = symEditLibs
-                for i in range(len(self.symEditLibs)):
-                        symEditLib = self.symEditLibs[i]
-                        for j in range(len(symEditLib.symEditSyms)):
-                                symEditSym = symEditLib.symEditSyms[j] # KiSymEditSym type
-                                schEditSym = _KiSchEditSym()
-                                schEditSym.parse(symEditLib.lib.name, symEditSym)
-                                self.schEditSyms.append(schEditSym)
-                self.numOfSchEditSyms = len(self.schEditSyms)
-                self.__prepareForAutoLayout()
-
-        def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + "PrjName: " + self.projectName + "\n"
-                for i in range(self.numOfSchEditSyms):
-                        s = s + self.schEditSyms[i].log(depth + 1, i + 1)
-                return s
+                self.projectName = projectName
+                for i in range(len(symEditLibs)):
+                        for j in range(symEditLibs[i].lib.numOfSymbols):
+                                symEditSym = symEditLibs[i].symEditSyms[j]
+                                schEditModule = _KiSchEditModule()
+                                schEditModule.parse(symEditLibs[i].lib.name, symEditSym)
+                                self.schEditModules.append(schEditModule)
+                self.numOfSchEditModules = len(self.schEditModules)
+                for i in range(self.numOfSchEditModules):
+                        self.schEditModules[i].prepareForLayout()
+                moduleHeights = 0
+                for i in range(self.numOfSchEditModules):
+                        self.schEditModules[i].autoLayout(0, moduleHeights)
+                        moduleHeights = moduleHeights + self.schEditModules[i].height + KiConst.schEdit["moduleyGap"]
 
         def gen(self, templateFilePath, outFolderPath):
-                
                 templateFileName = os.path.basename(templateFilePath)
                 templateLoader = jinja2.FileSystemLoader(searchpath=os.path.dirname(templateFilePath))
                 templateEnv = jinja2.Environment(loader=templateLoader)
@@ -162,7 +184,7 @@ class KiSchEditPrj:
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(symEditLibs=self.symEditLibs,
-                                               schEditSyms = self.schEditSyms)
+                                               schEditModules = self.schEditModules)
                 with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
                         f.write(renderedText)
                 print("Gen: " + str(outFilePath))

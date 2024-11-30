@@ -85,15 +85,17 @@ class KiConst:
         #     |----------/   ←
 
         globalLabel = {
+                "charWidth" : 1.27,
                 "leftToTextWidth"          : 1.27,
-                "rightToTexWidth"          : 1.55,
+                "rightToTextWidth"          : 1.55,
                 "height"                   : 2.54,
         }
 
 # container that contains single more global labels called connector.
 # a connector is top left aligned.
 #
-#
+# Module
+#---------------------------------------------------------------------------------------------------
 # Layouts =>↓ inConn   ↓ inWire               ↓ symbol             ↓ outWire           ↓ outConn ↓
 #           x                      wirexGap
 #           ↓                      ↓         ↓
@@ -115,5 +117,9 @@ class KiConst:
 #                               |-------------->                ----->-----|
 #                                            |--------------------|
         schEdit = {
-                "invalidConnIdx" : -1
+                "invalidConnIdx" : -1,
+                "connyGap" : 1.27,
+                "connyFirstOffset": 1.27,
+                "wirexGap" : 1.27,
+                "moduleyGap" : 2.54
         }
