@@ -163,12 +163,13 @@
 		(fields_autoplaced yes)
 		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
 		(property "Reference" "{{schEditModule.symEditSym.sym.designator}}1"
-			(at {{schEditModule.symx}} {{schEditModule.symy}} 0)
+			(at {{schEditModule.desigx}} {{schEditModule.desigy}} 0)
 			(effects
 				(font
 					(face "Cascadia Mono")
 					(size 1.27 1.27)
 				)
+				(justify left top)
 			)
 		)
 		(property "Value" "~"

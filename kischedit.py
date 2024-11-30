@@ -26,11 +26,6 @@ class _KiSchEditNode:
         def autoLayout(self, x, y):
                 self.x = self.x + x
                 self.y = self.y + y
-        
-        def alignx(self, x):
-                if self.dir == "output":
-                        return
-                self.x = x
 
 class _KiSchEditConn:
         def __init__(self):
@@ -54,14 +49,10 @@ class _KiSchEditConn:
                 self.idx = idx
         
         # x, y place in conn column
-        def prepareForLayout(self):
+        def prepareForLayout(self, maxNodeNameLenInModule):
                 self.height = KiConst.globalLabel["height"] * self.schEditNumOfNodes
-                maxNodeName = 0
-                for i in range(self.schEditNumOfNodes):
-                        if len(self.schEditNodes[i].name) > maxNodeName:
-                                maxNodeName = len(self.schEditNodes[i].name)
                 self.width = KiConst.globalLabel["leftToTextWidth"] + \
-                             (maxNodeName * KiConst.globalLabel["charWidth"]) + \
+                             (maxNodeNameLenInModule * KiConst.globalLabel["charWidth"]) + \
                              KiConst.globalLabel["rightToTextWidth"]
                 for i in range(self.schEditNumOfNodes):
                         self.schEditNodes[i].prepareForLayout(self.width)
@@ -93,6 +84,8 @@ class _KiSchEditModule:
                 self.height = 0
                 self.symx = 0
                 self.symy = 0
+                self.desigx = 0
+                self.desigy = 0
 
         def parse(self, libName, symEditSym):
                 self.symEditSym = symEditSym
@@ -119,9 +112,20 @@ class _KiSchEditModule:
                         self.numOfSchEditConns[dir] = len(self.schEditConns[dir])
 
         def prepareForLayout(self):
+                maxNodeNameLen = {
+                        "input" : 0,
+                        "output" : 0
+                }
                 for dir in ["input", "output"]:
                         for i in range(self.numOfSchEditConns[dir]):
-                                self.schEditConns[dir][i].prepareForLayout()
+                                for j in range(self.schEditConns[dir][i].schEditNumOfNodes):
+                                        nodeName = self.schEditConns[dir][i].schEditNodes[j].name
+                                        if len(nodeName) > maxNodeNameLen[dir]:
+                                                maxNodeNameLen[dir] = len(nodeName)
+
+                for dir in ["input", "output"]:
+                        for i in range(self.numOfSchEditConns[dir]):
+                                self.schEditConns[dir][i].prepareForLayout(maxNodeNameLen[dir])
                 
                 for dir in ["input", "output"]:
                         maxWidth = 0
@@ -145,27 +149,16 @@ class _KiSchEditModule:
                 if self.symEditSym.height > self.height:
                         self.height = self.symEditSym.height
 
-        def alignInConnx(self):
-                inConnx = 0
-                for i in range(self.numOfSchEditConns["input"]):
-                        for j in range(self.schEditConns["input"][i].schEditNumOfNodes):
-                                if self.schEditConns["input"][i].schEditNodes[j].x > inConnx:
-                                        inConnx = self.schEditConns["input"][i].schEditNodes[j].x
-
-                for i in range(self.numOfSchEditConns["input"]):
-                        for j in range(self.schEditConns["input"][i].schEditNumOfNodes):
-                                self.schEditConns["input"][i].schEditNodes[j].alignx(inConnx)
-
         def autoLayout(self, x, y):
                 inConnHeights = 0
                 for i in range(self.numOfSchEditConns["input"]):
                         self.schEditConns["input"][i].autoLayout(x, y + inConnHeights)
                         inConnHeights = inConnHeights + self.schEditConns["input"][i].height
 
-                self.alignInConnx()
-
                 self.symx = self.symx + x
                 self.symy = self.symy + y
+                self.desigx = self.symx + KiConst.schEdit["desigxOffset"]
+                self.desigy = self.symy + KiConst.schEdit["desigyOffset"]
                 outConnHeights = 0
                 for i in range(self.numOfSchEditConns["output"]):
                         self.schEditConns["output"][i].autoLayout(self.symx + self.symEditSym.width, y + outConnHeights)

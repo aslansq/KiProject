@@ -154,7 +154,7 @@
 		(dnp no)
 		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
 		(property "Reference" "f151dac1"
-			(at 0 0 0)
+			(at 1.016 1.016 0)
 			(effects
 				(font
 					(face "Cascadia Mono")

@@ -121,5 +121,7 @@ class KiConst:
                 "connyGap" : 1.27,
                 "connyFirstOffset": 1.27,
                 "wirexGap" : 1.27,
-                "moduleyGap" : 2.54
+                "moduleyGap" : 2.54,
+                "desigxOffset" : 1,
+                "desigyOffset" : 0.2,
         }
