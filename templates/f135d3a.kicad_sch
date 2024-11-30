@@ -5,7 +5,7 @@
 	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
 	(paper "A4")
 	(lib_symbols
-{% for schEditModule in schEditModules %} {# KiSchEditSym type #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"
 			(pin_numbers hide)
 			(exclude_from_sim no)
@@ -95,7 +95,63 @@
 		)
 {% endfor %}{# schEditModules #}
 	)
-{% for schEditModule in schEditModules %} {# KiSchEditSym type #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		for schEditConn in schEditModule.schEditConns["input"] %} {# _KiSchEditConn type #}
+{% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
+	(global_label "{{schEditNode.name}}"
+		(shape input)
+		(at {{schEditNode.x}} {{schEditNode.y}} 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "eace0e79-bf5f-4d6b-8d9e-e27e74d57971")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at {{schEditNode.x}} {{schEditNode.y}} 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+{% 			endfor %}{# schEditNodes #}
+{% 		endfor %}{# schEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		for schEditConn in schEditModule.schEditConns["output"] %} {# _KiSchEditConn type #}
+{% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
+	(global_label "{{schEditNode.name}}"
+		(shape output)
+		(at {{schEditNode.x}} {{schEditNode.y}} 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "dc68fdf5-7047-4402-b18e-91772ec7c508")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at {{schEditNode.x}} {{schEditNode.y}} 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+{% 			endfor %}{# schEditNodes #}
+{% 		endfor %}{# schEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 	(symbol
 		(lib_id "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}")
 		(at {{schEditModule.symx}} {{schEditModule.symy}} 0)

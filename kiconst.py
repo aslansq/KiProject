@@ -42,7 +42,7 @@ class KiConst:
                 "lenPin"                  : 2.54,
                 "spaceBetweenInNOutPin"   : 0.1,
                 "spaceBetweenBoxNPinName" : 1,
-                "heightBetweenPins"       : 1.8,
+                "heightBetweenPins"       : 2.57,
                 "firstPinyOffset"         : 3,
                 "pinToBoxWidth"           : 1.01,
                 "pinToBoxHeight"          : 1.01,

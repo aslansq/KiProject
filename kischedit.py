@@ -26,6 +26,11 @@ class _KiSchEditNode:
         def autoLayout(self, x, y):
                 self.x = self.x + x
                 self.y = self.y + y
+        
+        def alignx(self, x):
+                if self.dir == "output":
+                        return
+                self.x = x
 
 class _KiSchEditConn:
         def __init__(self):
@@ -93,6 +98,10 @@ class _KiSchEditModule:
                 self.symEditSym = symEditSym
                 self.name = symEditSym.sym.name
                 self.libName = libName
+                connIdx = {
+                        "input" : 0,
+                        "output" : 0
+                }
                 # iterate over pins
                 for i in range(self.symEditSym.sym.numOfPins):
                         # current pin
@@ -102,9 +111,10 @@ class _KiSchEditModule:
                                 # create schEditConn to layout
                                 schEditConn = _KiSchEditConn()
                                 # parsing
-                                schEditConn.parse(pin.conn.name, pin.dir, pin.conn.nodes, i)
+                                schEditConn.parse(pin.conn.name, pin.dir, pin.conn.nodes, connIdx[pin.dir])
                                 # added it modules connectors
                                 self.schEditConns[pin.dir].append(schEditConn)
+                                connIdx[pin.dir] = connIdx[pin.dir] + 1
                 for dir in ["input", "output"]:
                         self.numOfSchEditConns[dir] = len(self.schEditConns[dir])
 
@@ -135,18 +145,32 @@ class _KiSchEditModule:
                 if self.symEditSym.height > self.height:
                         self.height = self.symEditSym.height
 
+        def alignInConnx(self):
+                inConnx = 0
+                for i in range(self.numOfSchEditConns["input"]):
+                        for j in range(self.schEditConns["input"][i].schEditNumOfNodes):
+                                if self.schEditConns["input"][i].schEditNodes[j].x > inConnx:
+                                        inConnx = self.schEditConns["input"][i].schEditNodes[j].x
+
+                for i in range(self.numOfSchEditConns["input"]):
+                        for j in range(self.schEditConns["input"][i].schEditNumOfNodes):
+                                self.schEditConns["input"][i].schEditNodes[j].alignx(inConnx)
+
         def autoLayout(self, x, y):
                 inConnHeights = 0
                 for i in range(self.numOfSchEditConns["input"]):
                         self.schEditConns["input"][i].autoLayout(x, y + inConnHeights)
                         inConnHeights = inConnHeights + self.schEditConns["input"][i].height
-                
+
+                self.alignInConnx()
+
                 self.symx = self.symx + x
                 self.symy = self.symy + y
                 outConnHeights = 0
                 for i in range(self.numOfSchEditConns["output"]):
                         self.schEditConns["output"][i].autoLayout(self.symx + self.symEditSym.width, y + outConnHeights)
                         outConnHeights = outConnHeights + self.schEditConns["output"][i].height
+
 
 class KiSchEditPrj:
         def __init__(self):
