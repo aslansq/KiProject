@@ -96,9 +96,11 @@ class KiConst:
 #
 # Module
 #---------------------------------------------------------------------------------------------------
-# Layouts =>↓ inConn   ↓ inWire               ↓ symbol             ↓ outWire           ↓ outConn ↓
+# Layouts =>↓ inConn   ↓ inWire          ↓    symbol                 ↓ outWire         ↓ outConn ↓
+#                       multiNode
+#                      ↓                 ↓
 #           x                      wirexGap
-#           ↓                      ↓         ↓
+#           ↓                      ↓     ↓
 #         y→|----------|                                                               |----------|
 #           ||-------\ |                     IC1                                       ||-------\ |
 #         C ||        >|---|                 |--------------------|                |----|        >|
