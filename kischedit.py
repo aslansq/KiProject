@@ -160,7 +160,16 @@ class _KiSchEditWireCont:
                         "y" : y + len/2
                 }
                 self.endPoints.append(endPoint)
-        def __prepareInWireSingleNode(self, schEditConn, totalNode):
+        def __prepareWireSingleNode(self, schEditConn, totalNode):
+                # output
+                #-----------------------------------------------------------
+                #          |----------|
+                # endpoint↓||-------\ |
+                #         →||        >|←
+                #          ||-------/ |
+                #          |----------|
+                #
+                # input
                 #-----------------------------------------------------------
                 # |----------|   
                 # ||-------\ |↓endPoint
@@ -169,7 +178,10 @@ class _KiSchEditWireCont:
                 # |----------|
                 #             
                 schEditNode = schEditConn.schEditNodes[0]
-                x = 0
+                if self.dir == "input":
+                        x = 0
+                elif self.dir == "output":
+                        x = self.width
                 y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
                     (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
                     (KiConst.globalLabel["height"] / 2)
@@ -184,10 +196,14 @@ class _KiSchEditWireCont:
                 totalNode = 0
                 for i in range(self.numOfSchEditConns):
                         schEditConn = self.schEditConns[i]
-                        if schEditConn.schEditNumOfNodes > 1:
+                        multiNode = schEditConn.schEditNumOfNodes > 1
+                        if multiNode and self.dir == "output":
+                                print("ERROR OUTPUT conn container can NOT have multiple nodes")
+                                exit(1)
+                        elif schEditConn.schEditNumOfNodes > 1:
                                 self.__prepareInWireMultiNode(schEditConn, totalNode)
                         else:
-                                self.__prepareInWireSingleNode(schEditConn, totalNode)
+                                self.__prepareWireSingleNode(schEditConn, totalNode)
                         totalNode = totalNode + schEditConn.schEditNumOfNodes
 
 
@@ -200,8 +216,7 @@ class _KiSchEditWireCont:
                 self.width = self.numOfSchEditConns * (KiConst.schEdit["wirexGap"] * 2)
                 if connWMultipleNodesExist:
                         self.width = self.width + (KiConst.schEdit["wirexGap"] * 2)
-                if self.dir == "input":
-                        self.__prepareInWireContainer()
+                self.__prepareInWireContainer()
 
         def autoLayout(self, x, y):
                 self.x = x
