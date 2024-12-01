@@ -220,6 +220,11 @@ class _KiSchEditModule:
                         "output" : []
                 }
 
+                self.schEditConnsHeight = {
+                        "input" : 0,
+                        "output" : 0
+                }
+
                 self.numOfSchEditConns = {
                         "input" : 0,
                         "output" : 0
@@ -305,19 +310,23 @@ class _KiSchEditModule:
                                         totalHeight = totalHeight + KiConst.schEdit["connyGap"]
                         if totalHeight > self.height:
                                 self.height = totalHeight
+                        self.schEditConnsHeight[dir] = totalHeight
                 
                 if self.symEditSym.height > self.height:
                         self.height = self.symEditSym.height
 
         def autoLayout(self, x, y):
-                inConnHeights = 0
+                inConnyOffset = 0
+                if self.height > self.schEditConnsHeight["input"]:
+                        inConnyOffset = (self.height - self.schEditConnsHeight["input"]) / 2
+
                 for i in range(self.numOfSchEditConns["input"]):
-                        self.schEditConns["input"][i].autoLayout(x, y + inConnHeights)
-                        inConnHeights = inConnHeights + self.schEditConns["input"][i].height
+                        self.schEditConns["input"][i].autoLayout(x, y + inConnyOffset)
+                        inConnyOffset = inConnyOffset + self.schEditConns["input"][i].height
 
                 if self.numOfSchEditConns["input"] != 0:
                         self.schEditWireCont["input"].autoLayout(self.schEditConns["input"][0].x + \
-                                                                 self.schEditConns["input"][0].width, y)
+                                                                 self.schEditConns["input"][0].width, self.schEditConns["input"][0].y)
 
                 # if there is input connectors there is also wires
                 if self.numOfSchEditConns["input"] != 0:
@@ -333,11 +342,14 @@ class _KiSchEditModule:
                 if self.numOfSchEditConns["output"] != 0:
                         self.schEditWireCont["output"].autoLayout(self.symx + self.symEditSym.width, y)
 
-                outConnHeights = 0
+                outConnyOffset = 0
+                if self.height > self.schEditConnsHeight["output"]:
+                        outConnyOffset = (self.height - self.schEditConnsHeight["output"]) / 2
+
                 for i in range(self.numOfSchEditConns["output"]):
                         self.schEditConns["output"][i].autoLayout(self.schEditWireCont["output"].x + \
-                                                                  self.schEditWireCont["output"].width, y + outConnHeights)
-                        outConnHeights = outConnHeights + self.schEditConns["output"][i].height
+                                                                  self.schEditWireCont["output"].width, y + outConnyOffset)
+                        outConnyOffset = outConnyOffset + self.schEditConns["output"][i].height
 
 
 class KiSchEditPrj:
