@@ -83,11 +83,11 @@ class _KiSchEditWire:
                         print("ERROR undefined orientation.")
                         exit(1)
                 if self.o == 'v':
-                        self.x1 = self.x0 + self.len
-                        self.y1 = self.y0
-                elif self.o == 'h':
                         self.x1 = self.x0
                         self.y1 = self.y0 + self.len
+                elif self.o == 'h':
+                        self.x1 = self.x0 + self.len
+                        self.y1 = self.y0
         def autoLayout(self, x, y):
                 self.x0 = self.x0 + x
                 self.y0 = self.y0 + y
@@ -110,17 +110,30 @@ class _KiSchEditWireCont:
                 self.dir = self.schEditConns[0].dir
 
         def __prepareInWireContainer(self):
+                totalNode = 0
                 for i in range(self.numOfSchEditConns):
                         schEditConn = self.schEditConns[i]
-                        for j in range(len(schEditConn.schEditNodes)):
+                        for j in range(schEditConn.schEditNumOfNodes):
                                 schEditNode = schEditConn.schEditNodes[j]
                                 wire = _KiSchEditWire()
-                                x = schEditConn.width
+                                x = 0
                                 y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
-                                    (KiConst.globalLabel["height"] * schEditNode.idx) + \
+                                    (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
                                     (KiConst.globalLabel["height"] / 2)
                                 wire.prepareForLayout(x, y, 'h', KiConst.schEdit["wirexGap"])
                                 self.wires.append(wire)
+                        
+                        if schEditConn.schEditNumOfNodes > 1:
+                                wire = _KiSchEditWire()
+                                x = KiConst.schEdit["wirexGap"]
+                                y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
+                                    (KiConst.globalLabel["height"] * (schEditConn.schEditNodes[0].idx + totalNode)) + \
+                                    (KiConst.globalLabel["height"] / 2)
+                                len = (schEditConn.schEditNumOfNodes - 1) * KiConst.globalLabel["height"]
+                                wire.prepareForLayout(x, y, 'v', len)
+                                self.wires.append(wire)
+
+                        totalNode = totalNode + schEditConn.schEditNumOfNodes
 
 
         def prepareForLayout(self):

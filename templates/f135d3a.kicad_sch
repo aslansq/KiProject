@@ -96,6 +96,22 @@
 {% endfor %}{# schEditModules #}
 	)
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		if not schEditModule.numOfSchEditConns["input"] == 0 %}
+{% 			for schEditWire in schEditModule.schEditWireCont["input"].wires %}
+	(wire
+		(pts
+			(xy {{schEditWire.x0}} {{schEditWire.y0}}) (xy {{schEditWire.x1}} {{schEditWire.y1}})
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+	)
+{% 			endfor %}{# schEditWire #}
+{% 		endif %} {# numOfSchEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 {% 		for schEditConn in schEditModule.schEditConns["input"] %} {# _KiSchEditConn type #}
 {% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
 	(global_label "{{schEditNode.name}}"
