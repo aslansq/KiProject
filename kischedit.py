@@ -118,104 +118,66 @@ class _KiSchEditWireCont:
 
         def __prepareInWireMultiNode(self, schEditConn, totalNode):
                 #-----------------------------------------------------------
-                #                ConnVerticalWireToSymVerticalWire
-                #                ↓       ↓
                 #            NodeToConnVerticalWire
                 #            ↓   ↓
                 # |----------|   
-                # ||-------\ |                     IC1
-                # ||        >|---|       ↓endPoint |--------------------|
-                # ||-------/ |   |-------|←        |                    |
-                # ||-------\ |   |       |         |                    |
-                # ||        >|---|       |         |                    |
-                # ||-------/ |           |         |                    |
-                # |----------|           |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |----------->                ----->
-                #                                  |                    |
-                #                                  |                    |
-                #                                  |                    |
-                #                                  |                  ----->
-                #                                  |--------------------|
+                # ||-------\ |    
+                # ||        >|---|
+                # ||-------/ |   |↓ endPoint
+                # ||-------\ |   |←
+                # ||        >|---|
+                # ||-------/ |    
+                # |----------|    
                 #                ↑
                 #                ConnVerticalWire
-                #                        ↑ SymVerticalWire
 
-                       # Begin NodeToConnVerticalWire
-                        for j in range(schEditConn.schEditNumOfNodes):
-                                schEditNode = schEditConn.schEditNodes[j]
-                                wire = _KiSchEditWire()
-                                x = 0
-                                y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
-                                (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
-                                (KiConst.globalLabel["height"] / 2)
-                                wire.prepareForLayout(x, y, 'h', KiConst.schEdit["wirexGap"])
-                                self.wires.append(wire)
-                        # End NodeToConnVerticalWire
-
-                        # Begin ConnVerticalWire
+                # Begin NodeToConnVerticalWire
+                for j in range(schEditConn.schEditNumOfNodes):
+                        schEditNode = schEditConn.schEditNodes[j]
                         wire = _KiSchEditWire()
-                        x = KiConst.schEdit["wirexGap"]
+                        x = 0
                         y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
-                        (KiConst.globalLabel["height"] * (schEditConn.schEditNodes[0].idx + totalNode)) + \
+                        (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
                         (KiConst.globalLabel["height"] / 2)
-                        len = (schEditConn.schEditNumOfNodes - 1) * KiConst.globalLabel["height"]
-                        wire.prepareForLayout(x, y, 'v', len)
-                        # End ConnVerticalWire
-
-                        # Begin ConnVerticalWireToSymVerticalWire
+                        wire.prepareForLayout(x, y, 'h', KiConst.schEdit["wirexGap"])
                         self.wires.append(wire)
-                        wire = _KiSchEditWire()
-                        y = y + len/2
-                        len = self.width - (KiConst.schEdit["wirexGap"] * (2 + schEditConn.idx))
-                        wire.prepareForLayout(x, y, 'h', len)
-                        self.wires.append(wire)
-                        # End ConnVerticalWireToSymVerticalWire
+                # End NodeToConnVerticalWire
 
-                        endPoint = {
-                                "name" : schEditConn.name,
-                                "x" : x + len,
-                                "y" : y
-                        }
-                        self.endPoints.append(endPoint)
+                # Begin ConnVerticalWire
+                wire = _KiSchEditWire()
+                x = KiConst.schEdit["wirexGap"]
+                y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
+                (KiConst.globalLabel["height"] * (schEditConn.schEditNodes[0].idx + totalNode)) + \
+                (KiConst.globalLabel["height"] / 2)
+                len = (schEditConn.schEditNumOfNodes - 1) * KiConst.globalLabel["height"]
+                wire.prepareForLayout(x, y, 'v', len)
+                self.wires.append(wire)
+                # End ConnVerticalWire
+
+                endPoint = {
+                        "name" : schEditConn.name,
+                        "x" : x,
+                        "y" : y + len/2
+                }
+                self.endPoints.append(endPoint)
         def __prepareInWireSingleNode(self, schEditConn, totalNode):
                 #-----------------------------------------------------------
-                #            NodeToSymVerticalWire
-                #            ↓           ↓
                 # |----------|   
-                # ||-------\ |           ↓endPoint IC1
-                # ||        >|-----------|←        |--------------------|
-                # ||-------/ |           |         |                    |
-                # |----------|           |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |         |                    |
-                #                        |----------->                ----->
-                #                                  |                    |
-                #                                  |                    |
-                #                                  |                    |
-                #                                  |                  ----->
-                #                                  |--------------------|
-                #                        ↑ SymVerticalWire
+                # ||-------\ |↓endPoint
+                # ||        >|←
+                # ||-------/ |
+                # |----------|
+                #             
                 schEditNode = schEditConn.schEditNodes[0]
                 x = 0
                 y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
                     (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
                     (KiConst.globalLabel["height"] / 2)
-                len = self.width - ((schEditConn.idx + 1) * KiConst.schEdit["wirexGap"])
                 endPoint = {
                         "name" : schEditConn.name,
-                        "x" : x + len,
+                        "x" : x,
                         "y" : y
                 }
-                wire = _KiSchEditWire()
-                wire.prepareForLayout(x, y, 'h', len)
-                self.wires.append(wire)
                 self.endPoints.append(endPoint)
 
         def __prepareInWireContainer(self):
@@ -339,7 +301,8 @@ class _KiSchEditModule:
                         totalHeight = 0
                         for i in range(self.numOfSchEditConns[dir]):
                                 totalHeight = totalHeight + self.schEditConns[dir][i].height
-                                totalHeight = totalHeight + KiConst.schEdit["connyGap"]
+                                if i != (self.numOfSchEditConns[dir]-1):
+                                        totalHeight = totalHeight + KiConst.schEdit["connyGap"]
                         if totalHeight > self.height:
                                 self.height = totalHeight
                 
@@ -362,7 +325,7 @@ class _KiSchEditModule:
                 else:
                         self.symx = x
 
-                self.symy = y
+                self.symy = y + (self.height-self.symEditSym.height - KiConst.symEdit["charHeight"]) / 2
 
                 self.desigx = self.symx + KiConst.schEdit["desigxOffset"]
                 self.desigy = self.symy + KiConst.schEdit["desigyOffset"]
