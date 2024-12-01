@@ -105,7 +105,6 @@ for i in range(1, len(rows)):
                 continue
         
         choosenOutRowIdxs = []
-        choosenOutRowConnNames = []
         for j in range(numOfConnection):
                 outRowIdx = outputRowIdxs[randint(0,len(outputRowIdxs)-1)]
                 if not outRowIdx in choosenOutRowIdxs:
@@ -114,32 +113,23 @@ for i in range(1, len(rows)):
         newName = rows[i][KiConst.csv["sym"]] + "_" + rows[i][KiConst.csv["pin"]]
         for choosenOutRowIdx in choosenOutRowIdxs:
                 choosenOutRowConnName = rows[choosenOutRowIdx][KiConst.csv["nodes"]]
-                choosenOutRowConnNames.append(choosenOutRowConnName)
                 newName = newName + "-" + choosenOutRowConnName
                 
         rows[i][KiConst.csv["nodes"]] = newName
 
-        for j in range(1, len(rows)):
-                isSame = False
-                for choosenOutRowConnName in choosenOutRowConnNames:
-                        if choosenOutRowConnName == rows[j][KiConst.csv["nodes"]]:
-                                isSame = True
-                                break
-                if isSame:
-                        rows[j][KiConst.csv["nodes"]] = newName
-
-for i in range(1, len(rows)):
-        if rows[i][KiConst.csv["pinDir"]] == "input":
-                continue
+for outRowIdx in outputRowIdxs:
+        outNodeName = rows[outRowIdx][KiConst.csv["nodes"]]
         isUsed = False
-        for j in range(1, len(rows)):
-                if i == j:
+        for j in range(len(rows)):
+                if j == outRowIdx:
                         continue
-                if rows[i][KiConst.csv["nodes"]] == rows[j][KiConst.csv["nodes"]]:
+                if rows[j][KiConst.csv["pinDir"]] == "output":
+                        continue
+                if outNodeName in rows[j][KiConst.csv["nodes"]]:
                         isUsed = True
                         break
         if not isUsed:
-                rows[i][KiConst.csv["nodes"]] = ""
+                rows[outRowIdx][KiConst.csv["nodes"]] = ""
 
 for row in rows:
         s = ""
