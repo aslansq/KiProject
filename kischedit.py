@@ -325,7 +325,7 @@ class _KiSchEditModule:
                 else:
                         self.symx = x
 
-                self.symy = y + (self.height-self.symEditSym.height - KiConst.symEdit["charHeight"]) / 2
+                self.symy = y + (self.height-self.symEditSym.height) / 2 - KiConst.symEdit["charHeight"]
 
                 self.desigx = self.symx + KiConst.schEdit["desigxOffset"]
                 self.desigy = self.symy + KiConst.schEdit["desigyOffset"]
