@@ -9,7 +9,7 @@ mkdir -p ./log
 
 # generate and collect examples
 cd examples
-#python custom.py > custom.csv
+python custom.py > custom.csv
 examples=$(find . -type f | grep '.csv')
 cd ..
 
@@ -22,7 +22,7 @@ fi
 for example in $examples
 do
     mkdir -p ./out/${example%.csv}
-    echo python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log
-    python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log
+    echo python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
+    python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
 done
 

@@ -126,6 +126,5 @@ class KiConst:
                 "moduleyGap" : 2.54,
                 "modulexGap" : 2.54,
                 "desigxOffset" : 1,
-                "desigyOffset" : 0.2,
-                "pageOffset" : 14
+                "desigyOffset" : 0.2
         }
