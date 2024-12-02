@@ -66,13 +66,14 @@ class _KiSchEditConn:
                         self.schEditNodes[i].autoLayout(self.x, self.y)
 
 class _KiSchEditWire:
-        def __init__(self):
+        def __init__(self, name):
                 self.x0 = 0
                 self.x1 = 0
                 self.y0 = 0
                 self.y1 = 0
                 self.len = 0
                 self.o = '' # v(vertical) or h(horizontal)
+                self.name = name
 
         def prepareForLayout(self, x, y, o, len):
                 self.x0 = x
@@ -146,7 +147,7 @@ class _KiSchEditWireCont:
                 # Begin NodeToConnVerticalWire
                 for j in range(schEditConn.schEditNumOfNodes):
                         schEditNode = schEditConn.schEditNodes[j]
-                        wire = _KiSchEditWire()
+                        wire = _KiSchEditWire("NodeToConnVerticalWire_" + schEditNode.name)
                         x = 0
                         y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
                         (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
@@ -156,7 +157,7 @@ class _KiSchEditWireCont:
                 # End NodeToConnVerticalWire
 
                 # Begin ConnVerticalWire
-                wire = _KiSchEditWire()
+                wire = _KiSchEditWire("ConnVerticalWire_"+schEditConn.name)
                 x = KiConst.schEdit["wirexGap"]
                 y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
                 (KiConst.globalLabel["height"] * (schEditConn.schEditNodes[0].idx + totalNode)) + \
@@ -166,7 +167,7 @@ class _KiSchEditWireCont:
                 self.wires.append(wire)
                 # End ConnVerticalWire
 
-                wire = _KiSchEditWire()
+                wire = _KiSchEditWire("Endpoint_"+schEditConn.name)
                 y = y + len/2
                 len = KiConst.schEdit["wirexGap"]
                 wire.prepareForLayout(x, y, 'h', len)
@@ -207,7 +208,7 @@ class _KiSchEditWireCont:
                     (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
                     (KiConst.globalLabel["height"] / 2)
 
-                wire = _KiSchEditWire()
+                wire = _KiSchEditWire("Endpoint_" + schEditNode.name)
                 wire.prepareForLayout(x, y, 'h', len)
                 self.wires.append(wire)
 
@@ -370,7 +371,7 @@ class _KiSchEditModule:
                                         for j in range(self.schEditWireCont[dir].numOfEndPoints):
                                                 endPoint = self.schEditWireCont[dir].endPoints[j]
                                                 if endPoint["name"] == symEditPin.pin.conn.name:
-                                                        wire = _KiSchEditWire()
+                                                        wire = _KiSchEditWire("Final_" + symEditPin.pin.conn.name)
                                                         wire.custom(endPoint["x"],
                                                                 endPoint["y"],
                                                                 symEditPin.x + self.symx,
@@ -473,7 +474,20 @@ class KiSchEditPrj:
                 renderedText = template.render(symEditLibs=self.symEditLibs,
                                                schEditModules = self.schEditModules,
                                                pageWidth=self.pageWidth,
-                                               pageHeight=self.pageHeight)
-                with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
+                                               pageHeight=self.pageHeight,
+                                               loggingEnabled=False)
+                with open(outFilePath, 'w') as f:
+                        f.write(renderedText)
+
+                outFolderPath = os.path.join(self.logFolderPath, self.projectName)
+                if not os.path.exists(outFolderPath):
+                        os.makedirs(outFolderPath)
+                outFilePath = os.path.join(outFolderPath, "KiSchEdit_" + self.outFileName)
+                renderedText = template.render(symEditLibs=self.symEditLibs,
+                                               schEditModules = self.schEditModules,
+                                               pageWidth=self.pageWidth,
+                                               pageHeight=self.pageHeight,
+                                               loggingEnabled=True)
+                with open(outFilePath, 'w') as f:
                         f.write(renderedText)
                 print("Gen: " + str(outFilePath))

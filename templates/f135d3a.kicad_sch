@@ -98,6 +98,9 @@
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 {% 		if not schEditModule.numOfSchEditConns["input"] == 0 %}
 {% 			for schEditWire in schEditModule.schEditWireCont["input"].wires %}
+{% 				if loggingEnabled == True %}
+	{{schEditWire.name}}
+{% 				endif %}
 	(wire
 		(pts
 			(xy {{'%.2f' % schEditWire.x0}} {{'%.2f' % schEditWire.y0}}) (xy {{'%.2f' % schEditWire.x1}} {{'%.2f' % schEditWire.y1}})
@@ -114,6 +117,9 @@
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 {% 		if not schEditModule.numOfSchEditConns["output"] == 0 %}
 {% 			for schEditWire in schEditModule.schEditWireCont["output"].wires %}
+{% 				if loggingEnabled == True %}
+	{{schEditWire.name}}
+{% 				endif %}
 	(wire
 		(pts
 			(xy {{'%.2f' % schEditWire.x0}} {{'%.2f' % schEditWire.y0}}) (xy {{'%.2f' % schEditWire.x1}} {{'%.2f' % schEditWire.y1}})
@@ -128,8 +134,10 @@
 {% 		endif %} {# numOfSchEditConns #}
 {% endfor %}{# schEditModules #}
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
-{% 		if not schEditModule.numOfSchEditConns["input"] == 0 %}
 {% 			for schEditWire in schEditModule.finalWires %}
+{% 				if loggingEnabled == True %}
+	{{schEditWire.name}}
+{% 				endif %}
 	(wire
 		(pts
 			(xy {{'%.2f' % schEditWire.x0}} {{'%.2f' % schEditWire.y0}}) (xy {{'%.2f' % schEditWire.x1}} {{'%.2f' % schEditWire.y1}})
@@ -141,7 +149,6 @@
 		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
 	)
 {% 			endfor %}{# schEditWire #}
-{% 		endif %} {# numOfSchEditConns #}
 {% endfor %}{# schEditModules #}
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 {% 		for schEditConn in schEditModule.schEditConns["input"] %} {# _KiSchEditConn type #}
