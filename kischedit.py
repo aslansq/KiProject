@@ -418,13 +418,14 @@ class _KiSchEditModule:
 
 
 class KiSchEditPrj:
-        def __init__(self):
+        def __init__(self, logFolderPath):
                 self.schEditModules = []
                 self.projectName = ""
                 self.numOfSchEditModules = 0
                 self.symEditLibs = []
                 self.pageWidth = 0
                 self.pageHeight = 0
+                self.logFolderPath = logFolderPath
 
         def parse(self, projectName, symEditLibs, pageWidth, pageHeight):
                 self.symEditLibs = symEditLibs

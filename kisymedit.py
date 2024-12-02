@@ -188,11 +188,13 @@ class _KiSymEditSym:
                 return s
 
 class KiSymEditLib:
-        def __init__(self):
+        def __init__(self, logFolderPath):
                 self.lib = None # KiLib type
                 # this one does not have any physical items to be placed
                 self.symEditSyms = [] # class _KiSymEditSym type
                 self.outFileName = "" # just for debugging purposes
+                self.projectName = ""
+                self.logFolderPath = logFolderPath
 
         def __prepareForAutoLayout(self):
                 for i in range(self.lib.numOfSymbols):
@@ -204,7 +206,8 @@ class KiSymEditLib:
 
         # KiSymEditLib is suppose to contain data from KiPrj
         # and do auto layout for them
-        def parse(self, lib):
+        def parse(self, projectName, lib):
+                self.projectName = projectName
                 self.lib = lib
                 for i in range(lib.numOfSymbols):
                         kiSymEditSym = _KiSymEditSym()
@@ -213,11 +216,19 @@ class KiSymEditLib:
                 self.__prepareForAutoLayout()
                 self.__autoLayout()
 
-        def log(self, depth, pos):
+        def __log(self):
+                depth = 0
+                pos = 1
                 s = KiUtil.getLogDepthStr(depth, pos) + "LibName: " + self.lib.name + "\n"
                 for i in range(self.lib.numOfSymbols):
                         s = s + self.symEditSyms[i].log(depth + 1, i + 1)
-                return s
+
+                absOutFolderPath = os.path.join(self.logFolderPath, self.projectName)
+                if not os.path.exists(absOutFolderPath):
+                        os.makedirs(absOutFolderPath)
+                absOutFilePath = os.path.join(absOutFolderPath, "KiSymEdit_" + self.lib.name + ".txt")
+                with open(absOutFilePath, 'w') as f:
+                        f.write(s)
 
         def gen(self, templateFilePath, outFolderPath):
                 templateFileName = os.path.basename(templateFilePath)
@@ -234,3 +245,4 @@ class KiSymEditLib:
                 with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
                         f.write(renderedText)
                 print("Gen: " + str(outFilePath))
+                self.__log()

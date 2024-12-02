@@ -55,8 +55,8 @@
 		)
 		(symbol "{{symEditSym.sym.name}}_0_1"
 			(rectangle
-				(start {{symEditSym.x0}} {{symEditSym.y0}})
-				(end {{symEditSym.x1}} {{symEditSym.y1}})
+				(start {{'%.2f' % symEditSym.x0}} {{'%.2f' % symEditSym.y0}})
+				(end {{'%.2f' % symEditSym.x1}} {{'%.2f' % symEditSym.y1}})
 				(stroke
 					(width 0)
 					(type default)
@@ -69,7 +69,7 @@
 		(symbol "{{symEditSym.sym.name}}_1_1"
 {%	for symEditPin in symEditSym.symEditPins %} {# KiSymEditPin type #}
 			(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
-				(at {{symEditPin.x}} {{symEditPin.y}} {{symEditPin.deg}})
+				(at {{'%.2f' % symEditPin.x}} {{'%.2f' % symEditPin.y}} {{symEditPin.deg}})
 				(length 2.54)
 				(name "{{symEditPin.pin.name}}"
 					(effects

@@ -130,10 +130,11 @@ class _KiLib:
                 return s
 
 class KiPrj:
-        def __init__(self):
+        def __init__(self, logFolderPath):
                 self.name = ""
                 self.numOfLibs = 0
                 self.libs = [] # class _KiLib type
+                self.logFolderPath = logFolderPath
 
         def parseFromCsv(self, csvFilePath):
                 self.name = str(os.path.basename(csvFilePath)).replace(".csv", "")
@@ -168,9 +169,16 @@ class KiPrj:
                                 self.libs[i].parseFromCsv(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
 
 
-        def log(self, depth, pos):
+        def log(self):
+                depth = 0
+                pos = 1
                 s = KiUtil.getLogDepthStr(depth, pos) + "PrjName: "+ self.name + " NumOfLibs" + str(self.numOfLibs) + "\n"
                 for i in range(self.numOfLibs):
                         s = s + self.libs[i].log(depth + 1, i + 1)
-                return s
+                absOutFolderPath = os.path.join(self.logFolderPath, self.name)
+                if not os.path.exists(absOutFolderPath):
+                        os.makedirs(absOutFolderPath)
+                absOutFilePath = os.path.join(absOutFolderPath, "KiPrj.txt")
+                with open(absOutFilePath, 'w') as f:
+                        f.write(s)
 

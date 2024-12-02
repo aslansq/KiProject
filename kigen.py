@@ -10,7 +10,6 @@ g_args = {
     "csvFilePath" : None,
     "outFolderPath" : None,
     "logFolderPath" : None,
-    "logEnabled"    : False,
     "templateFilePath" : None
 }
 g_argList = sys.argv[1:]
@@ -47,7 +46,6 @@ try:
                                 print(str(absPath) + " not exists.")
                                 exit(1)
                         g_args["logFolderPath"] = absPath
-                        g_args["logEnabled"] = True
                 elif currentArg in ("-t", "--templateFilePath"):
                         absPath = os.path.abspath(currentVal)
                         if not os.path.exists(absPath):
@@ -71,33 +69,25 @@ if g_args["templateFilePath"] == None:
         print("Template file is not given.")
         exit(1)
 
-def printLog(processedFilePath, outStr):
-        if g_args["logEnabled"] == False:
-                return
+if g_args["logFolderPath"] == None:
+        print("Log folder path is not given.")
+        exit(1)
 
-        fileName = os.path.basename(processedFilePath)
-        outFileName = str(fileName) + ".log"
-        outPath = os.path.join(g_args["logFolderPath"], outFileName)
-        print("Log: " + str(outPath))
-        with open(outPath, "w") as f:
-                f.write(outStr)
-
-g_prj = KiPrj()
+g_prj = KiPrj(g_args["logFolderPath"])
 g_prj.parseFromCsv(g_args["csvFilePath"])
-printLog(g_args["csvFilePath"], g_prj.log(0, 1))
+g_prj.log()
 
 # we always parse for symbol editor. even if it is not used directly; sch editor will use it
 for i in range(g_prj.numOfLibs):
-        symEditLib = KiSymEditLib()
-        symEditLib.parse(g_prj.libs[i])
+        symEditLib = KiSymEditLib(g_args["logFolderPath"])
+        symEditLib.parse(g_prj.name, g_prj.libs[i])
         g_symEditLibs.append(symEditLib)
 
 if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen lib for symbol editor
         for i in range(len(g_symEditLibs)):
                 g_symEditLibs[i].gen(g_args["templateFilePath"], g_args["outFolderPath"])
-                printLog(str(g_args["templateFilePath"]) + "." + g_prj.name + "."  + g_symEditLibs[i].lib.name, g_symEditLibs[i].log(0,1))
 
 else:
-        schEditPrj = KiSchEditPrj()
+        schEditPrj = KiSchEditPrj(g_args["logFolderPath"])
         schEditPrj.parse(g_prj.name, g_symEditLibs, 192, 108)
         schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])
