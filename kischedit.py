@@ -442,8 +442,8 @@ class KiSchEditPrj:
                 self.numOfSchEditModules = len(self.schEditModules)
                 for i in range(self.numOfSchEditModules):
                         self.schEditModules[i].prepareForLayout()
-                modulexOffset = KiConst.schEdit["pageOffset"]
-                moduleyOffset = KiConst.schEdit["pageOffset"]
+                modulexOffset = 0
+                moduleyOffset = 0
                 maxWidth = 0
                 for i in range(self.numOfSchEditModules):
                         if moduleyOffset + self.schEditModules[i].height < self.pageHeight:
@@ -452,12 +452,12 @@ class KiSchEditPrj:
                                         maxWidth = self.schEditModules[i].width
                         else:
                                 modulexOffset = modulexOffset + maxWidth + KiConst.schEdit["modulexGap"]
-                                moduleyOffset = KiConst.schEdit["pageOffset"]
+                                moduleyOffset = 0
                                 maxWidth = self.schEditModules[i].width
                                 self.schEditModules[i].autoLayout(modulexOffset, moduleyOffset)
                         moduleyOffset = moduleyOffset + self.schEditModules[i].height + KiConst.schEdit["moduleyGap"]
 
-                if modulexOffset + maxWidth + KiConst.schEdit["pageOffset"] > self.pageWidth:
+                if modulexOffset + maxWidth > self.pageWidth:
                         return False
                 return True
 
@@ -478,6 +478,15 @@ class KiSchEditPrj:
                                                loggingEnabled=False)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
+
+                if ".kicad_pro" in self.outFileName:
+                        srcPath = os.path.dirname(templateFilePath)
+                        srcPath = os.path.join(srcPath, "emptySheet.kicad_wks")
+                        dstPath = os.path.join(outFolderPath, "emptySheet.kicad_wks")
+                        with open(srcPath, 'r') as srcFile:
+                                with open(dstPath, 'w') as dstFile:
+                                        for srcLine in srcFile:
+                                                dstFile.write(srcLine)
 
                 outFolderPath = os.path.join(self.logFolderPath, self.projectName)
                 if not os.path.exists(outFolderPath):
