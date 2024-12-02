@@ -192,7 +192,7 @@ class _KiSchEditWireCont:
                 }
                 self.endPoints.append(endPoint)
 
-        def __prepareInWireContainer(self):
+        def __prepareWireContainer(self):
                 totalNode = 0
                 for i in range(self.numOfSchEditConns):
                         schEditConn = self.schEditConns[i]
@@ -216,7 +216,7 @@ class _KiSchEditWireCont:
                 self.width = self.numOfSchEditConns * (KiConst.schEdit["wirexGap"] * 2)
                 if connWMultipleNodesExist:
                         self.width = self.width + (KiConst.schEdit["wirexGap"] * 2)
-                self.__prepareInWireContainer()
+                self.__prepareWireContainer()
 
         def autoLayout(self, x, y):
                 self.x = x
