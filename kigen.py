@@ -5,16 +5,21 @@ import getopt
 from kiprj import KiPrj
 from kisymedit import KiSymEditLib
 from kischedit import KiSchEditPrj
+from kipro import KiPro
+from kiutil import KiUtil
+from kisymlibtable import KiSymLibTable
+from kiprl import KiPrl
+
+G_TEMPLATE_FOLDER_PATH="templates"
 
 g_args = {
     "csvFilePath" : None,
     "outFolderPath" : None,
-    "logFolderPath" : None,
-    "templateFilePath" : None
+    "logFolderPath" : None
 }
 g_argList = sys.argv[1:]
 g_opts = "hl:c:o:t:"
-g_longOpts = ["help", "logFolderPath=", "csvFilePath=", "outFolderPath=", "templateFilePath="]
+g_longOpts = ["help", "logFolderPath=", "csvFilePath=", "outFolderPath="]
 g_symEditLibs = []
 g_prj = None
 
@@ -46,12 +51,6 @@ try:
                                 print(str(absPath) + " not exists.")
                                 exit(1)
                         g_args["logFolderPath"] = absPath
-                elif currentArg in ("-t", "--templateFilePath"):
-                        absPath = os.path.abspath(currentVal)
-                        if not os.path.exists(absPath):
-                                print(str(absPath) + " not exists.")
-                                exit(1)
-                        g_args["templateFilePath"] = absPath
 
 except getopt.error as err:
     print("Unrecognized input parameter " + str(err))
@@ -64,10 +63,6 @@ if g_args["csvFilePath"] == None:
 if g_args["outFolderPath"] == None:
        print("Output folder is not given.")
        exit(1)
-
-if g_args["templateFilePath"] == None:
-        print("Template file is not given.")
-        exit(1)
 
 if g_args["logFolderPath"] == None:
         print("Log folder path is not given.")
@@ -83,11 +78,31 @@ for i in range(g_prj.numOfLibs):
         symEditLib.parse(g_prj.name, g_prj.libs[i])
         g_symEditLibs.append(symEditLib)
 
-if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen lib for symbol editor
-        for i in range(len(g_symEditLibs)):
-                g_symEditLibs[i].gen(g_args["templateFilePath"], g_args["outFolderPath"])
+g_absPath = None
 
-else:
-        schEditPrj = KiSchEditPrj(g_args["logFolderPath"])
-        schEditPrj.parse(g_prj.name, g_symEditLibs, 192, 108)
-        schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])
+for i in range(len(g_symEditLibs)):
+        g_absPath = os.path.join(G_TEMPLATE_FOLDER_PATH, "e5ea7ba.kicad_sym")
+        g_symEditLibs[i].gen(g_absPath, g_args["outFolderPath"])
+
+g_absPath = os.path.join(G_TEMPLATE_FOLDER_PATH, "f135d3a.kicad_sch")
+g_schEditPrj = KiSchEditPrj(g_args["logFolderPath"])
+g_schEditPrj.parse(g_prj.name, g_symEditLibs, 192, 108)
+g_schEditPrj.gen(g_absPath, g_args["outFolderPath"])
+
+g_absPath = os.path.join(G_TEMPLATE_FOLDER_PATH, "f135d3a.kicad_pro")
+g_pro = KiPro(g_prj.name)
+g_pro.gen(g_absPath, g_args["outFolderPath"])
+
+g_absPath = os.path.join(G_TEMPLATE_FOLDER_PATH, "f135d3a.kicad_prl")
+g_pro = KiPrl(g_prj.name)
+g_pro.gen(g_absPath, g_args["outFolderPath"])
+
+g_absPath = os.path.join(g_args["outFolderPath"], g_prj.name + ".kicad_pcb")
+KiUtil.copyPaste(os.path.join(G_TEMPLATE_FOLDER_PATH, "f135d3a.kicad_pcb"),
+                g_absPath)
+print("Copy To: " + str(g_absPath))
+
+g_absPath = os.path.join(G_TEMPLATE_FOLDER_PATH, "sym-lib-table")
+g_pro = KiSymLibTable(g_prj)
+g_pro.gen(g_absPath, g_args["outFolderPath"])
+

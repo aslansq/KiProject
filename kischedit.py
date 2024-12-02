@@ -479,15 +479,6 @@ class KiSchEditPrj:
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
 
-                if ".kicad_pro" in self.outFileName:
-                        srcPath = os.path.dirname(templateFilePath)
-                        srcPath = os.path.join(srcPath, "emptySheet.kicad_wks")
-                        dstPath = os.path.join(outFolderPath, "emptySheet.kicad_wks")
-                        with open(srcPath, 'r') as srcFile:
-                                with open(dstPath, 'w') as dstFile:
-                                        for srcLine in srcFile:
-                                                dstFile.write(srcLine)
-
                 outFolderPath = os.path.join(self.logFolderPath, self.projectName)
                 if not os.path.exists(outFolderPath):
                         os.makedirs(outFolderPath)

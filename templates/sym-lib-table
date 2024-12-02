@@ -1,6 +1,6 @@
 (sym_lib_table
   (version 7)
-{% for symEditLib in symEditLibs %} {# KiSymEditLib type #}
-  (lib (name "{{symEditLib.lib.name}}")(type "KiCad")(uri "${KIPRJMOD}/{{symEditLib.lib.name}}.kicad_sym")(options "")(descr ""))
-{% endfor %} {# symEditLibs #}
+{% for libName in libNames %}
+  (lib (name "{{libName}}")(type "KiCad")(uri "${KIPRJMOD}/{{libName}}.kicad_sym")(options "")(descr ""))
+{% endfor %}
 )

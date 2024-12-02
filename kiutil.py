@@ -11,3 +11,9 @@ class KiUtil:
                 else:
                         s = "|"
                 return s
+        
+        def copyPaste(srcPath, dstPath):
+                with open(srcPath, 'r') as srcFile:
+                        with open(dstPath, 'w') as dstFile:
+                                for srcLine in srcFile:
+                                        dstFile.write(srcLine)
