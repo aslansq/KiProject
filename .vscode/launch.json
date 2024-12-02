@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "kigen.py",
             "console": "integratedTerminal",
-            "args": ["--csvFilePath", "./examples/two.csv",
+            "args": ["--csvFilePath", "./examples/custom.csv",
                      "--outFolderPath", "./out",
                      "--logFolderPath", "./log"
                      "--templateFilePath", "./templates/f135d3a.kicad_sch"]

@@ -99,5 +99,5 @@ if "kicad_sym" in g_args["templateFilePath"]: # if correct template given gen li
 
 else:
         schEditPrj = KiSchEditPrj()
-        schEditPrj.parse(g_prj.name, g_symEditLibs)
+        schEditPrj.parse(g_prj.name, g_symEditLibs, 192, 108)
         schEditPrj.gen(g_args["templateFilePath"], g_args["outFolderPath"])

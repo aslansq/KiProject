@@ -3,7 +3,7 @@
 	(generator "eeschema")
 	(generator_version "8.0")
 	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
-	(paper "A4")
+	(paper "User" {{pageWidth}} {{pageHeight}})
 	(lib_symbols
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"

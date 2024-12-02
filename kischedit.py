@@ -423,11 +423,14 @@ class KiSchEditPrj:
                 self.projectName = ""
                 self.numOfSchEditModules = 0
                 self.symEditLibs = []
+                self.pageWidth = 0
+                self.pageHeight = 0
 
-
-        def parse(self, projectName, symEditLibs):
+        def parse(self, projectName, symEditLibs, pageWidth, pageHeight):
                 self.symEditLibs = symEditLibs
                 self.projectName = projectName
+                self.pageHeight = pageHeight
+                self.pageWidth = pageWidth
                 for i in range(len(symEditLibs)):
                         for j in range(symEditLibs[i].lib.numOfSymbols):
                                 symEditSym = symEditLibs[i].symEditSyms[j]
@@ -437,10 +440,24 @@ class KiSchEditPrj:
                 self.numOfSchEditModules = len(self.schEditModules)
                 for i in range(self.numOfSchEditModules):
                         self.schEditModules[i].prepareForLayout()
-                moduleHeights = 0
+                modulexOffset = KiConst.schEdit["pageOffset"]
+                moduleyOffset = KiConst.schEdit["pageOffset"]
+                maxWidth = 0
                 for i in range(self.numOfSchEditModules):
-                        self.schEditModules[i].autoLayout(0, moduleHeights)
-                        moduleHeights = moduleHeights + self.schEditModules[i].height + KiConst.schEdit["moduleyGap"]
+                        if moduleyOffset + self.schEditModules[i].height < self.pageHeight:
+                                self.schEditModules[i].autoLayout(modulexOffset, moduleyOffset)
+                                if self.schEditModules[i].width > maxWidth:
+                                        maxWidth = self.schEditModules[i].width
+                        else:
+                                modulexOffset = modulexOffset + maxWidth + KiConst.schEdit["modulexGap"]
+                                moduleyOffset = KiConst.schEdit["pageOffset"]
+                                maxWidth = self.schEditModules[i].width
+                                self.schEditModules[i].autoLayout(modulexOffset, moduleyOffset)
+                        moduleyOffset = moduleyOffset + self.schEditModules[i].height + KiConst.schEdit["moduleyGap"]
+
+                if modulexOffset + maxWidth + KiConst.schEdit["pageOffset"] > self.pageWidth:
+                        return False
+                return True
 
         def gen(self, templateFilePath, outFolderPath):
                 templateFileName = os.path.basename(templateFilePath)
@@ -453,7 +470,9 @@ class KiSchEditPrj:
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(symEditLibs=self.symEditLibs,
-                                               schEditModules = self.schEditModules)
+                                               schEditModules = self.schEditModules,
+                                               pageWidth=self.pageWidth,
+                                               pageHeight=self.pageHeight)
                 with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
                         f.write(renderedText)
                 print("Gen: " + str(outFilePath))
