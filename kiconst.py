@@ -20,6 +20,10 @@ class KiConst:
                 "fc9d56b" : "xglobalOutputLabel.name",
                 "c75eb8b" : "xtemp"
         }
+
+        def grid(num):
+                return num * 1.27
+
         #                                             pinToBoxWidth
         #                                                      ↓  ↓
         #   |--------------------------------------------------|
@@ -33,20 +37,20 @@ class KiConst:
         #   |--------------|   ←
         #   |     OutPin0 ---->←firstPinyOffset
         #   |↑   ↑         |
-        #   |spaceBetweenBoxNPinName
+        #   |spaceBetweenBoxNPinName 
         #   |--------------|
         #
         symEdit = {
-                "charHeight"              : 1.27,
-                "charWidth"               : 1.27,
-                "lenPin"                  : 2.54,
-                "spaceBetweenInNOutPin"   : 0.1,
-                "spaceBetweenBoxNPinName" : 1,
-                "heightBetweenPins"       : 2.57,
-                "firstPinyOffset"         : 3,
-                "pinToBoxWidth"           : 1.01,
-                "pinToBoxHeight"          : 1.01,
-                "pinEndToPinName"         : 0.7
+                "charHeight"              : grid(1),
+                "charWidth"               : grid(1),
+                "lenPin"                  : grid(2),
+                "spaceBetweenInNOutPin"   : grid(1),
+                "spaceBetweenBoxNPinName" : grid(1),
+                "heightBetweenPins"       : grid(2),
+                "firstPinyOffset"         : grid(3),
+                "pinToBoxWidth"           : grid(1),
+                "pinToBoxHeight"          : grid(1),
+                "pinEndToPinName"         : grid(1)
         }
 
         invertedUniqDict = {v: k for k, v in uniqDict.items()}
@@ -85,10 +89,10 @@ class KiConst:
         #     |----------/   ←
 
         globalLabel = {
-                "charWidth" : 1.27,
-                "leftToTextWidth"          : 1.27,
-                "rightToTextWidth"          : 1.55,
-                "height"                   : 2.54,
+                "charWidth"        : grid(1),
+                "leftToTextWidth"  : grid(1),
+                "rightToTextWidth" : grid(1),
+                "height"           : grid(2),
         }
 
 # container that contains single more global labels called connector.
@@ -119,12 +123,12 @@ class KiConst:
 #                               |-------------->                ----->-----|
 #                                            |--------------------|
         schEdit = {
-                "invalidConnIdx" : -1,
-                "connyGap" : 1.27,
-                "connyFirstOffset": 1.27,
-                "wirexGap" : 1.27,
-                "moduleyGap" : 2.54,
-                "modulexGap" : 2.54,
-                "desigxOffset" : 1,
-                "desigyOffset" : 0.2
+                "invalidConnIdx"  : -1,
+                "connyGap"        : grid(1),
+                "connyFirstOffset": grid(1),
+                "wirexGap"        : grid(1),
+                "moduleyGap"      : grid(2),
+                "modulexGap"      : grid(2),
+                "desigxOffset"    : 1,
+                "desigyOffset"    : 0.2
         }

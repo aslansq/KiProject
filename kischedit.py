@@ -383,6 +383,7 @@ class _KiSchEditModule:
                 inConnyOffset = 0
                 if self.height > self.schEditConnsHeight["input"]:
                         inConnyOffset = (self.height - self.schEditConnsHeight["input"]) / 2
+                        inConnyOffset = KiUtil.roundToGrid(inConnyOffset)
 
                 for i in range(self.numOfSchEditConns["input"]):
                         self.schEditConns["input"][i].autoLayout(x, y + inConnyOffset)
@@ -399,6 +400,8 @@ class _KiSchEditModule:
                         self.symx = x
 
                 self.symy = y + (self.height-self.symEditSym.height) / 2 - KiConst.symEdit["charHeight"]
+                self.symx = KiUtil.roundToGrid(self.symx)
+                self.symy = KiUtil.roundToGrid(self.symy)
 
                 self.desigx = self.symx + KiConst.schEdit["desigxOffset"]
                 self.desigy = self.symy + KiConst.schEdit["desigyOffset"]
@@ -406,6 +409,7 @@ class _KiSchEditModule:
                 outConnyOffset = 0
                 if self.height > self.schEditConnsHeight["output"]:
                         outConnyOffset = (self.height - self.schEditConnsHeight["output"]) / 2
+                        outConnyOffset = KiUtil.roundToGrid(outConnyOffset)
 
                 if self.numOfSchEditConns["output"] != 0:
                         self.schEditWireCont["output"].autoLayout(self.symx + self.symEditSym.width, y + outConnyOffset)

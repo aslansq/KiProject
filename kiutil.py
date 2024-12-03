@@ -17,3 +17,6 @@ class KiUtil:
                         with open(dstPath, 'w') as dstFile:
                                 for srcLine in srcFile:
                                         dstFile.write(srcLine)
+
+        def roundToGrid(num):
+                return KiConst.grid(1) * round(num/KiConst.grid(1))
