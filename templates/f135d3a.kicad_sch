@@ -1,0 +1,283 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
+	(paper "User" {{pageWidth}} {{pageHeight}})
+	(lib_symbols
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"
+			(pin_numbers hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "{{schEditModule.symEditSym.sym.designator}}"
+				(at 0.254 -0.508 0)
+				(effects
+					(font
+						(face "Cascadia Mono")
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "{{schEditModule.symEditSym.sym.name}}_0_1"
+				(rectangle
+					(start {{'%.2f' % schEditModule.symEditSym.x0}} {{'%.2f' % schEditModule.symEditSym.y0}})
+					(end {{'%.2f' % schEditModule.symEditSym.x1}} {{'%.2f' % schEditModule.symEditSym.y1}})
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "{{schEditModule.symEditSym.sym.name}}_1_1"
+	{%	for symEditPin in schEditModule.symEditSym.symEditPins %} {# KiSymEditPin type #}
+				(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
+					(at {{'%.2f' % symEditPin.x}} {{'%.2f' % symEditPin.y}} {{'%.2f' % symEditPin.deg}})
+					(length 2.54)
+					(name "{{symEditPin.pin.name}}"
+						(effects
+							(font
+								(face "Cascadia Mono")
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+	{% 	endfor %} {# symEditPins #}
+			)
+		)
+{% endfor %}{# schEditModules #}
+	)
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		if not schEditModule.numOfSchEditConns["input"] == 0 %}
+{% 			for schEditWire in schEditModule.schEditWireCont["input"].wires %}
+{% 				if loggingEnabled == True %}
+	{{schEditWire.name}}
+{% 				endif %}
+	(wire
+		(pts
+			(xy {{'%.2f' % schEditWire.x0}} {{'%.2f' % schEditWire.y0}}) (xy {{'%.2f' % schEditWire.x1}} {{'%.2f' % schEditWire.y1}})
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+	)
+{% 			endfor %}{# schEditWire #}
+{% 		endif %} {# numOfSchEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		if not schEditModule.numOfSchEditConns["output"] == 0 %}
+{% 			for schEditWire in schEditModule.schEditWireCont["output"].wires %}
+{% 				if loggingEnabled == True %}
+	{{schEditWire.name}}
+{% 				endif %}
+	(wire
+		(pts
+			(xy {{'%.2f' % schEditWire.x0}} {{'%.2f' % schEditWire.y0}}) (xy {{'%.2f' % schEditWire.x1}} {{'%.2f' % schEditWire.y1}})
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+	)
+{% 			endfor %}{# schEditWire #}
+{% 		endif %} {# numOfSchEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 			for schEditWire in schEditModule.finalWires %}
+{% 				if loggingEnabled == True %}
+	{{schEditWire.name}}
+{% 				endif %}
+	(wire
+		(pts
+			(xy {{'%.2f' % schEditWire.x0}} {{'%.2f' % schEditWire.y0}}) (xy {{'%.2f' % schEditWire.x1}} {{'%.2f' % schEditWire.y1}})
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+	)
+{% 			endfor %}{# schEditWire #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		for schEditConn in schEditModule.schEditConns["input"] %} {# _KiSchEditConn type #}
+{% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
+	(global_label "{{schEditNode.name}}"
+		(shape input)
+		(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "eace0e79-bf5f-4d6b-8d9e-e27e74d57971")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+{% 			endfor %}{# schEditNodes #}
+{% 		endfor %}{# schEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% 		for schEditConn in schEditModule.schEditConns["output"] %} {# _KiSchEditConn type #}
+{% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
+	(global_label "{{schEditNode.name}}"
+		(shape output)
+		(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "dc68fdf5-7047-4402-b18e-91772ec7c508")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+{% 			endfor %}{# schEditNodes #}
+{% 		endfor %}{# schEditConns #}
+{% endfor %}{# schEditModules #}
+{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+	(symbol
+		(lib_id "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}")
+		(at {{'%.2f' % schEditModule.symx}} {{'%.2f' % schEditModule.symy}} 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
+		(property "Reference" "{{schEditModule.symEditSym.sym.designator}}1"
+			(at {{'%.2f' % schEditModule.desigx}} {{'%.2f' % schEditModule.desigy}} 0)
+			(effects
+				(font
+					(face "Cascadia Mono")
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Value" "~"
+			(at 28.194 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 12.7 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 12.7 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 12.7 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin ""
+			(uuid "f3a877d8-8ddd-4699-874b-2d6146f3f342")
+		)
+		(instances
+			(project ""
+				(path "/97f17985-da40-43fd-b268-8c96b481a2af"
+					(reference "{{schEditModule.symEditSym.sym.designator}}1")
+					(unit 1)
+				)
+			)
+		)
+	)
+{% endfor %}{# schEditModules #}
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)

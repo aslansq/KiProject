@@ -1,0 +1,6 @@
+(sym_lib_table
+  (version 7)
+{% for libName in libNames %}
+  (lib (name "{{libName}}")(type "KiCad")(uri "${KIPRJMOD}/{{libName}}.kicad_sym")(options "")(descr ""))
+{% endfor %}
+)

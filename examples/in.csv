@@ -1,0 +1,5 @@
+#Library,Symbol,SymbolDesignator,PinName,PinDir,PinStyle,Connector,
+USA,NewYork,NewYork,NewYork,input,inverted,,
+USA,NewYork,NewYork,Buffalo,input,inverted,,
+USA,NewYork,NewYork,Rochester,input,inverted_clock,,
+USA,NewYork,NewYork,Albany,input,line,,

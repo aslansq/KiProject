@@ -1,0 +1,94 @@
+(kicad_symbol_lib
+	(version 20231120)
+	(generator "kicad_symbol_editor")
+	(generator_version "8.0")
+{% for symEditSym in symEditSyms %} {# KiSymEditSym type #}
+	(symbol "{{symEditSym.sym.name}}"
+		(pin_numbers hide)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property "Reference" "{{symEditSym.sym.designator}}"
+			(at 0.254 -0.508 0)
+			(effects
+				(font
+					(face "Cascadia Mono")
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(property "Value" ""
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(symbol "{{symEditSym.sym.name}}_0_1"
+			(rectangle
+				(start {{'%.2f' % symEditSym.x0}} {{'%.2f' % symEditSym.y0}})
+				(end {{'%.2f' % symEditSym.x1}} {{'%.2f' % symEditSym.y1}})
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "{{symEditSym.sym.name}}_1_1"
+{%	for symEditPin in symEditSym.symEditPins %} {# KiSymEditPin type #}
+			(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
+				(at {{'%.2f' % symEditPin.x}} {{'%.2f' % symEditPin.y}} {{symEditPin.deg}})
+				(length 2.54)
+				(name "{{symEditPin.pin.name}}"
+					(effects
+						(font
+							(face "Cascadia Mono")
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+{% 	endfor %} {# symEditPins #}
+		)
+	)
+{% endfor %} {# symEditSyms #}
+)
