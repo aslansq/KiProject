@@ -1,4 +1,14 @@
+thisPath=$(realpath "$0")
 req=$1
+thisDirPath=$(dirname "$thisPath")
+prjDirPath=$thisDirPath/..
+
+cd $prjDirPath
+if [[ $? != 0 ]]
+then
+    echo cd to project directory failed
+    exit 1
+fi
 
 # clear old files
 rm -rf ./out
