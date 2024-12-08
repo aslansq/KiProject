@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "kigen.py",
+            "program": "kicli.py",
             "console": "integratedTerminal",
             "args": ["--csvFilePath", "./examples/custom.csv",
                      "--outFolderPath", "./out",

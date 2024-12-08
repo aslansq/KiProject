@@ -1,6 +1,7 @@
 from random import randint
 import sys
-sys.path.append("..")
+import os
+sys.path.append(os.path.join("..", "sources"))
 from kiconst import KiConst
 
 countries = {

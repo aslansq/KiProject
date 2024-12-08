@@ -17,7 +17,7 @@ class _KiGlobalConn:
                 self.dir = ""
                 self.name = ""
         
-        def parseFromCsv(self, pin):
+        def parse(self, pin):
                 self.name = pin[KiConst.csv["sym"]] + "_" + pin[KiConst.csv["pin"]]
                 self.nodes = pin[KiConst.csv["nodes"]].split('-')
                 # remove itself
@@ -44,12 +44,12 @@ class _KiPin:
                 self.style = ""
                 self.conn = _KiGlobalConn()
         
-        def parseFromCsv(self, pin):
+        def parse(self, pin):
                 self.name = pin[KiConst.csv["pin"]]
                 self.dir = pin[KiConst.csv["pinDir"]]
                 self.style = pin[KiConst.csv["pinStyle"]]
                 if pin[KiConst.csv["nodes"]] != "":
-                        self.conn.parseFromCsv(pin)
+                        self.conn.parse(pin)
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Dir: " + self.dir + " Style: " + self.style + " " + "\n"
@@ -64,7 +64,7 @@ class _KiSymbol:
                 self.numOfPins = 0
                 self.pins = [] # class _KiLib.Pin type
 
-        def parseFromCsv(self, symbol):
+        def parse(self, symbol):
                 # if empty just return
                 if len(symbol) == 0:
                         return
@@ -75,9 +75,9 @@ class _KiSymbol:
                 self.numOfPins = len(symbol)
 
                 for i in range(self.numOfPins):
-                        # create a pin and parseFromCsv it
+                        # create a pin and parse it
                         kiPin = _KiPin()
-                        kiPin.parseFromCsv(symbol[i])
+                        kiPin.parse(symbol[i])
                         self.pins.append(kiPin)
         
         def log(self, depth, pos):
@@ -93,15 +93,15 @@ class _KiLib:
                 self.numOfSymbols = 0
                 self.symbols = [] # class Symbol type
 
-        def parseFromCsv(self, lib):
+        def parse(self, lib):
                 # if empty library just return
                 if len(lib) == 0:
                         return
 
                 if len(lib[0]) < KiConst.csv["count"]:
-                        print("invalid number of columns(" + str(len(lib[0])) +") in csv")
-                        print(lib)
-                        exit(1)
+                        s = "invalid number of columns(" + str(len(lib[0])) +") in csv\n"
+                        s = s + str(lib)
+                        raise Exception(s)
                 self.name = lib[0][KiConst.csv["lib"]]
 
                 lastSymbolName = ""
@@ -121,7 +121,7 @@ class _KiLib:
 
                 for i in range(self.numOfSymbols):
                         # parsing symbols with entry and exist boundary
-                        self.symbols[i].parseFromCsv(lib[lastLibIdx[i] : lastLibIdx[i+1]])
+                        self.symbols[i].parse(lib[lastLibIdx[i] : lastLibIdx[i+1]])
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + "LibName: " + self.name + " " + "\n"
@@ -205,7 +205,7 @@ class KiPrj:
 
                 return True
 
-        def parseFromCsv(self, csvFilePath):
+        def parse(self, csvFilePath):
                 self.name = str(os.path.basename(csvFilePath)).replace(".csv", "")
                 with open(csvFilePath, newline='') as csvFile:
                         csvReader = csv.reader(csvFile)
@@ -226,8 +226,7 @@ class KiPrj:
                                 return
 
                         if self.__validate(rowList) == False:
-                                print("ERR: Csv file is not valid: " + str(csvFilePath))
-                                exit(1)
+                                raise Exception("ERR: Csv file is not valid: " + str(csvFilePath))
 
                         lastLibName = ""
                         lastRowIdx = []
@@ -246,7 +245,7 @@ class KiPrj:
 
                         for i in range(self.numOfLibs):
                                 # parsing library with entry and exit boundary
-                                self.libs[i].parseFromCsv(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
+                                self.libs[i].parse(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
 
 
         def log(self):

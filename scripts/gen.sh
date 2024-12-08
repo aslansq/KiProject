@@ -32,7 +32,7 @@ fi
 for example in $examples
 do
     mkdir -p ./out/${example%.csv}
-    echo python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
-    python kigen.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
+    echo python kicli.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
+    python kicli.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
 done
 
