@@ -31,8 +31,9 @@ fi
 
 for example in $examples
 do
-    mkdir -p ./out/${example%.csv}
-    echo python kicli.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
-    python kicli.py --csvFilePath ./examples/$example --outFolderPath ./out/${example%.csv} --logFolderPath ./log --pageWidth 384 --pageHeight 216
+    mkdir -p ./examples/out/${example%.csv}
+    mkdir -p ./examples/log
+    echo python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216
+    python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216
 done
 
