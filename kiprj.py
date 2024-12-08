@@ -136,6 +136,73 @@ class KiPrj:
                 self.libs = [] # class _KiLib type
                 self.logFolderPath = logFolderPath
 
+        def __isLibsConsecutive(self, rowList):
+                libNames = []
+                lastLibName = ""
+                for i in range(len(rowList)):
+                        libName = rowList[i][KiConst.csv["lib"]]
+                        if libName != lastLibName:
+                                lastLibName = libName
+                                if libName in libNames:
+                                        return False
+                                libNames.append(libName)
+                return True
+
+        def __isSymNamesUniq(self, rowList):
+                # purposes of this function not to have same symbol name in different libraries
+                libSymNames = []
+                for i in range(len(rowList)):
+                        # ?? because I dont think anyone will put questions marks in their symbol or library names
+                        libSymName = rowList[i][KiConst.csv["lib"]] + "??" + rowList[i][KiConst.csv["sym"]]
+                        if not libSymName in libSymNames:
+                                libSymNames.append(libSymName)
+
+                symNames = []
+                for i in range(len(libSymNames)):
+                        symNames.append(libSymNames[i].split("??")[1])
+
+                isUniq = len(symNames) == len(set(symNames))
+                if isUniq == False:
+                        for i in range(len(symNames)):
+                                for j in range(i, len(symNames)):
+                                        if symNames[i] == symNames[j]:
+                                                print("ERR: symbol name is not uniq->" + symNames[i])
+                return isUniq
+
+        def __isSymsConsecutive(self, rowList):
+                if self.__isSymNamesUniq(rowList) == False:
+                        return False
+
+                symNames = []
+                lastSymName = ""
+                for i in range(len(rowList)):
+                        symName = rowList[i][KiConst.csv["sym"]]
+                        if symName != lastSymName:
+                                lastSymName = symName
+                                if symName in symNames:
+                                        return False
+                                symNames.append(symName)
+                return True
+
+        def __validate(self, rowList):
+                for i in range(len(rowList)):
+                        #at least it should have until nodes
+                        if len(rowList[i]) < KiConst.csv["nodes"]:
+                                return False
+                        # if it has empty elements, not valid
+                        # nodes can be empty
+                        for j in range(KiConst.csv["nodes"]):
+                                if rowList[i][j] == "":
+                                        return False
+
+                if self.__isLibsConsecutive(rowList) == False:
+                        return False
+
+                if self.__isSymsConsecutive(rowList) == False:
+                        return False
+
+                return True
+
         def parseFromCsv(self, csvFilePath):
                 self.name = str(os.path.basename(csvFilePath)).replace(".csv", "")
                 with open(csvFilePath, newline='') as csvFile:
@@ -144,10 +211,18 @@ class KiPrj:
                         for row in csvReader:
                                 if row[0][0] == "#":
                                         continue
+                                # we dont care about white space or new line
+                                for i in range(len(row)):
+                                        row[i] = row[i].replace(" ", "")
+                                        row[i] = row[i].strip()
                                 rowList.append(row)
                         # if empty just return
                         if len(rowList) == 0:
                                 return
+
+                        if self.__validate(rowList) == False:
+                                print("ERR: Csv file is not valid: " + str(csvFilePath))
+                                exit(1)
 
                         lastLibName = ""
                         lastRowIdx = []
