@@ -81,8 +81,7 @@ class _KiSchEditWire:
                 self.o = o
                 self.len = len
                 if self.o != 'v' and self.o != 'h':
-                        print("ERROR undefined orientation.")
-                        exit(1)
+                        raise Exception("ERROR undefined orientation.")
                 if self.o == 'v':
                         self.x1 = self.x0
                         self.y1 = self.y0 + self.len
@@ -228,8 +227,7 @@ class _KiSchEditWireCont:
                         schEditConn = self.schEditConns[i]
                         multiNode = schEditConn.schEditNumOfNodes > 1
                         if multiNode and self.dir == "output":
-                                print("ERROR OUTPUT conn container can NOT have multiple nodes")
-                                exit(1)
+                                raise Exception("ERROR OUTPUT conn container can NOT have multiple nodes")
                         elif schEditConn.schEditNumOfNodes > 1:
                                 self.__prepareInWireMultiNode(schEditConn, totalNode)
                         else:
