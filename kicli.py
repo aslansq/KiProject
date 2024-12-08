@@ -7,6 +7,7 @@ g_dirPath = os.path.abspath(sys.argv[0])
 g_dirPath = os.path.dirname(g_dirPath)
 g_prjPath = g_dirPath
 sys.path.append(g_prjPath)
+sys.path.append(os.path.join(g_prjPath, "sources"))
 
 from kiprj import KiPrj
 from kisymedit import KiSymEditLib
