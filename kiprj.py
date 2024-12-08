@@ -193,6 +193,8 @@ class KiPrj:
                         # nodes can be empty
                         for j in range(KiConst.csv["nodes"]):
                                 if rowList[i][j] == "":
+                                        print("ERR: row in csv file has empty elements")
+                                        print(rowList[i])
                                         return False
 
                 if self.__isLibsConsecutive(rowList) == False:
@@ -209,6 +211,9 @@ class KiPrj:
                         csvReader = csv.reader(csvFile)
                         rowList = []
                         for row in csvReader:
+                                # if it is just new line just skip
+                                if len(row) == 0:
+                                        continue
                                 if row[0][0] == "#":
                                         continue
                                 # we dont care about white space or new line
