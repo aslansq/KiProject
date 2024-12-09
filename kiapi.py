@@ -22,11 +22,13 @@ class KiApi:
                     csvFilePath=None, # mandatory
                     logFolderPath=None, # mandatory
                     outFolderPath=None, # mandatory
-                    kicadVersion=g_latestKicadVersion): # optional, if not given: latest supported used
+                    kicadVersion=g_latestKicadVersion, # optional, if not given: latest supported used
+                    showPinNumbers=False): # optional
                 self.__csvFilePath = None
                 self.__logFolderPath = None
                 self.__outFolderPath = None
                 self.__kicadVersion = kicadVersion
+                self.showPinNumbers = showPinNumbers
                 # start filled by __setTemplateDirPath
                 self.__equivalentKicadVersion = ""
                 self.__templateDirPath = None
@@ -66,7 +68,7 @@ class KiApi:
         def genLib(self):
                 symEditLibs = []
                 for i in range(self.__prj.numOfLibs):
-                        symEditLib = KiSymEditLib(self.__logFolderPath)
+                        symEditLib = KiSymEditLib(self.__logFolderPath, self.showPinNumbers)
                         symEditLib.parse(self.__prj.name, self.__prj.libs[i])
                         symEditLibs.append(symEditLib)
 
@@ -80,7 +82,7 @@ class KiApi:
                 symEditLibs = self.genLib()
 
                 absPath = os.path.join(self.__templateDirPath, "f135d3a.kicad_sch")
-                schEditPrj = KiSchEditPrj(self.__logFolderPath)
+                schEditPrj = KiSchEditPrj(self.__logFolderPath, self.showPinNumbers)
                 retVal = schEditPrj.parse(self.__prj.name, symEditLibs, pageWidth, pageHeight)
                 if retVal == False:
                         print("WARN: Project(" + self.__prj.name + ") did not fit into page.")

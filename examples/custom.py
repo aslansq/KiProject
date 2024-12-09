@@ -66,17 +66,19 @@ countries = {
     }
 }
 
-r = ["#Library", "Symbol", "SymbolDesignator", "PinName", "PinDir", "PinStyle", "Connector"]
+r = ["#Library", "Symbol", "SymbolDesignator", "PinName", "PinNumber", "PinDir", "PinStyle", "Connector"]
 rows = []
 rows.append(r)
 for keyCountry in countries:
         for keyCity in countries[keyCountry]:
+                ordinalNumber = 1
                 for province in countries[keyCountry][keyCity]:
                         r = []
                         r.append(keyCountry) # library
                         r.append(keyCity) # Symbol
                         r.append(keyCity) # SymbolDesignator
                         r.append(province) # PinName
+                        r.append(str(ordinalNumber)) # PinNumber
                         dir = ["output", "input"]
                         dir = dir[randint(0,1)]
                         r.append(dir) #PinDir
@@ -91,6 +93,7 @@ for keyCountry in countries:
                                 r[i] = r[i].replace(" ", "")
                                 r[i] = r[i].replace("-", "")
                         rows.append(r)
+                        ordinalNumber = ordinalNumber + 1
 
 outputRowIdxs = []
 for r in range(len(rows)):
