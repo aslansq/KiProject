@@ -70,7 +70,7 @@
 		)
 		(symbol "{{symEditSym.sym.name}}_1_1"
 {%	for symEditPin in symEditSym.symEditPins %} {# KiSymEditPin type #}
-			(pin {{symEditPin.pin.dir}} {{symEditPin.pin.style}}
+			(pin {{symEditPin.pin.type}} {{symEditPin.pin.style}}
 				(at {{'%.2f' % symEditPin.x}} {{'%.2f' % symEditPin.y}} {{symEditPin.deg}})
 				(length 2.54)
 				(name "{{symEditPin.pin.name}}"

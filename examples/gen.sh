@@ -10,13 +10,6 @@ then
     exit 1
 fi
 
-# clear old files
-rm -rf ./out
-mkdir -p ./out
-# clear old log files
-rm -rf ./log
-mkdir -p ./log
-
 # generate and collect examples
 cd examples
 python custom.py > custom.csv

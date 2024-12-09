@@ -65,8 +65,11 @@ countries = {
         "Okinawa": ["Naha", "Okinawa City"]
     }
 }
-
-r = ["#Library", "Symbol", "SymbolDesignator", "PinName", "PinNumber", "PinDir", "PinStyle", "Connector"]
+pos = {
+        "input"  : "left",
+        "output" : "right"
+}
+r = ["#Library", "Symbol", "SymbolDesignator", "PinName", "PinNumber", "PinPos", "PinType", "PinStyle", "Connector"]
 rows = []
 rows.append(r)
 for keyCountry in countries:
@@ -81,7 +84,8 @@ for keyCountry in countries:
                         r.append(str(ordinalNumber)) # PinNumber
                         dir = ["output", "input"]
                         dir = dir[randint(0,1)]
-                        r.append(dir) #PinDir
+                        r.append(pos[dir])
+                        r.append(dir) #PinType
                         style = ["inverted_clock", "inverted", "line", "clock"]
                         style = style[randint(0,3)]
                         r.append(style) #PinStyle
@@ -97,11 +101,11 @@ for keyCountry in countries:
 
 outputRowIdxs = []
 for r in range(len(rows)):
-        if rows[r][KiConst.csv["pinDir"]] == "output":
+        if rows[r][KiConst.csv["pinType"]] == "output":
                 outputRowIdxs.append(r)
 
 for i in range(1, len(rows)):
-        if rows[i][KiConst.csv["pinDir"]] == "output":
+        if rows[i][KiConst.csv["pinType"]] == "output":
                 continue
 
         numOfConnection = randint(0,1)
@@ -127,7 +131,7 @@ for outRowIdx in outputRowIdxs:
         for j in range(len(rows)):
                 if j == outRowIdx:
                         continue
-                if rows[j][KiConst.csv["pinDir"]] == "output":
+                if rows[j][KiConst.csv["pinType"]] == "output":
                         continue
                 if outNodeName in rows[j][KiConst.csv["nodes"]]:
                         isUsed = True

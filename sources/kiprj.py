@@ -14,16 +14,15 @@ class _KiGlobalConn:
         def __init__(self):
                 self.nodes = []
                 self.numOfNodes = 0
-                self.dir = ""
+                self.type = ""
                 self.name = ""
+                self.pos = ""
         
         def parse(self, pin):
                 self.name = pin[KiConst.csv["sym"]] + "_" + pin[KiConst.csv["pin"]]
                 self.nodes = pin[KiConst.csv["nodes"]].split('-')
-                # remove itself
-                self.dir = pin[KiConst.csv["pinDir"]]
-                if self.dir == "input" and self.name in self.nodes:
-                        self.nodes.remove(self.name)
+                self.type = pin[KiConst.csv["pinType"]]
+                self.pos = pin[KiConst.csv["pinPos"]]
                 self.numOfNodes = len(self.nodes)
 
         def log(self, depth, pos):
@@ -42,14 +41,17 @@ class _KiPin:
                 self.dir = ""
                 # inverted_clock, inverted, line, clock
                 self.style = ""
+                self.type = ""
                 self.conn = _KiGlobalConn()
                 self.number = ""
+                self.pos = ""
         
         def parse(self, pin):
                 self.name = pin[KiConst.csv["pin"]]
-                self.dir = pin[KiConst.csv["pinDir"]]
+                self.type = pin[KiConst.csv["pinType"]]
                 self.style = pin[KiConst.csv["pinStyle"]]
                 self.number = pin[KiConst.csv["pinNumber"]]
+                self.pos = pin[KiConst.csv["pinPos"]]
                 if pin[KiConst.csv["nodes"]] != "":
                         self.conn.parse(pin)
 
@@ -210,6 +212,17 @@ class KiPrj:
                                 return False
 
                 return True
+        
+        def __isPinTypeSupported(self, rowList):
+                for i in range(len(rowList)):
+                        type = rowList[i][KiConst.csv["pinType"]]
+                        if type == "bidirectional" or type == "input" or type == "output":
+                                #supported
+                                continue
+                        print("ERR unsupported pin type(" + type + ")")
+                        print(rowList[i])
+                        return False
+                return True
 
         def __validate(self, rowList):
                 for i in range(len(rowList)):
@@ -234,6 +247,9 @@ class KiPrj:
                         return False
                 
                 if self.__isPinNumbersUniqInSymbol(rowList) == False:
+                        return False
+
+                if self.__isPinTypeSupported(rowList) == False:
                         return False
 
                 return True
