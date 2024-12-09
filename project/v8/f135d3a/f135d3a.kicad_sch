@@ -5,7 +5,7 @@
 	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
 	(paper "User" 999 666)
 	(lib_symbols
-		(symbol "e5ea7ba:a87e18d"
+		(symbol "a87e18d_1"
 			(pin_numbers hide)
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -55,7 +55,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "a87e18d_0_1"
+			(symbol "a87e18d_1_0_1"
 				(rectangle
 					(start 1.27 -2.54)
 					(end 29.718 -4.826)
@@ -68,7 +68,7 @@
 					)
 				)
 			)
-			(symbol "a87e18d_1_1"
+			(symbol "a87e18d_1_1_1"
 				(pin input line
 					(at 0 -3.81 0)
 					(length 2.54)
@@ -80,6 +80,24 @@
 						)
 					)
 					(number ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin bidirectional line
+					(at 2.54 -8.89 0)
+					(length 2.54)
+					(name "BidirectionalTypePin"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -99,6 +117,28 @@
 			(type default)
 		)
 		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+	)
+	(global_label "BidirectionalGlobalLabel"
+		(shape bidirectional)
+		(at 12.7 16.51 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "777187b5-a51d-4f72-9f43-ae070340a0f9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 39.9585 16.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
 	)
 	(global_label "fc9d56b"
 		(shape output)
@@ -145,26 +185,27 @@
 		)
 	)
 	(symbol
+		(lib_name "a87e18d_1")
 		(lib_id "e5ea7ba:a87e18d")
-		(at 0 0 0)
+		(at 8.89 40.64 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
-		(property "Reference" "f151dac1"
-			(at 1.016 1.016 0)
+		(fields_autoplaced yes)
+		(uuid "45ab7ed3-d5d8-44c7-ade4-d71740a6f777")
+		(property "Reference" "f151dac2"
+			(at 24.384 39.37 0)
 			(effects
 				(font
 					(face "Cascadia Mono")
 					(size 1.27 1.27)
 				)
-				(justify left top)
 			)
 		)
 		(property "Value" "~"
-			(at 0 0 0)
+			(at 24.384 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -172,7 +213,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 0 0 0)
+			(at 8.89 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -181,7 +222,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 8.89 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -190,7 +231,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 0)
+			(at 8.89 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -199,12 +240,15 @@
 			)
 		)
 		(pin ""
-			(uuid "f3a877d8-8ddd-4699-874b-2d6146f3f342")
+			(uuid "801687b2-ce68-4dd2-93af-31a808db66df")
+		)
+		(pin "1"
+			(uuid "97c70572-90d5-4e43-ac17-eb81ef7de064")
 		)
 		(instances
 			(project ""
 				(path "/97f17985-da40-43fd-b268-8c96b481a2af"
-					(reference "f151dac1")
+					(reference "f151dac2")
 					(unit 1)
 				)
 			)

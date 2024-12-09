@@ -62,10 +62,11 @@ class KiConst:
                 "desig"    : 2,
                 "pin"      : 3,
                 "pinNumber": 4,
-                "pinDir"   : 5,
-                "pinStyle" : 6,
-                "nodes"    : 7,
-                "count"    : 8
+                "pinPos"   : 5,
+                "pinType"   : 6,
+                "pinStyle" : 7,
+                "nodes"    : 8,
+                "count"    : 9
         }
 
         #  leftToTextWidth
