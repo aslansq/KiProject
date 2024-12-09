@@ -10,11 +10,12 @@ g_args = {
     "logFolderPath" : None,
     "pageWidth" : 1366,
     "pageHeight": 768,
-    "kicadVersion": "v8" # put here latest that should be default
+    "kicadVersion": "v8", # put here latest that should be default,
+    "pinNumbers" : False
 }
 g_argList = sys.argv[1:]
-g_opts = "hl:c:o:t:h:w:k:"
-g_longOpts = ["help", "logFolderPath=", "csvFilePath=", "outFolderPath=", "pageHeight=", "pageWidth=", "kicadVersion="]
+g_opts = "hpl:c:o:t:h:w:k:"
+g_longOpts = ["help", "pinNumbers", "logFolderPath=", "csvFilePath=", "outFolderPath=", "pageHeight=", "pageWidth=", "kicadVersion="]
 g_symEditLibs = []
 g_prj = None
 
@@ -27,6 +28,7 @@ try:
                 if currentArg in ("-h", "--help"):
                         print("Available options\n"
                         " --help          , -h : Displays this help\n"
+                        " --pinNumbers    , -p : Optional. Show pin numbers if this parameter is passed.\n"
                         " --logFolderPath , -l : Mandatory. Where log files are going to be stored.\n"
                         " --csvFilePath   , -c : Mandatory. Csv file path\n"
                         " --outFolderPath , -o : Mandatory. Where generated output files are going to be stored.\n"
@@ -64,6 +66,8 @@ try:
                         g_args["pageHeight"] = int(currentVal)
                 elif currentArg in ("-k", "--kicadVersion"):
                         g_args["kicadVersion"] = currentVal
+                elif currentArg in ("-p", "--pinNumbers"):
+                        g_args["pinNumbers"] = True
 
 except getopt.error as err:
     print("Unrecognized input parameter " + str(err))
@@ -84,6 +88,7 @@ if g_args["logFolderPath"] == None:
 api = KiApi(csvFilePath=g_args["csvFilePath"],
             logFolderPath=g_args["logFolderPath"],
             outFolderPath=g_args["outFolderPath"],
-            kicadVersion=g_args["kicadVersion"])
+            kicadVersion=g_args["kicadVersion"],
+            showPinNumbers=g_args["pinNumbers"])
 
 api.genPrj(g_args["pageHeight"], g_args["pageWidth"])

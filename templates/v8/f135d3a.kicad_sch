@@ -7,7 +7,9 @@
 	(lib_symbols
 {% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
 		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"
+{% 	if showPinNumbers == False %}
 			(pin_numbers hide)
+{%	endif %}
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -82,7 +84,7 @@
 							)
 						)
 					)
-					(number ""
+					(number "{{symEditPin.pin.number}}"
 						(effects
 							(font
 								(size 1.27 1.27)

@@ -187,13 +187,14 @@ class _KiSymEditSym:
                 return s
 
 class KiSymEditLib:
-        def __init__(self, logFolderPath):
+        def __init__(self, logFolderPath, showPinNumbers):
                 self.lib = None # KiLib type
                 # this one does not have any physical items to be placed
                 self.symEditSyms = [] # class _KiSymEditSym type
                 self.outFileName = "" # just for debugging purposes
                 self.projectName = ""
                 self.logFolderPath = logFolderPath
+                self.showPinNumbers = showPinNumbers
 
         def __prepareForAutoLayout(self):
                 for i in range(self.lib.numOfSymbols):
@@ -240,7 +241,8 @@ class KiSymEditLib:
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(symEditSyms = self.symEditSyms,
-                                               lib = self.lib)
+                                               lib = self.lib,
+                                               showPinNumbers=self.showPinNumbers)
                 with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
                         f.write(renderedText)
                 print("Gen: " + str(outFilePath))

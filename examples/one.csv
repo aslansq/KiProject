@@ -1,2 +1,2 @@
-#Library,Symbol,SymbolDesignator,PinName,PinDir,PinStyle,Connector,
-Amplifier,Opamp,Opamp,InvertedInput,input,line,,
+#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinDir,PinStyle,Connector,
+Amplifier,Opamp,Opamp,InvertedInput,1,input,line,,

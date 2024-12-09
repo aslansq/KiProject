@@ -43,11 +43,13 @@ class _KiPin:
                 # inverted_clock, inverted, line, clock
                 self.style = ""
                 self.conn = _KiGlobalConn()
+                self.number = ""
         
         def parse(self, pin):
                 self.name = pin[KiConst.csv["pin"]]
                 self.dir = pin[KiConst.csv["pinDir"]]
                 self.style = pin[KiConst.csv["pinStyle"]]
+                self.number = pin[KiConst.csv["pinNumber"]]
                 if pin[KiConst.csv["nodes"]] != "":
                         self.conn.parse(pin)
 
@@ -180,8 +182,33 @@ class KiPrj:
                         if symName != lastSymName:
                                 lastSymName = symName
                                 if symName in symNames:
+                                        print("ERR symbol name is not consecutive->" + symName)
                                         return False
                                 symNames.append(symName)
+                return True
+        
+        def __isPinNumbersNumeric(self, rowList):
+                for i in range(len(rowList)):
+                        if rowList[i][KiConst.csv["pinNumber"]].isnumeric() == False:
+                                print("ERR pin number is not numeric. "  + str(rowList[i]))
+                                return False
+                return True
+
+        def __isPinNumbersUniqInSymbol(self, rowList):
+                dict = {}
+                for i in range(len(rowList)):
+                        name = rowList[i][KiConst.csv["sym"]]
+                        pinNumber = rowList[i][KiConst.csv["pinNumber"]]
+                        if not name in dict:
+                                dict.update({name : [pinNumber]})
+                        else:
+                                dict[name].append(pinNumber)
+                
+                for key in dict.keys():
+                        if len(dict[key]) != len(set(dict[key])):
+                                print("ERR Pin numbers are not unique in " + str(key))
+                                return False
+
                 return True
 
         def __validate(self, rowList):
@@ -197,10 +224,16 @@ class KiPrj:
                                         print(rowList[i])
                                         return False
 
+                if self.__isPinNumbersNumeric(rowList) == False:
+                        return False
+
                 if self.__isLibsConsecutive(rowList) == False:
                         return False
 
                 if self.__isSymsConsecutive(rowList) == False:
+                        return False
+                
+                if self.__isPinNumbersUniqInSymbol(rowList) == False:
                         return False
 
                 return True
@@ -218,6 +251,7 @@ class KiPrj:
                                         continue
                                 # we dont care about white space or new line
                                 for i in range(len(row)):
+                                        row[i] = str(row[i])
                                         row[i] = row[i].replace(" ", "")
                                         row[i] = row[i].strip()
                                 rowList.append(row)

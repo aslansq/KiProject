@@ -24,16 +24,20 @@ examples=$(find . -type f | grep '.csv')
 cd ..
 
 # if there is specific request do not generate everything
-if [[ ! -z "${req}" ]]
-then
-    examples=${req}
-fi
+mkdir -p ./examples/out/${example%.csv}
+mkdir -p ./examples/log
 
-for example in $examples
-do
-    mkdir -p ./examples/out/${example%.csv}
-    mkdir -p ./examples/log
-    echo python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216
-    python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216
-done
+gen()
+{
+    example=$1
+    customArg=$2
+    echo python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216 $customArg
+    python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216 $customArg
+}
+
+gen custom.csv
+gen in.csv
+gen one.csv
+gen two.csv --pinNumbers
+
 

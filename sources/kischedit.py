@@ -421,7 +421,7 @@ class _KiSchEditModule:
 
 
 class KiSchEditPrj:
-        def __init__(self, logFolderPath):
+        def __init__(self, logFolderPath, showPinNumbers):
                 self.schEditModules = []
                 self.projectName = ""
                 self.numOfSchEditModules = 0
@@ -429,6 +429,7 @@ class KiSchEditPrj:
                 self.pageWidth = 0
                 self.pageHeight = 0
                 self.logFolderPath = logFolderPath
+                self.showPinNumbers = showPinNumbers
 
         def parse(self, projectName, symEditLibs, pageWidth, pageHeight):
                 self.symEditLibs = symEditLibs
@@ -477,6 +478,7 @@ class KiSchEditPrj:
                                                schEditModules = self.schEditModules,
                                                pageWidth=self.pageWidth,
                                                pageHeight=self.pageHeight,
+                                               showPinNumbers=self.showPinNumbers,
                                                loggingEnabled=False)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
@@ -489,7 +491,8 @@ class KiSchEditPrj:
                                                schEditModules = self.schEditModules,
                                                pageWidth=self.pageWidth,
                                                pageHeight=self.pageHeight,
-                                               loggingEnabled=True)
+                                               loggingEnabled=True,
+                                               showPinNumbers=self.showPinNumbers)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
                 print("Gen: " + str(outFilePath))
