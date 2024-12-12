@@ -1,11 +1,13 @@
 import os
 import sys
 
-g_dirPath = os.path.abspath(sys.argv[0])
-g_dirPath = os.path.dirname(g_dirPath)
-g_prjPath = g_dirPath
-sys.path.append(g_prjPath)
-sys.path.append(os.path.join(g_prjPath, "sources"))
+g_homePath = None
+try:
+        g_homePath = os.environ['KI_PROJECT_HOME']
+        scriptsPath = os.path.join(g_homePath, "scripts")
+        sys.path.append(scriptsPath)
+except Exception as e:
+        raise Exception("KI_PROJECT_HOME environment variable is not found")
 
 from kiprj import KiPrj
 from kisymedit import KiSymEditLib
@@ -14,17 +16,60 @@ from kipro import KiPro
 from kiutil import KiUtil
 from kisymlibtable import KiSymLibTable
 from kiprl import KiPrl
+from kiconst import KiConst
 
 g_latestKicadVersion = "v8"
 
+class KiApiItem:
+        numOfAvailPinStyles = KiConst.numOfAvailPinStyles
+        numOfAvailPinTypes  = KiConst.numOfAvailPinTypes
+        numOfAvailPinPoss   = KiConst.numOfAvailPinPoss
+
+        availPinStyles = KiConst.availPinStyles
+        availPinTypes  = KiConst.availPinTypes
+        availPinPoss   = KiConst.availPinPoss
+
+        def getHeader():
+                return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes"
+
+        def __init__(self):
+                self.lib       = ""
+                self.sym       = ""
+                self.desig     = ""
+                self.pin       = ""
+                self.pinNumber = ""
+                self.pinPos    = ""
+                self.pinType   = ""
+                self.pinStyle  = ""
+                self.nodes     = [] # just list of strings
+
+        def toStr(self):
+                s = self.lib       + "," + \
+                    self.sym       + "," + \
+                    self.desig     + "," + \
+                    self.pin       + "," + \
+                    self.pinNumber + "," + \
+                    self.pinPos    + "," + \
+                    self.pinType   + "," + \
+                    self.pinStyle  + ","
+                numOfNodes = len(self.nodes)
+                for i in range(numOfNodes):
+                    s = s + self.nodes[i]
+                    if i != (numOfNodes-1):
+                            s = s + "-"
+                return s
+
 class KiApi:
         def __init__(self,
-                    csvFilePath=None, # mandatory
+                    csvFilePath=None, #  kiApiItems and csvFilePath is mutually exclusive.
+                    kiApiItems=None,  #  only one is mandatory
+                    kiApiItemsName=None, # if kiApiItems given mandatory
                     logFolderPath=None, # mandatory
                     outFolderPath=None, # mandatory
                     kicadVersion=g_latestKicadVersion, # optional, if not given: latest supported used
                     showPinNumbers=False): # optional
                 self.__csvFilePath = None
+                self.__csvStr = None
                 self.__logFolderPath = None
                 self.__outFolderPath = None
                 self.__kicadVersion = kicadVersion
@@ -37,8 +82,7 @@ class KiApi:
                 self.__prj = None
                 # end filled by __parse
 
-
-                if csvFilePath == None:
+                if csvFilePath == None and kiApiItems == None:
                         raise Exception("ERR no input is given to KiApi")
                 
                 if logFolderPath == None:
@@ -46,11 +90,19 @@ class KiApi:
                 
                 if outFolderPath == None:
                         raise Exception("ERR no out folder is given to KiApi")
-                
-                if not os.path.exists(csvFilePath):
-                        raise Exception("ERR csv file(" + str(self.__csvFilePath) + ") not exists.")
+
+                if kiApiItems != None and csvFilePath != None:
+                        raise Exception("ERR KiApi dual input")
+                elif kiApiItems != None and kiApiItemsName == None:
+                        raise Exception("ERR KiApi items name has not given")
+                elif kiApiItems != None:
+                        self.__createCsvStrFromItems(kiApiItems)
+                        self.__kiApiItemsName = kiApiItemsName
                 else:
-                        self.__csvFilePath = csvFilePath
+                        if not os.path.exists(csvFilePath):
+                                raise Exception("ERR csv file(" + str(self.__csvFilePath) + ") not exists.")
+                        else:
+                                self.__csvFilePath = csvFilePath
 
                 if not os.path.exists(logFolderPath):
                         raise Exception("ERR log folder(" + str(self.__logFolderPath) + ") not exist.")
@@ -64,6 +116,12 @@ class KiApi:
 
                 self.__setTemplateDirPath()
                 self.__parse()
+
+        def __createCsvStrFromItems(self, kiApiItems):
+                numOfItems = len(kiApiItems)
+                self.__csvStr = KiApiItem.getHeader() + "\n"
+                for i in range(numOfItems):
+                        self.__csvStr = self.__csvStr + kiApiItems[i].toStr() + "\n"
 
         def genLib(self):
                 symEditLibs = []
@@ -107,7 +165,10 @@ class KiApi:
 
         def __parse(self):
                 self.__prj = KiPrj(self.__logFolderPath)
-                self.__prj.parse(self.__csvFilePath)
+                if self.__csvStr != None:
+                        self.__prj.parseFromStr(self.__kiApiItemsName, self.__csvStr)
+                if self.__csvFilePath != None:
+                        self.__prj.parse(self.__csvFilePath)
                 self.__prj.log()
 
         def __setTemplateDirPath(self):
@@ -117,7 +178,7 @@ class KiApi:
                        s = s + "ERR Kicad version->" + self.__kicadVersion
                        raise Exception(s)
                 else:
-                        absPath = os.path.join(g_prjPath, "templates/" + self.__equivalentKicadVersion)
+                        absPath = os.path.join(g_homePath, "templates/" + self.__equivalentKicadVersion)
                         if not os.path.exists(absPath):
                                 s = "templates does not exist for that version requested " \
                                     + self.__kicadVersion + " equivalent " + self.__equivalentKicadVersion + "\n"
@@ -127,7 +188,7 @@ class KiApi:
 
         def __getEquivalentKicadVersion(self, kicadVersion):
                 equivalentVersion = ""
-                lookupTablePath = os.path.join(g_prjPath, "templates/version_lookup_table.csv")
+                lookupTablePath = os.path.join(g_homePath, "templates/version_lookup_table.csv")
                 try: # file open operation and out of bound in items
                         file = open(lookupTablePath)
                         for line in file:

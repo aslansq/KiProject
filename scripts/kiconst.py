@@ -63,7 +63,7 @@ class KiConst:
                 "pin"      : 3,
                 "pinNumber": 4,
                 "pinPos"   : 5,
-                "pinType"   : 6,
+                "pinType"  : 6,
                 "pinStyle" : 7,
                 "nodes"    : 8,
                 "count"    : 9
@@ -129,3 +129,27 @@ class KiConst:
                 "desigxOffset"    : 1,
                 "desigyOffset"    : 0.2
         }
+
+        availPinStyles = [
+                "line",
+                "clock",
+                "clock_low",
+                "edge_clock_high",
+                "input_low",
+                "inverted",
+                "inverted_clock",
+                "non_logic",
+                "output_low"
+        ]
+
+        availPinTypes = [
+                "bidirectional",
+                "input",
+                "output"
+        ]
+
+        availPinPoss = ["left", "right"]
+
+        numOfAvailPinStyles = len(availPinStyles)
+        numOfAvailPinTypes = len(availPinTypes)
+        numOfAvailPinPoss = len(availPinPoss)

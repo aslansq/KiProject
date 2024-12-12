@@ -8,9 +8,17 @@ from kiconst import KiConst
 from kiutil import KiUtil
 import csv
 import os
+from io import StringIO
 
 # maybe this should not be here but it is easy to gather data here
 class _KiGlobalConn:
+        def reset(self):
+                self.nodes = []
+                self.numOfNodes = 0
+                self.type = ""
+                self.name = ""
+                self.pos = ""
+
         def __init__(self):
                 self.nodes = []
                 self.numOfNodes = 0
@@ -83,6 +91,20 @@ class _KiSymbol:
                         kiPin = _KiPin()
                         kiPin.parse(symbol[i])
                         self.pins.append(kiPin)
+
+                self.__checkConnectorsNReset
+
+        def __checkConnectorsNReset(self):
+                for i in range(self.numOfPins):
+                        for j in range(i+1, self.numOfPins):
+                                if self.pins[i].conn.name != "" and self.pins[i].conn.name == self.pins[j].conn.name:
+                                        print("WARN: " + \
+                                              "pin(" + self.pins[i].name + ") and " + \
+                                              "pin(" + self.pins[j].name + ") " + \
+                                              "has same connector name(" + self.pins[i].conn.name + ") so resetting."
+                                              )
+                                        self.pins[i].conn.reset()
+                                        self.pins[j].conn.reset()
         
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + "SymName: " + self.name + " DesigName" + self.designator + " " + "\n"
@@ -216,12 +238,21 @@ class KiPrj:
         def __isPinTypeSupported(self, rowList):
                 for i in range(len(rowList)):
                         type = rowList[i][KiConst.csv["pinType"]]
-                        if type == "bidirectional" or type == "input" or type == "output":
+                        if type in KiConst.availPinTypes:
                                 #supported
                                 continue
                         print("ERR unsupported pin type(" + type + ")")
                         print(rowList[i])
                         return False
+                return True
+        
+        def __isPinStyleSupported(self, rowList):
+                for i in range(len(rowList)):
+                        style = rowList[i][KiConst.csv["pinStyle"]]
+                        if not style in KiConst.availPinStyles:
+                                print("ERR unsupported pin style(" + style + ")")
+                                print(rowList[i])
+                                return False
                 return True
 
         def __validate(self, rowList):
@@ -252,51 +283,64 @@ class KiPrj:
                 if self.__isPinTypeSupported(rowList) == False:
                         return False
 
+                if self.__isPinStyleSupported(rowList) == False:
+                        return False
+
                 return True
 
+        def parseFromStr(self, name, s):
+                self.name = name
+                f = StringIO(s)
+                csvReader = csv.reader(f)
+                rowList = []
+                for row in csvReader:
+                        # if it is just new line just skip
+                        if len(row) == 0:
+                                continue
+                        if row[0][0] == "#":
+                                continue
+                        # we dont care about white space or new line
+                        for i in range(len(row)):
+                                row[i] = str(row[i])
+                                row[i] = row[i].replace(" ", "")
+                                row[i] = row[i].strip()
+                        rowList.append(row)
+                # if empty just return
+                if len(rowList) == 0:
+                        return
+
+                if self.__validate(rowList) == False:
+                        raise Exception("ERR: input is not valid: ")
+
+                lastLibName = ""
+                lastRowIdx = []
+                # deducing entry and exit boundary of a library in csv file
+                for i in range(len(rowList)):
+                        # creating new library for every different library name found in csv file
+                        if rowList[i][KiConst.csv["lib"]] != lastLibName:
+                                kiLib = _KiLib()
+                                self.libs.append(kiLib)
+                                # storing idx that I found different library name
+                                lastRowIdx.append(i)
+                                lastLibName = rowList[i][KiConst.csv["lib"]]
+                self.numOfLibs = len(self.libs)
+                # for loop wont detect last item library name change so added myself
+                lastRowIdx.append(len(rowList))
+
+                for i in range(self.numOfLibs):
+                        # parsing library with entry and exit boundary
+                        self.libs[i].parse(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
+
         def parse(self, csvFilePath):
-                self.name = str(os.path.basename(csvFilePath)).replace(".csv", "")
+                name = str(os.path.basename(csvFilePath)).replace(".csv", "")
                 with open(csvFilePath, newline='') as csvFile:
-                        csvReader = csv.reader(csvFile)
-                        rowList = []
-                        for row in csvReader:
-                                # if it is just new line just skip
-                                if len(row) == 0:
-                                        continue
-                                if row[0][0] == "#":
-                                        continue
-                                # we dont care about white space or new line
-                                for i in range(len(row)):
-                                        row[i] = str(row[i])
-                                        row[i] = row[i].replace(" ", "")
-                                        row[i] = row[i].strip()
-                                rowList.append(row)
-                        # if empty just return
-                        if len(rowList) == 0:
-                                return
-
-                        if self.__validate(rowList) == False:
-                                raise Exception("ERR: Csv file is not valid: " + str(csvFilePath))
-
-                        lastLibName = ""
-                        lastRowIdx = []
-                        # deducing entry and exit boundary of a library in csv file
-                        for i in range(len(rowList)):
-                                # creating new library for every different library name found in csv file
-                                if rowList[i][KiConst.csv["lib"]] != lastLibName:
-                                        kiLib = _KiLib()
-                                        self.libs.append(kiLib)
-                                        # storing idx that I found different library name
-                                        lastRowIdx.append(i)
-                                        lastLibName = rowList[i][KiConst.csv["lib"]]
-                        self.numOfLibs = len(self.libs)
-                        # for loop wont detect last item library name change so added myself
-                        lastRowIdx.append(len(rowList))
-
-                        for i in range(self.numOfLibs):
-                                # parsing library with entry and exit boundary
-                                self.libs[i].parse(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
-
+                        s = csvFile.read()
+                        try:
+                                self.parseFromStr(name, s)
+                        except Exception as e:
+                                s = str(csvFilePath) + " is not valid.\n"
+                                s = s + str(e) + "\n"
+                                raise Exception(s)
 
         def log(self):
                 depth = 0

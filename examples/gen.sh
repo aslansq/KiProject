@@ -3,34 +3,43 @@ req=$1
 thisDirPath=$(dirname "$thisPath")
 prjDirPath=$thisDirPath/..
 
-cd $prjDirPath
-if [[ $? != 0 ]]
-then
-    echo cd to project directory failed
-    exit 1
-fi
-
-# generate and collect examples
-cd examples
-python custom.py > custom.csv
-examples=$(find . -type f | grep '.csv')
-cd ..
-
-# if there is specific request do not generate everything
-mkdir -p ./examples/out/${example%.csv}
-mkdir -p ./examples/log
-
 gen()
 {
     example=$1
     customArg=$2
-    echo python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216 $customArg
-    python kicli.py --csvFilePath ./examples/$example --outFolderPath ./examples/out/${example%.csv} --logFolderPath ./examples/log --pageWidth 384 --pageHeight 216 $customArg
+    mkdir -p $thisDirPath/out/${example%.csv}
+    mkdir -p $thisDirPath/log
+    cmd="
+python $prjDirPath/kicli.py
+        --csvFilePath $thisDirPath/$example
+        --outFolderPath $thisDirPath/out/${example%.csv}
+        --logFolderPath $thisDirPath/log
+        --pageWidth 384
+        --pageHeight 216
+        $customArg
+    "
+    echo "$cmd"
+
+    python $prjDirPath/kicli.py \
+           --csvFilePath $thisDirPath/$example \
+           --outFolderPath $thisDirPath/out/${example%.csv} \
+           --logFolderPath $thisDirPath/log \
+           --pageWidth 384 \
+           --pageHeight 216 \
+           $customArg
 }
 
-gen custom.csv
-gen in.csv
-gen one.csv
-gen two.csv --pinNumbers
+if [ ! -z "$req" ]
+then
+    gen $req
+else
+    gen in.csv
+    gen one.csv
+    gen two.csv --pinNumbers
 
-
+    echo
+    echo
+    echo Showcase
+    cd $thisDirPath
+    python showcase.py
+fi
