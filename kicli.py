@@ -2,6 +2,11 @@ import csv
 import sys
 import os
 import getopt
+try:
+        home = os.environ['KI_PROJECT_HOME']
+        sys.path.append(home)
+except Exception as e:
+        raise Exception("KI_PROJECT_HOME environment variable is not found")
 from kiapi import KiApi
 
 g_args = {

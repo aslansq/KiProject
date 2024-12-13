@@ -131,7 +131,7 @@ class _KiSchEditWireCont:
                                 self.connWMultipleNodesExist = True
                                 break
 
-        def __prepareInWireMultiNode(self, schEditConn, totalNode):
+        def __prepareLeftWireMultiNode(self, schEditConn, totalNode):
                 #-----------------------------------------------------------
                 #            NodeToConnVerticalWire
                 #            ↓   ↓
@@ -230,9 +230,9 @@ class _KiSchEditWireCont:
                         schEditConn = self.schEditConns[i]
                         multiNode = schEditConn.schEditNumOfNodes > 1
                         if multiNode and self.pos == "right":
-                                raise Exception("ERROR OUTPUT conn container can NOT have multiple nodes")
+                                raise Exception("ERROR right conn container can NOT have multiple nodes")
                         elif schEditConn.schEditNumOfNodes > 1:
-                                self.__prepareInWireMultiNode(schEditConn, totalNode)
+                                self.__prepareLeftWireMultiNode(schEditConn, totalNode)
                         else:
                                 self.__prepareWireSingleNode(schEditConn, totalNode)
                         totalNode = totalNode + schEditConn.schEditNumOfNodes
@@ -312,10 +312,10 @@ class _KiSchEditModule:
                                 # added it modules connectors
                                 self.schEditConns[pin.pos].append(schEditConn)
                                 connIdx[pin.pos] = connIdx[pin.pos] + 1
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         self.numOfSchEditConns[pos] = len(self.schEditConns[pos])
                 
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         if self.numOfSchEditConns[pos] != 0:
                                 self.schEditWireCont[pos] = _KiSchEditWireCont()
                                 self.schEditWireCont[pos].parse(self.schEditConns[pos])
@@ -325,18 +325,18 @@ class _KiSchEditModule:
                         "left" : 0,
                         "right" : 0
                 }
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         for i in range(self.numOfSchEditConns[pos]):
                                 for j in range(self.schEditConns[pos][i].schEditNumOfNodes):
                                         nodeName = self.schEditConns[pos][i].schEditNodes[j].name
                                         if len(nodeName) > maxNodeNameLen[pos]:
                                                 maxNodeNameLen[pos] = len(nodeName)
 
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         for i in range(self.numOfSchEditConns[pos]):
                                 self.schEditConns[pos][i].prepareForLayout(maxNodeNameLen[pos])
                 
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         maxWidth = 0
                         for i in range(self.numOfSchEditConns[pos]):
                                 if self.schEditConns[pos][i].width > maxWidth:
@@ -344,14 +344,14 @@ class _KiSchEditModule:
                         self.width = self.width + maxWidth
 
 
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         if self.numOfSchEditConns[pos] != 0:
                                 self.schEditWireCont[pos].prepareForLayout()
                                 self.width = self.width + self.schEditWireCont[pos].width
                                 
                 self.width = self.width + self.symEditSym.width
 
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         totalHeight = 0
                         for i in range(self.numOfSchEditConns[pos]):
                                 totalHeight = totalHeight + self.schEditConns[pos][i].height
@@ -365,7 +365,7 @@ class _KiSchEditModule:
                         self.height = self.symEditSym.height
 
         def __connectConnToSymbol(self):
-                for pos in ["left", "right"]:
+                for pos in KiConst.availPinPoss:
                         if self.numOfSchEditConns[pos] != 0:
                                 for i in range(self.symEditSym.sym.numOfPins):
                                         symEditPin = self.symEditSym.symEditPins[i]

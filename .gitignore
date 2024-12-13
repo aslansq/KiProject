@@ -1,5 +1,6 @@
 examples/out/
 examples/log/
+showcase/
 __pycache__/
 **.bak
 **backup**

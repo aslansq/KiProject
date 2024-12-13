@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Current File",
+            "name": "KiCli",
             "type": "debugpy",
             "request": "launch",
             "program": "kicli.py",
@@ -13,6 +13,14 @@
             "args": ["--csvFilePath", "./examples/custom.csv",
                      "--outFolderPath", "./out",
                      "--logFolderPath", "./log"]
+        }
+        {
+            "name": "Replace",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "./project/replace.py",
+            "console": "integratedTerminal",
+            "args": ["./project/v8", "./project/dev"]
         }
     ]
 }

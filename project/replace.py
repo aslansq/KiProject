@@ -2,17 +2,23 @@ import os
 import sys
 import glob
 
-g_dirPath = os.path.abspath(sys.argv[0])
-g_dirPath = os.path.dirname(g_dirPath)
-g_prjPath = os.path.join(g_dirPath, "..")
-sys.path.append(g_prjPath)
+try:
+        home = os.environ['KI_PROJECT_HOME']
+        scripts = os.path.join(home, "scripts")
+        sys.path.append(scripts)
+except Exception as e:
+        raise Exception("KI_PROJECT_HOME environment variable is not found")
 
 from kiconst import KiConst
 
-# where replaced files will be stored
-g_devFolderPath = os.path.abspath(os.path.join(g_prjPath, "dev"))
-# where is KiCAD project
-g_origFolderPath = os.path.abspath(os.path.join(g_prjPath, "project"))
+g_devFolderPath = None
+g_origFolderPath = None
+if len(sys.argv) < 3:
+        print("ERR not enough arguments given.")
+        exit(1)
+else:
+        g_origFolderPath = os.path.abspath(sys.argv[1])
+        g_devFolderPath = os.path.abspath(sys.argv[2])
 
 g_origFilePaths = []
 # recursively walk original project
