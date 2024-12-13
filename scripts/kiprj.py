@@ -262,9 +262,9 @@ class KiPrj:
                                 return False
                         # if it has empty elements, not valid
                         # nodes can be empty
-                        for j in range(KiConst.csv["nodes"]):
+                        for j in range(KiConst.csv["pinStyle"]):
                                 if rowList[i][j] == "":
-                                        print("ERR: row in csv file has empty elements")
+                                        print("ERR: row in csv file has empty elements. columnIdx = " + str(j))
                                         print(rowList[i])
                                         return False
 
