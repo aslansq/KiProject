@@ -36,7 +36,7 @@ if [ ! -z "$req" ]
 then
     gen $req
 else
-    gen microchip --pinNumbers
+    gen microchip "--pinNumbers --fullProject"
 
     echo
     echo

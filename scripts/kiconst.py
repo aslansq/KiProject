@@ -21,6 +21,9 @@ class KiConst:
                 "c75eb8b" : "xtemp"
         }
 
+        invertedUniqDict = {v: k for k, v in uniqDict.items()}
+
+        # returns multiples of grid
         def grid(num):
                 return num * 1.27
 
@@ -50,22 +53,27 @@ class KiConst:
                 "pinEndToPinName"         : grid(1)
         }
 
-        invertedUniqDict = {v: k for k, v in uniqDict.items()}
-
-        info = {
+        # constants used in log functions
+        log = {
                 "depthIndentLen" : 4
         }
 
+        # column index in a row in csv file mapping
         csv = {
-                "lib"      : 0,
-                "sym"      : 1,
-                "desig"    : 2,
-                "pin"      : 3,
+                "lib"      : 0, # name of the library
+                "sym"      : 1, # name of the symbol
+                "desig"    : 2, # name of the symbol designator
+                "pin"      : 3, # name of the pin
                 "pinNumber": 4,
-                "pinPos"   : 5,
-                "pinType"  : 6,
-                "pinStyle" : 7,
+                "pinPos"   : 5, # availPinPoss
+                "pinType"  : 6, # availPinTypes
+                "pinStyle" : 7, # availPinStyles
+                # aka global label
+                # if you want to connect multiple global label to pin
+                # use delimeter -
                 "nodes"    : 8,
+                # number of columns
+                # if you put more than this amount it will just get ignored
                 "count"    : 9
         }
 
@@ -94,12 +102,12 @@ class KiConst:
                 "height"           : grid(2),
         }
 
-# container that contains single more global labels called connector.
+# container that contains single or more global labels called connector.
 # a connector is top left aligned.
 #
 # Module
 #---------------------------------------------------------------------------------------------------
-# Layouts =>↓ inConn   ↓ inWire          ↓    symbol                 ↓ outWire         ↓ outConn ↓
+# Layouts =>↓ leftConn ↓ leftWire        ↓    symbol                   ↓rightWire↓ rightConn↓
 #           x              wirexGap
 #           ↓              ↓   ↓
 #         y→|----------|                                                         |----------|
@@ -130,6 +138,7 @@ class KiConst:
                 "desigyOffset"    : 0.2
         }
 
+        # available pin styles
         availPinStyles = [
                 "line",
                 "clock",
@@ -142,12 +151,15 @@ class KiConst:
                 "output_low"
         ]
 
+        # avaliable pin types
         availPinTypes = [
                 "bidirectional",
                 "input",
                 "output"
         ]
 
+        # avaliable pin positions
+        # left or right side of the symbol
         availPinPoss = ["left", "right"]
 
         numOfAvailPinStyles = len(availPinStyles)

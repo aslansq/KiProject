@@ -6,8 +6,8 @@ class KiUtil:
                 s = ""
                 if depth != 0:
                         if depth > 1:
-                                s = s + " " * (depth-1) * KiConst.info["depthIndentLen"]
-                        s = s + str(pos) + ("-" * (KiConst.info["depthIndentLen"]-1)) + "|"
+                                s = s + " " * (depth-1) * KiConst.log["depthIndentLen"]
+                        s = s + str(pos) + ("-" * (KiConst.log["depthIndentLen"]-1)) + "|"
                 else:
                         s = "|"
                 return s
