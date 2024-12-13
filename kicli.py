@@ -16,11 +16,12 @@ g_args = {
     "pageWidth" : 1366,
     "pageHeight": 768,
     "kicadVersion": "v8", # put here latest that should be default,
-    "pinNumbers" : False
+    "pinNumbers" : False,
+    "fullProject" : False
 }
 g_argList = sys.argv[1:]
-g_opts = "hpl:c:o:t:h:w:k:"
-g_longOpts = ["help", "pinNumbers", "logFolderPath=", "csvFilePath=", "outFolderPath=", "pageHeight=", "pageWidth=", "kicadVersion="]
+g_opts = "hpfl:c:o:t:h:w:k:"
+g_longOpts = ["help", "pinNumbers", "fullProject", "logFolderPath=", "csvFilePath=", "outFolderPath=", "pageHeight=", "pageWidth=", "kicadVersion="]
 g_symEditLibs = []
 g_prj = None
 
@@ -34,6 +35,7 @@ try:
                         print("Available options\n"
                         " --help          , -h : Displays this help\n"
                         " --pinNumbers    , -p : Optional. Show pin numbers if this parameter is passed.\n"
+                        " --fullProject   , -f : Optional. Create only library if this parameter is passed.\n"
                         " --logFolderPath , -l : Mandatory. Where log files are going to be stored.\n"
                         " --csvFilePath   , -c : Mandatory. Csv file path\n"
                         " --outFolderPath , -o : Mandatory. Where generated output files are going to be stored.\n"
@@ -73,6 +75,8 @@ try:
                         g_args["kicadVersion"] = currentVal
                 elif currentArg in ("-p", "--pinNumbers"):
                         g_args["pinNumbers"] = True
+                elif currentArg in ("-f", "--fullProject"):
+                        g_args["fullProject"] = True
 
 except getopt.error as err:
     print("Unrecognized input parameter " + str(err))
@@ -96,4 +100,7 @@ api = KiApi(csvFilePath=g_args["csvFilePath"],
             kicadVersion=g_args["kicadVersion"],
             showPinNumbers=g_args["pinNumbers"])
 
-api.genPrj(g_args["pageHeight"], g_args["pageWidth"])
+if g_args["fullProject"]:
+        api.genPrj(g_args["pageHeight"], g_args["pageWidth"])
+else:
+        api.genLib()

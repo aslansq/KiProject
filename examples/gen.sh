@@ -3,16 +3,19 @@ req=$1
 thisDirPath=$(dirname "$thisPath")
 prjDirPath=$thisDirPath/..
 
+rm -rf $thisDirPath/log
+rm -rf $thisDirPath/out
+
 gen()
 {
     example=$1
     customArg=$2
-    mkdir -p $thisDirPath/out/${example%.csv}
+    mkdir -p $thisDirPath/out/$example
     mkdir -p $thisDirPath/log
     cmd="
 python $prjDirPath/kicli.py
-        --csvFilePath $thisDirPath/$example
-        --outFolderPath $thisDirPath/out/${example%.csv}
+        --csvFilePath $thisDirPath/${example}.csv
+        --outFolderPath $thisDirPath/out/${example}
         --logFolderPath $thisDirPath/log
         --pageWidth 384
         --pageHeight 216
@@ -21,8 +24,8 @@ python $prjDirPath/kicli.py
     echo "$cmd"
 
     python $prjDirPath/kicli.py \
-           --csvFilePath $thisDirPath/$example \
-           --outFolderPath $thisDirPath/out/${example%.csv} \
+           --csvFilePath $thisDirPath/${example}.csv \
+           --outFolderPath $thisDirPath/out/${example} \
            --logFolderPath $thisDirPath/log \
            --pageWidth 384 \
            --pageHeight 216 \
@@ -33,9 +36,7 @@ if [ ! -z "$req" ]
 then
     gen $req
 else
-    gen in.csv
-    gen one.csv
-    gen two.csv --pinNumbers
+    gen microchip --pinNumbers
 
     echo
     echo
