@@ -11,7 +11,9 @@ class _KiSymEditPin:
                 # positions
                 self.x = 0
                 self.y = 0
+                # rotation degree
                 self.deg = 0
+                # positional index
                 self.posIdx = 0
                 # storing copy in every pin is not needed but it makes things very easy
                 self.posMaxNameLenAll = {
@@ -26,19 +28,19 @@ class _KiSymEditPin:
                 self.posMaxNameLenAll = posMaxNameLenAll
 
         def autoLayout(self):
-                if self.posIdx == 0:
+                if self.posIdx == 0: # first one
                         self.y = -KiConst.symEdit["firstPinyOffset"]
                 else:
-                        self.y = -KiConst.symEdit["firstPinyOffset"]
+                        self.y = -KiConst.symEdit["firstPinyOffset"] # first pin positions
                         self.y = self.y - (self.posIdx * KiConst.symEdit["heightBetweenPins"])
 
                 # see KiConst.symEdit comment to understand this
                 if self.pin.pos == "right":
                         self.deg = 180
-                        isInPinExist = False
+                        isLeftPinExist = False
                         if self.posMaxNameLenAll["left"] != 0:
-                                isInPinExist = True
-                        if isInPinExist:
+                                isLeftPinExist = True
+                        if isLeftPinExist:
                                 self.x = self.x + KiConst.symEdit["lenPin"] + \
                                          KiConst.symEdit["pinEndToPinName"] + \
                                          (self.posMaxNameLenAll["left"] * KiConst.symEdit["charWidth"]) + \
@@ -70,8 +72,8 @@ class _KiSymEditSym:
                 # just the box
                 self.boxWidth = 0
                 self.boxHeight = 0
-                self.isInPinExist = False
-                self.isOutPinExist = False
+                self.isLeftPinExist = False
+                self.isRightPinExist = False
 
         def parse(self, sym):
                 self.sym = sym
@@ -87,16 +89,16 @@ class _KiSymEditSym:
                 # ----->|                                                             |
                 #       ↑  pinEndToPinName  ↑  maxInNameLen  ↑ spaceBetweenBoxNPinName|
                 #       |-------------------------------------------------------------|
-                self.isInPinExist = False
-                self.isOutPinExist = False
+                self.isLeftPinExist = False
+                self.isRightPinExist = False
                 if posIdx["left"] > 0:
-                        self.isInPinExist = True
+                        self.isLeftPinExist = True
                 if posIdx["right"] > 0:
-                        self.isOutPinExist = True
+                        self.isRightPinExist = True
                 # workaround characters are not monospaced, it is very hard to calculate width of the box.
                 # if output pin exist I just align edge of the box to output pin and recalculate box width
                 # in case there is no output pin, this is going to be used
-                if not self.isOutPinExist:
+                if not self.isRightPinExist:
                         self.boxWidth = KiConst.symEdit["pinEndToPinName"] + \
                                         (posMaxNameLen["left"] * KiConst.symEdit["charWidth"]) + \
                                         KiConst.symEdit["spaceBetweenBoxNPinName"]
@@ -115,11 +117,7 @@ class _KiSymEditSym:
                 self.boxHeight = ((maxPin-1) * KiConst.symEdit["heightBetweenPins"]) + \
                                  (KiConst.symEdit["pinToBoxHeight"] * 2)
 
-        def prepareForAutoLayout(self):
-                posIdx = {
-                        "left"  : 0,
-                        "right" : 0
-                }
+        def __getPosMaxNameLen(self):
                 posMaxNameLen = {
                         "left" : 0,
                         "right": 0
@@ -128,6 +126,14 @@ class _KiSymEditSym:
                         nameLen = len(self.sym.pins[i].name)
                         if nameLen > posMaxNameLen[self.sym.pins[i].pos]:
                                 posMaxNameLen[self.sym.pins[i].pos] = nameLen
+                return posMaxNameLen
+
+        def prepareForAutoLayout(self):
+                posIdx = {
+                        "left"  : 0,
+                        "right" : 0
+                }
+                posMaxNameLen = self.__getPosMaxNameLen()
 
                 for i in range(self.sym.numOfPins):
                         self.symEditPins[i].prepareForAutoLayout(posIdx[self.sym.pins[i].pos],
@@ -144,13 +150,13 @@ class _KiSymEditSym:
                 #    |-------------------|←y1
                 #                        ↑
                 #                        x1
-                if self.isInPinExist:
+                if self.isLeftPinExist:
                         self.x0 = KiConst.symEdit["lenPin"]
                 else:
                         self.x0 = 0
                 self.y0 = -KiConst.symEdit["firstPinyOffset"] + KiConst.symEdit["pinToBoxHeight"]
                 # see workaround comment in __calcBoxWidthHeight to understand why boxWidth is recalculated
-                if self.isOutPinExist:
+                if self.isRightPinExist:
                         for i in range(self.sym.numOfPins):
                                 if self.sym.pins[i].pos == "right":
                                         self.x1 = self.symEditPins[i].x - KiConst.symEdit["lenPin"]
@@ -161,7 +167,7 @@ class _KiSymEditSym:
                 self.y1 = self.y0 - self.boxHeight
 
         def __calcSymbolWidthHeight(self):
-                if self.isOutPinExist:
+                if self.isRightPinExist:
                         self.width = self.x1 + KiConst.symEdit["lenPin"]
                 else:
                         self.width = self.x1

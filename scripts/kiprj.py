@@ -11,7 +11,9 @@ import os
 from io import StringIO
 
 # maybe this should not be here but it is easy to gather data here
+# Data structure of global connector. a connector can contain multiple nodes(aka global labels)
 class _KiGlobalConn:
+        # reset connector to default values
         def reset(self):
                 self.nodes = []
                 self.numOfNodes = 0
@@ -27,6 +29,9 @@ class _KiGlobalConn:
                 self.pos = ""
         
         def parse(self, pin):
+                # so we need to give unique name to connector so we later we can use it to connect to pins
+                # this forbids to have pin with same names to have connectors tho
+                # maybe if needed this should be replaced with unique id to pin
                 self.name = pin[KiConst.csv["sym"]] + "_" + pin[KiConst.csv["pin"]]
                 self.nodes = pin[KiConst.csv["nodes"]].split('-')
                 self.type = pin[KiConst.csv["pinType"]]
@@ -45,11 +50,11 @@ class _KiGlobalConn:
 class _KiPin:
         def __init__(self):
                 self.name = ""
-                # input, output
-                self.dir = ""
-                # inverted_clock, inverted, line, clock
+                # KiConst.availPinStyles
                 self.style = ""
+                # KiConst.availPinTypes
                 self.type = ""
+                # so we choosed to have a connector for each pin but they can be empty
                 self.conn = _KiGlobalConn()
                 self.number = ""
                 self.pos = ""
@@ -64,7 +69,7 @@ class _KiPin:
                         self.conn.parse(pin)
 
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Dir: " + self.dir + " Style: " + self.style + " " + "\n"
+                s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Pos: " + self.pos + " Style: " + self.style + " " + "\n"
                 s = s + self.conn.log(depth + 1, 1) + "\n"
                 return s
 

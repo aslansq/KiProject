@@ -33,14 +33,14 @@ class KiApiItem:
                 return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes"
 
         def __init__(self):
-                self.lib       = ""
-                self.sym       = ""
-                self.desig     = ""
-                self.pin       = ""
+                self.lib       = "" # library name
+                self.sym       = "" # symbol name
+                self.desig     = "" # designator name
+                self.pin       = "" # pin name
                 self.pinNumber = ""
-                self.pinPos    = ""
-                self.pinType   = ""
-                self.pinStyle  = ""
+                self.pinPos    = "" # KiConst.availPinPoss
+                self.pinType   = "" # KiConst.availPinTypes
+                self.pinStyle  = "" # KiConst.availPinStyles
                 self.nodes     = [] # just list of strings
 
         def toStr(self):
@@ -82,40 +82,53 @@ class KiApi:
                 self.__prj = None
                 # end filled by __parse
 
+                self.__validity(csvFilePath,
+                                kiApiItems,
+                                kiApiItemsName,
+                                logFolderPath,
+                                outFolderPath)
+
+                if kiApiItems != None:
+                        self.__createCsvStrFromItems(kiApiItems)
+                        self.__kiApiItemsName = kiApiItemsName
+                else:
+                        self.__csvFilePath = csvFilePath
+
+                self.__logFolderPath = logFolderPath
+                self.__outFolderPath = outFolderPath
+
+                self.__setTemplateDirPath()
+                self.__parse()
+
+        def __validity(self,
+                       csvFilePath,
+                       kiApiItems,
+                       kiApiItemsName,
+                       logFolderPath,
+                       outFolderPath):
+                if kiApiItems != None and csvFilePath != None:
+                        raise Exception("ERR KiApi dual input")
+
                 if csvFilePath == None and kiApiItems == None:
                         raise Exception("ERR no input is given to KiApi")
-                
+
+                if kiApiItems == None and not os.path.exists(csvFilePath):
+                        raise Exception("ERR csv file(" + str(self.__csvFilePath) + ") not exists.")
+
+                if kiApiItems != None and kiApiItemsName == None:
+                        raise Exception("ERR KiApi items name has not given")
+
                 if logFolderPath == None:
                         raise Exception("ERR no log folder is given to KiApi")
                 
                 if outFolderPath == None:
                         raise Exception("ERR no out folder is given to KiApi")
 
-                if kiApiItems != None and csvFilePath != None:
-                        raise Exception("ERR KiApi dual input")
-                elif kiApiItems != None and kiApiItemsName == None:
-                        raise Exception("ERR KiApi items name has not given")
-                elif kiApiItems != None:
-                        self.__createCsvStrFromItems(kiApiItems)
-                        self.__kiApiItemsName = kiApiItemsName
-                else:
-                        if not os.path.exists(csvFilePath):
-                                raise Exception("ERR csv file(" + str(self.__csvFilePath) + ") not exists.")
-                        else:
-                                self.__csvFilePath = csvFilePath
-
                 if not os.path.exists(logFolderPath):
                         raise Exception("ERR log folder(" + str(self.__logFolderPath) + ") not exist.")
-                else:
-                        self.__logFolderPath = logFolderPath
 
                 if not os.path.exists(outFolderPath):
                         raise Exception("ERR out folder(" + str(self.__outFolderPath) + ") not exists.")
-                else:
-                        self.__outFolderPath = outFolderPath
-
-                self.__setTemplateDirPath()
-                self.__parse()
 
         def __createCsvStrFromItems(self, kiApiItems):
                 numOfItems = len(kiApiItems)
