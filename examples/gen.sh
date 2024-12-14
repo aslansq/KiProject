@@ -30,6 +30,26 @@ python $prjDirPath/kicli.py
            --pageWidth 384 \
            --pageHeight 216 \
            $customArg
+    if [ $? != 0 ]
+    then
+        exit 1
+    fi
+}
+
+genPython()
+{
+    example=$1
+    echo
+    echo
+    echo $example
+    cd $thisDirPath
+    mkdir -p out/$example
+    mkdir -p log
+    python $example.py
+    if [ $? != 0 ]
+    then
+        exit 1
+    fi
 }
 
 if [ ! -z "$req" ]
@@ -38,9 +58,7 @@ then
 else
     gen microchip "--pinNumbers --fullProject"
 
-    echo
-    echo
-    echo Showcase
-    cd $thisDirPath
-    python showcase.py
+    genPython showcase
+
+    genPython simple
 fi
