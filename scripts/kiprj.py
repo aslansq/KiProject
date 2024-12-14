@@ -13,30 +13,26 @@ from io import StringIO
 # maybe this should not be here but it is easy to gather data here
 # Data structure of global connector. a connector can contain multiple nodes(aka global labels)
 class _KiGlobalConn:
-        # reset connector to default values
-        def reset(self):
-                self.nodes = []
-                self.numOfNodes = 0
-                self.type = ""
-                self.name = ""
-                self.pos = ""
-
         def __init__(self):
                 self.nodes = []
                 self.numOfNodes = 0
                 self.type = ""
                 self.name = ""
                 self.pos = ""
+                self.idx = 0
+                self.uuid = ""
         
-        def parse(self, pin):
-                # so we need to give unique name to connector so we later we can use it to connect to pins
-                # this forbids to have pin with same names to have connectors tho
-                # maybe if needed this should be replaced with unique id to pin
+        def parse(self, parentUuid, pin, idx):
+                self.idx = idx
                 self.name = pin[KiConst.csv["sym"]] + "_" + pin[KiConst.csv["pin"]]
                 self.nodes = pin[KiConst.csv["nodes"]].split('-')
                 self.type = pin[KiConst.csv["pinType"]]
                 self.pos = pin[KiConst.csv["pinPos"]]
                 self.numOfNodes = len(self.nodes)
+                self.uuid = KiUtil.getUuid("_KiGlobalConn" +
+                                           parentUuid +
+                                           self.name +
+                                           str(self.idx))
 
         def log(self, depth, pos):
                 if self.numOfNodes == 0:
@@ -58,15 +54,22 @@ class _KiPin:
                 self.conn = _KiGlobalConn()
                 self.number = ""
                 self.pos = ""
+                self.idx = 0
+                self.uuid = ""
         
-        def parse(self, pin):
+        def parse(self, parentUuid, pin, idx):
+                self.idx = idx
                 self.name = pin[KiConst.csv["pin"]]
                 self.type = pin[KiConst.csv["pinType"]]
                 self.style = pin[KiConst.csv["pinStyle"]]
                 self.number = pin[KiConst.csv["pinNumber"]]
                 self.pos = pin[KiConst.csv["pinPos"]]
+                self.uuid = KiUtil.getUuid("_KiPin" +
+                                           parentUuid +
+                                           self.name +
+                                           str(self.idx))
                 if pin[KiConst.csv["nodes"]] != "":
-                        self.conn.parse(pin)
+                        self.conn.parse(self.uuid, pin, self.idx)
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Pos: " + self.pos + " Style: " + self.style + " " + "\n"
@@ -80,37 +83,31 @@ class _KiSymbol:
                 self.designator = ""
                 self.numOfPins = 0
                 self.pins = [] # class _KiLib.Pin type
+                self.idx = 0
+                self.uuid = ""
 
-        def parse(self, symbol):
+        def parse(self, parentUuid, symbol, idx):
                 # if empty just return
                 if len(symbol) == 0:
                         return
+                self.idx = idx
                 # at this point every item in should have same symbol name
                 self.name = symbol[0][KiConst.csv["sym"]]
                 self.designator = symbol[0][KiConst.csv["desig"]]
                 # number of pins is just number of items
                 self.numOfPins = len(symbol)
 
+                self.uuid = KiUtil.getUuid("_KiSymbol" +
+                                           parentUuid +
+                                           self.name +
+                                           str(self.idx))
+
                 for i in range(self.numOfPins):
                         # create a pin and parse it
                         kiPin = _KiPin()
-                        kiPin.parse(symbol[i])
+                        kiPin.parse(self.uuid, symbol[i], i)
                         self.pins.append(kiPin)
 
-                self.__checkConnectorsNReset
-
-        def __checkConnectorsNReset(self):
-                for i in range(self.numOfPins):
-                        for j in range(i+1, self.numOfPins):
-                                if self.pins[i].conn.name != "" and self.pins[i].conn.name == self.pins[j].conn.name:
-                                        print("WARN: " + \
-                                              "pin(" + self.pins[i].name + ") and " + \
-                                              "pin(" + self.pins[j].name + ") " + \
-                                              "has same connector name(" + self.pins[i].conn.name + ") so resetting."
-                                              )
-                                        self.pins[i].conn.reset()
-                                        self.pins[j].conn.reset()
-        
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + "SymName: " + self.name + " DesigName" + self.designator + " " + "\n"
                 for i in range(self.numOfPins):
@@ -123,16 +120,14 @@ class _KiLib:
                 self.name = ""
                 self.numOfSymbols = 0
                 self.symbols = [] # class Symbol type
+                self.idx = 0
+                self.uuid = ""
 
-        def parse(self, lib):
+        def parse(self, parentUuid, lib, idx):
                 # if empty library just return
                 if len(lib) == 0:
                         return
-
-                if len(lib[0]) < KiConst.csv["count"]:
-                        s = "invalid number of columns(" + str(len(lib[0])) +") in csv\n"
-                        s = s + str(lib)
-                        raise Exception(s)
+                self.idx = idx
                 self.name = lib[0][KiConst.csv["lib"]]
 
                 lastSymbolName = ""
@@ -150,9 +145,13 @@ class _KiLib:
                 # for loop wont detect last item symbol name change so added myself
                 lastLibIdx.append(len(lib))
 
+                self.uuid = KiUtil.getUuid("_KiLib" +
+                                           parentUuid +
+                                           self.name +
+                                           str(self.idx))
                 for i in range(self.numOfSymbols):
                         # parsing symbols with entry and exist boundary
-                        self.symbols[i].parse(lib[lastLibIdx[i] : lastLibIdx[i+1]])
+                        self.symbols[i].parse(self.uuid, lib[lastLibIdx[i] : lastLibIdx[i+1]], i)
 
         def log(self, depth, pos):
                 s = KiUtil.getLogDepthStr(depth, pos) + "LibName: " + self.name + " " + "\n"
@@ -166,6 +165,7 @@ class KiPrj:
                 self.numOfLibs = 0
                 self.libs = [] # class _KiLib type
                 self.logFolderPath = logFolderPath
+                self.uuid = ""
 
         def __isLibsConsecutive(self, rowList):
                 libNames = []
@@ -175,9 +175,8 @@ class KiPrj:
                         if libName != lastLibName:
                                 lastLibName = libName
                                 if libName in libNames:
-                                        return False
+                                        raise Exception("Lib(" + libName + ") is not consecutive")
                                 libNames.append(libName)
-                return True
 
         def __isSymNamesUniq(self, rowList):
                 # purposes of this function not to have same symbol name in different libraries
@@ -197,12 +196,10 @@ class KiPrj:
                         for i in range(len(symNames)):
                                 for j in range(i, len(symNames)):
                                         if symNames[i] == symNames[j]:
-                                                print("ERR: symbol name is not uniq->" + symNames[i])
-                return isUniq
+                                                raise Exception("ERR: symbol name is not uniq->" + symNames[i])
 
         def __isSymsConsecutive(self, rowList):
-                if self.__isSymNamesUniq(rowList) == False:
-                        return False
+                self.__isSymNamesUniq(rowList)
 
                 symNames = []
                 lastSymName = ""
@@ -211,17 +208,13 @@ class KiPrj:
                         if symName != lastSymName:
                                 lastSymName = symName
                                 if symName in symNames:
-                                        print("ERR symbol name is not consecutive->" + symName)
-                                        return False
+                                        raise Exception("ERR symbol name is not consecutive->" + symName)
                                 symNames.append(symName)
-                return True
-        
+
         def __isPinNumbersNumeric(self, rowList):
                 for i in range(len(rowList)):
                         if rowList[i][KiConst.csv["pinNumber"]].isnumeric() == False:
-                                print("ERR pin number is not numeric. "  + str(rowList[i]))
-                                return False
-                return True
+                                raise Exception("ERR pin number is not numeric. "  + str(rowList[i]))
 
         def __isPinNumbersUniqInSymbol(self, rowList):
                 dict = {}
@@ -235,30 +228,25 @@ class KiPrj:
                 
                 for key in dict.keys():
                         if len(dict[key]) != len(set(dict[key])):
-                                print("ERR Pin numbers are not unique in " + str(key))
-                                return False
+                                raise Exception("ERR Pin numbers are not unique in " + str(key))
 
-                return True
-        
         def __isPinTypeSupported(self, rowList):
                 for i in range(len(rowList)):
                         type = rowList[i][KiConst.csv["pinType"]]
                         if type in KiConst.availPinTypes:
                                 #supported
                                 continue
-                        print("ERR unsupported pin type(" + type + ")")
-                        print(rowList[i])
-                        return False
-                return True
+                        s = "ERR unsupported pin type(" + type + ")\n"
+                        s = s + str(rowList[i])
+                        raise Exception(s)
         
         def __isPinStyleSupported(self, rowList):
                 for i in range(len(rowList)):
                         style = rowList[i][KiConst.csv["pinStyle"]]
                         if not style in KiConst.availPinStyles:
-                                print("ERR unsupported pin style(" + style + ")")
-                                print(rowList[i])
-                                return False
-                return True
+                                s = "ERR unsupported pin style(" + style + ")\n"
+                                s = s + str(rowList[i])
+                                raise Exception(s)
 
         def __validate(self, rowList):
                 for i in range(len(rowList)):
@@ -269,32 +257,23 @@ class KiPrj:
                         # nodes can be empty
                         for j in range(KiConst.csv["pinStyle"]):
                                 if rowList[i][j] == "":
-                                        print("ERR: row in csv file has empty elements. columnIdx = " + str(j))
-                                        print(rowList[i])
-                                        return False
+                                        s = "ERR: row in csv file has empty elements. columnIdx = " + str(j) + "\n"
+                                        s = s + str(rowList[i])
+                                        raise Exception(s)
 
-                if self.__isPinNumbersNumeric(rowList) == False:
-                        return False
+                self.__isPinNumbersNumeric(rowList)
 
-                if self.__isLibsConsecutive(rowList) == False:
-                        return False
+                self.__isLibsConsecutive(rowList)
 
-                if self.__isSymsConsecutive(rowList) == False:
-                        return False
+                self.__isSymsConsecutive(rowList)
                 
-                if self.__isPinNumbersUniqInSymbol(rowList) == False:
-                        return False
+                self.__isPinNumbersUniqInSymbol(rowList)
 
-                if self.__isPinTypeSupported(rowList) == False:
-                        return False
+                self.__isPinTypeSupported(rowList)
 
-                if self.__isPinStyleSupported(rowList) == False:
-                        return False
+                self.__isPinStyleSupported(rowList)
 
-                return True
-
-        def parseFromStr(self, name, s):
-                self.name = name
+        def __getRowList(self, s):
                 f = StringIO(s)
                 csvReader = csv.reader(f)
                 rowList = []
@@ -310,12 +289,16 @@ class KiPrj:
                                 row[i] = row[i].replace(" ", "")
                                 row[i] = row[i].strip()
                         rowList.append(row)
+                return rowList
+
+        def parseFromStr(self, name, s):
+                self.name = name
+                rowList = self.__getRowList(s)
                 # if empty just return
                 if len(rowList) == 0:
                         return
 
-                if self.__validate(rowList) == False:
-                        raise Exception("ERR: input is not valid: ")
+                self.__validate(rowList)
 
                 lastLibName = ""
                 lastRowIdx = []
@@ -332,9 +315,10 @@ class KiPrj:
                 # for loop wont detect last item library name change so added myself
                 lastRowIdx.append(len(rowList))
 
+                self.uuid = KiUtil.getUuid("KiPrj" + self.name)
                 for i in range(self.numOfLibs):
                         # parsing library with entry and exit boundary
-                        self.libs[i].parse(rowList[lastRowIdx[i] : lastRowIdx[i+1]])
+                        self.libs[i].parse(self.uuid, rowList[lastRowIdx[i] : lastRowIdx[i+1]], i)
 
         def parse(self, csvFilePath):
                 name = str(os.path.basename(csvFilePath)).replace(".csv", "")

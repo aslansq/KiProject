@@ -1,6 +1,7 @@
 import os
 import jinja2
 from kiconst import KiConst
+from kiutil import KiUtil
 
 class KiSymLibTable:
         def __init__(self, prj):
@@ -20,6 +21,7 @@ class KiSymLibTable:
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(libNames=self.libNames)
+                renderedText = KiUtil.removeEmptyLines(renderedText)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
-                print("Gen: " + str(outFilePath))
+                return [outFilePath]

@@ -167,7 +167,11 @@ api = KiApi(csvFilePath=g_args["csvFilePath"],
             kicadVersion=g_args["kicadVersion"],
             showPinNumbers=g_args["pinNumbers"])
 
+g_genFiles = None
 if g_args["fullProject"]:
-        api.genPrj(g_args["pageHeight"], g_args["pageWidth"])
+        g_genFiles = api.genPrj(g_args["pageHeight"], g_args["pageWidth"])
 else:
-        api.genLib()
+        g_genFiles = api.genLib()
+
+for i in range(len(g_genFiles)):
+        print("Gen: " + str(g_genFiles[i]))

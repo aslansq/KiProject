@@ -2,10 +2,10 @@
 	(version 20231120)
 	(generator "eeschema")
 	(generator_version "8.0")
-	(uuid "97f17985-da40-43fd-b268-8c96b481a2af")
+	(uuid "{{uuid}}")
 	(paper "User" {{pageWidth}} {{pageHeight}})
 	(lib_symbols
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
 		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"
 {% 	if showPinNumbers == False %}
 			(pin_numbers hide)
@@ -72,7 +72,7 @@
 				)
 			)
 			(symbol "{{schEditModule.symEditSym.sym.name}}_1_1"
-	{%	for symEditPin in schEditModule.symEditSym.symEditPins %} {# KiSymEditPin type #}
+{%		for symEditPin in schEditModule.symEditSym.symEditPins %}{# KiSymEditPin type #}
 				(pin {{symEditPin.pin.type}} {{symEditPin.pin.style}}
 					(at {{'%.2f' % symEditPin.x}} {{'%.2f' % symEditPin.y}} {{'%.2f' % symEditPin.deg}})
 					(length 2.54)
@@ -92,12 +92,12 @@
 						)
 					)
 				)
-	{% 	endfor %} {# symEditPins #}
+{%	 	endfor %}{# symEditPins #}
 			)
 		)
 {% endfor %}{# schEditModules #}
 	)
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
 {% 		if not schEditModule.numOfSchEditConns["left"] == 0 %}
 {% 			for schEditWire in schEditModule.schEditWireCont["left"].wires %}
 {% 				if loggingEnabled == True %}
@@ -111,12 +111,12 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+		(uuid "{{schEditWire.uuid}}")
 	)
 {% 			endfor %}{# schEditWire #}
-{% 		endif %} {# numOfSchEditConns #}
+{% 		endif %}{# numOfSchEditConns #}
 {% endfor %}{# schEditModules #}
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
 {% 		if not schEditModule.numOfSchEditConns["right"] == 0 %}
 {% 			for schEditWire in schEditModule.schEditWireCont["right"].wires %}
 {% 				if loggingEnabled == True %}
@@ -130,12 +130,12 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+		(uuid "{{schEditWire.uuid}}")
 	)
 {% 			endfor %}{# schEditWire #}
-{% 		endif %} {# numOfSchEditConns #}
+{% 		endif %}{# numOfSchEditConns #}
 {% endfor %}{# schEditModules #}
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
 {% 			for schEditWire in schEditModule.finalWires %}
 {% 				if loggingEnabled == True %}
 	{{schEditWire.name}}
@@ -148,13 +148,13 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a7773376-10ee-4786-8463-4422c839aa4d")
+		(uuid "{{schEditWire.uuid}}")
 	)
 {% 			endfor %}{# schEditWire #}
 {% endfor %}{# schEditModules #}
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
-{% 		for schEditConn in schEditModule.schEditConns["left"] %} {# _KiSchEditConn type #}
-{% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
+{% 		for schEditConn in schEditModule.schEditConns["left"] %}{# _KiSchEditConn type #}
+{% 			for schEditNode in schEditConn.schEditNodes %}{# _KiSchEditNode type #}
 	(global_label "{{schEditNode.name}}"
 		(shape {{schEditNode.type}})
 		(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 180)
@@ -165,7 +165,7 @@
 			)
 			(justify right)
 		)
-		(uuid "eace0e79-bf5f-4d6b-8d9e-e27e74d57971")
+		(uuid "{{schEditNode.uuid}}")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 0)
 			(effects
@@ -180,9 +180,9 @@
 {% 			endfor %}{# schEditNodes #}
 {% 		endfor %}{# schEditConns #}
 {% endfor %}{# schEditModules #}
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
-{% 		for schEditConn in schEditModule.schEditConns["right"] %} {# _KiSchEditConn type #}
-{% 			for schEditNode in schEditConn.schEditNodes %} {# _KiSchEditNode type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
+{% 		for schEditConn in schEditModule.schEditConns["right"] %}{# _KiSchEditConn type #}
+{% 			for schEditNode in schEditConn.schEditNodes %}{# _KiSchEditNode type #}
 	(global_label "{{schEditNode.name}}"
 		(shape {{schEditNode.type}})
 		(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 0)
@@ -193,7 +193,7 @@
 			)
 			(justify left)
 		)
-		(uuid "dc68fdf5-7047-4402-b18e-91772ec7c508")
+		(uuid "{{schEditNode.uuid}}")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at {{'%.2f' % schEditNode.x}} {{'%.2f' % schEditNode.y}} 0)
 			(effects
@@ -208,7 +208,7 @@
 {% 			endfor %}{# schEditNodes #}
 {% 		endfor %}{# schEditConns #}
 {% endfor %}{# schEditModules #}
-{% for schEditModule in schEditModules %} {# _KiSchEditModule type #}
+{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
 	(symbol
 		(lib_id "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}")
 		(at {{'%.2f' % schEditModule.symx}} {{'%.2f' % schEditModule.symy}} 0)
@@ -218,8 +218,8 @@
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "f7a21d2d-bc83-4330-9191-030dee8e65c9")
-		(property "Reference" "{{schEditModule.symEditSym.sym.designator}}1"
+		(uuid "{{schEditModule.uuid}}")
+		(property "Reference" "{{schEditModule.symEditSym.sym.designator}}"
 			(at {{'%.2f' % schEditModule.desigx}} {{'%.2f' % schEditModule.desigy}} 0)
 			(effects
 				(font
@@ -264,13 +264,15 @@
 				(hide yes)
 			)
 		)
-		(pin ""
-			(uuid "f3a877d8-8ddd-4699-874b-2d6146f3f342")
+{%		for symEditPin in schEditModule.symEditSym.symEditPins %}{# KiSymEditPin type #}
+		(pin "{{symEditPin.pin.name}}"
+			(uuid "{{symEditPin.pin.uuid}}")
 		)
+{%		endfor %}
 		(instances
 			(project ""
-				(path "/97f17985-da40-43fd-b268-8c96b481a2af"
-					(reference "{{schEditModule.symEditSym.sym.designator}}1")
+				(path "/{{uuid}}"
+					(reference "{{schEditModule.symEditSym.sym.designator}}")
 					(unit 1)
 				)
 			)

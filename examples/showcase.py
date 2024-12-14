@@ -19,14 +19,14 @@ def createItem(symIdx, style, type, pos, pinNum):
         item.lib = g_lib
         item.sym = g_syms[symIdx]
         item.desig = g_syms[symIdx]
-        item.pin = type + "_" + style + "_" + str(pinNum)
+        item.pin = type + "_" + style
         item.pinNumber = str(pinNum)
         item.pinPos = pos
         item.pinType = type
         item.pinStyle = style
         if pos == "left":
                 for i in range(symIdx):
-                        item.nodes.append(item.pin + "_" + str(i))
+                        item.nodes.append(item.pin)
         elif (symIdx % 2) == 0:
                 item.nodes.append(item.pin)
 
@@ -52,15 +52,15 @@ for i in range(g_numSyms):
                                 g_apiItemCont.add(item)
                                 g_pinNum = g_pinNum + 1
 
-g_outPath = os.path.abspath("out")
-g_prjPath = os.path.join(g_outPath, "showcase")
-g_logFolderPath = os.path.abspath("log")
-
 g_kiApi = KiApi(
         apiItemCont=g_apiItemCont,
-        logFolderPath=g_logFolderPath,
-        outFolderPath=g_prjPath,
+        logFolderPath="log",
+        outFolderPath="out/showcase",
         showPinNumbers=False
 )
 
-g_kiApi.genPrj(216,384)
+genPaths = g_kiApi.genPrj(216,384)
+
+# print generated files
+for g in genPaths:
+        print("Gen: " + str(g))
