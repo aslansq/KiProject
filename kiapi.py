@@ -1,5 +1,6 @@
 import os
 import sys
+import copy
 
 g_homePath = None
 try:
@@ -21,17 +22,6 @@ from kiconst import KiConst
 g_latestKicadVersion = "v8"
 
 class KiApiItem:
-        numOfAvailPinStyles = KiConst.numOfAvailPinStyles
-        numOfAvailPinTypes  = KiConst.numOfAvailPinTypes
-        numOfAvailPinPoss   = KiConst.numOfAvailPinPoss
-
-        availPinStyles = KiConst.availPinStyles
-        availPinTypes  = KiConst.availPinTypes
-        availPinPoss   = KiConst.availPinPoss
-
-        def getHeader():
-                return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes"
-
         def __init__(self):
                 self.lib       = "" # library name
                 self.sym       = "" # symbol name
@@ -43,7 +33,7 @@ class KiApiItem:
                 self.pinStyle  = "" # KiConst.availPinStyles
                 self.nodes     = [] # just list of strings
 
-        def toStr(self):
+        def _toStr(self):
                 s = self.lib       + "," + \
                     self.sym       + "," + \
                     self.desig     + "," + \
@@ -59,17 +49,75 @@ class KiApiItem:
                             s = s + "-"
                 return s
 
+        def _validity(self, apiContName):
+                init = apiContName + "->KiApiItem invalid config:\n"
+
+                s = init
+
+                if self.lib == "":
+                        s = s + "lib\n"
+                if self.sym == "":
+                        s = s + "sym\n"
+                if self.desig == "":
+                        s = s + "desig\n"
+                if self.pin == "":
+                        s = s + "pin\n"
+                if self.pinNumber == "":
+                        s = s + "pinNumber\n"
+
+                if not self.pinPos in KiConst.availPinPoss:
+                        s = s + "pinPos(" + self.pinPos + ")\n"
+                if not self.pinType in KiConst.availPinTypes:
+                        s = s + "pinType(" + self.pinType + ")\n"
+                if not self.pinStyle in KiConst.availPinStyles:
+                        s = s + "pinStyle(" + self.pinStyle + ")\n"
+
+                if s != init:
+                        raise Exception(s)
+
+class KiApiItemCont:
+        numOfAvailPinStyles = KiConst.numOfAvailPinStyles
+        numOfAvailPinTypes  = KiConst.numOfAvailPinTypes
+        numOfAvailPinPoss   = KiConst.numOfAvailPinPoss
+
+        availPinStyles = KiConst.availPinStyles
+        availPinTypes  = KiConst.availPinTypes
+        availPinPoss   = KiConst.availPinPoss
+
+        def __init__(self,
+                     autoFill=True):
+                self.name = None
+                self.__apiItems = []
+
+        def add(self, apiItem):
+                self.__apiItems.append(copy.copy(apiItem))
+
+        def _validity(self):
+                if self.name == None:
+                        raise Exception("KiApiCont is not valid")
+                for i in range(len(self.__apiItems)):
+                        self.__apiItems[i]._validity(self.name)
+
+        def _getCsvStr(self):
+                numOfApiItems = len(self.__apiItems)
+                csvStr = KiApiItemCont.__getHeader() + "\n"
+                for i in range(numOfApiItems):
+                        csvStr = csvStr + self.__apiItems[i]._toStr() + "\n"
+                return csvStr
+
+        def __getHeader():
+                return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes"
+
 class KiApi:
         def __init__(self,
                     csvFilePath=None, #  kiApiItems and csvFilePath is mutually exclusive.
-                    kiApiItems=None,  #  only one is mandatory
-                    kiApiItemsName=None, # if kiApiItems given mandatory
+                    apiItemCont=None,  #  only one is mandatory
                     logFolderPath=None, # mandatory
                     outFolderPath=None, # mandatory
                     kicadVersion=g_latestKicadVersion, # optional, if not given: latest supported used
                     showPinNumbers=False): # optional
                 self.__csvFilePath = None
-                self.__csvStr = None
+                self.__apiItemCont = None
                 self.__logFolderPath = None
                 self.__outFolderPath = None
                 self.__kicadVersion = kicadVersion
@@ -83,14 +131,12 @@ class KiApi:
                 # end filled by __parse
 
                 self.__validity(csvFilePath,
-                                kiApiItems,
-                                kiApiItemsName,
+                                apiItemCont,
                                 logFolderPath,
                                 outFolderPath)
 
-                if kiApiItems != None:
-                        self.__createCsvStrFromItems(kiApiItems)
-                        self.__kiApiItemsName = kiApiItemsName
+                if apiItemCont != None:
+                        self.__apiItemCont = apiItemCont
                 else:
                         self.__csvFilePath = csvFilePath
 
@@ -102,21 +148,20 @@ class KiApi:
 
         def __validity(self,
                        csvFilePath,
-                       kiApiItems,
-                       kiApiItemsName,
+                       apiItemCont,
                        logFolderPath,
                        outFolderPath):
-                if kiApiItems != None and csvFilePath != None:
+                if apiItemCont != None and csvFilePath != None:
                         raise Exception("ERR KiApi dual input")
 
-                if csvFilePath == None and kiApiItems == None:
+                if csvFilePath == None and apiItemCont == None:
                         raise Exception("ERR no input is given to KiApi")
 
-                if kiApiItems == None and not os.path.exists(csvFilePath):
+                if apiItemCont == None and not os.path.exists(csvFilePath):
                         raise Exception("ERR csv file(" + str(self.__csvFilePath) + ") not exists.")
 
-                if kiApiItems != None and kiApiItemsName == None:
-                        raise Exception("ERR KiApi items name has not given")
+                if apiItemCont != None:
+                        apiItemCont._validity()
 
                 if logFolderPath == None:
                         raise Exception("ERR no log folder is given to KiApi")
@@ -129,12 +174,6 @@ class KiApi:
 
                 if not os.path.exists(outFolderPath):
                         raise Exception("ERR out folder(" + str(self.__outFolderPath) + ") not exists.")
-
-        def __createCsvStrFromItems(self, kiApiItems):
-                numOfItems = len(kiApiItems)
-                self.__csvStr = KiApiItem.getHeader() + "\n"
-                for i in range(numOfItems):
-                        self.__csvStr = self.__csvStr + kiApiItems[i].toStr() + "\n"
 
         def genLib(self):
                 symEditLibs = []
@@ -178,8 +217,8 @@ class KiApi:
 
         def __parse(self):
                 self.__prj = KiPrj(self.__logFolderPath)
-                if self.__csvStr != None:
-                        self.__prj.parseFromStr(self.__kiApiItemsName, self.__csvStr)
+                if self.__apiItemCont != None:
+                        self.__prj.parseFromStr(self.__apiItemCont.name, self.__apiItemCont._getCsvStr())
                 if self.__csvFilePath != None:
                         self.__prj.parse(self.__csvFilePath)
                 self.__prj.log()
