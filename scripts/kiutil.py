@@ -1,4 +1,5 @@
 from kiconst import KiConst
+import uuid
 
 class KiUtil:
         # used for pretty printing of parsed csv structure
@@ -11,7 +12,7 @@ class KiUtil:
                 else:
                         s = "|"
                 return s
-        
+
         def copyPaste(srcPath, dstPath):
                 with open(srcPath, 'r') as srcFile:
                         with open(dstPath, 'w') as dstFile:
@@ -20,3 +21,14 @@ class KiUtil:
 
         def roundToGrid(num):
                 return KiConst.grid(1) * round(num/KiConst.grid(1))
+
+        def getUuid(s):
+                myUuid = uuid.UUID('{12345678-1234-5678-1234-567812345678}')
+                return str(uuid.uuid3(myUuid, s))
+
+        def removeEmptyLines(s):
+                r = ""
+                for l in s.split("\n"):
+                        if l != "":
+                                r = r + l + "\n"
+                return r

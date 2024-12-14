@@ -18,12 +18,12 @@ class KiPro:
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(projectName=self.projectName)
+                renderedText = KiUtil.removeEmptyLines(renderedText)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
 
-                print("Gen: " + str(outFilePath))
                 srcPath = os.path.dirname(templateFilePath)
                 srcPath = os.path.join(srcPath, "emptySheet.kicad_wks")
                 dstPath = os.path.join(outFolderPath, "emptySheet.kicad_wks")
                 KiUtil.copyPaste(srcPath, dstPath)
-                print("Copy To: " + str(dstPath))
+                return [dstPath, outFilePath]

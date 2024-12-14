@@ -1,6 +1,7 @@
 import os
 import jinja2
 from kiconst import KiConst
+from kiutil import KiUtil
 
 class KiPrl:
         def __init__(self, projectName):
@@ -17,6 +18,7 @@ class KiPrl:
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
                 renderedText = template.render(projectName=self.projectName)
+                renderedText = KiUtil.removeEmptyLines(renderedText)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
-                print("Gen: " + str(outFilePath))
+                return [outFilePath]

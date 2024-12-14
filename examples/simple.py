@@ -26,52 +26,15 @@ apiItem.pinStyle = "line"
 
 apiItemCont.add(apiItem)
 
-apiItem.pin = "Pin2"
-apiItem.pinNumber = "2"
-apiItemCont.add(apiItem)
-
-apiItem.pin = "Pin3"
-apiItem.pinNumber = "3"
-apiItem.pinPos = "right"
-apiItemCont.add(apiItem)
-
-apiItem.pin = "Pin4"
-apiItem.pinNumber = "4"
-apiItemCont.add(apiItem)
-# end of symbol 1
-
-# begin of symbol 2
-apiItem.sym = "SimpleSym2"
-apiItem.desig = "SimpleDesig2"
-apiItem.pin = "Pin1"
-apiItem.pinNumber = "1"
-apiItem.pinPos = "left"
-
-apiItemCont.add(apiItem)
-
-apiItem.pin = "Pin2"
-apiItem.pinNumber = "2"
-apiItemCont.add(apiItem)
-
-apiItem.pin = "Pin3"
-apiItem.pinNumber = "3"
-apiItem.pinPos = "right"
-apiItemCont.add(apiItem)
-
-apiItem.pin = "Pin4"
-apiItem.pinNumber = "4"
-apiItemCont.add(apiItem)
-# end of symbol 2
-
-outPath = os.path.abspath("out")
-prjPath = os.path.join(outPath, "simple")
-logFolderPath = os.path.abspath("log")
-
 g_kiApi = KiApi(
         apiItemCont=apiItemCont,
-        logFolderPath=logFolderPath,
-        outFolderPath=prjPath,
+        logFolderPath="log",
+        outFolderPath="out/simple",
         showPinNumbers=False
 )
 
-g_kiApi.genPrj(216,384)
+genPaths = g_kiApi.genPrj(216,384)
+
+# print generated files
+for g in genPaths:
+        print("Gen: " + str(g))

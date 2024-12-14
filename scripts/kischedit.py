@@ -18,12 +18,17 @@ class _KiSchEditNode:
                 self.name = ""
                 self.idx = 0
                 self.type = ""
+                self.uuid = ""
 
-        def parse(self, pos, name, idx, type):
+        def parse(self, parentUuid, pos, name, idx, type):
                 self.name = name
                 self.pos = pos
                 self.idx = idx
                 self.type = type
+                self.uuid = KiUtil.getUuid("_KiSchEditNode" +
+                                           parentUuid +
+                                           self.name +
+                                           str(self.idx))
 
         def prepareForLayout(self, connWidth):
                 # x and y are offseted to their relatives connectors
@@ -57,18 +62,20 @@ class _KiSchEditConn:
                 self.schEditNodes = [] # _KiSchEditNode
                 self.schEditNumOfNodes = 0
                 self.idx = 0
+                self.uuid = ""
 
         def parse(self, pin, idx):
                 # copy pasting information
                 # just to create new re-presentation
                 self.name = pin.conn.name
+                self.uuid = pin.conn.uuid
                 self.pos = pin.pos
                 nodes = pin.conn.nodes
                 self.schEditNumOfNodes = len(nodes)
                 for i in range(self.schEditNumOfNodes):
                         # create new global labels from pin nodes
                         schEditNode = _KiSchEditNode()
-                        schEditNode.parse(self.pos, nodes[i], i, pin.type)
+                        schEditNode.parse(self.uuid, self.pos, nodes[i], i, pin.type)
                         self.schEditNodes.append(schEditNode)
                 self.idx = idx
 
@@ -97,7 +104,7 @@ class _KiSchEditConn:
 
 # data structure for a wire
 class _KiSchEditWire:
-        def __init__(self, name):
+        def __init__(self, parentUuid, idx, name):
                 # start point x
                 self.x0 = 0
                 # end point x
@@ -111,6 +118,11 @@ class _KiSchEditWire:
                 # orientation
                 self.o = '' # v(vertical) or h(horizontal)
                 self.name = name
+                self.idx = idx
+                self.uuid = KiUtil.getUuid("_KiSchEditWire" +
+                                           parentUuid +
+                                           self.name +
+                                           str(self.idx))
 
         # it takes below parameters below and calculates end points
         # params:
@@ -161,7 +173,7 @@ class _KiSchEditWireCont:
                 self.y = 0
                 self.endPoints = [
                 # {
-                # "connName"
+                # "uuid"
                 # "x"
                 # "y"
                 # }
@@ -169,8 +181,9 @@ class _KiSchEditWireCont:
                 self.numOfEndPoints = 0
                 # connector with multiple global labels exist
                 self.connWMultipleNodesExist = False
+                self.uuid = ""
 
-        def parse(self, schEditConns):
+        def parse(self, parentUuid, schEditConns):
                 self.schEditConns = schEditConns
                 self.numOfSchEditConns = len(self.schEditConns)
                 # so all of nodes in connector should have same pos
@@ -180,6 +193,9 @@ class _KiSchEditWireCont:
                         if self.schEditConns[i].schEditNumOfNodes > 1:
                                 self.connWMultipleNodesExist = True
                                 break
+                self.uuid = KiUtil.getUuid("_KiSchEditWireCont" +
+                                            parentUuid +
+                                            self.pos)
 
         # offseting inside of a connector
         # leftWire/rightWire
@@ -202,7 +218,7 @@ class _KiSchEditWireCont:
                 # Begin NodeToConnVerticalWire
                 for j in range(schEditConn.schEditNumOfNodes):
                         schEditNode = schEditConn.schEditNodes[j]
-                        wire = _KiSchEditWire("NodeToConnVerticalWire_" + schEditNode.name)
+                        wire = _KiSchEditWire(self.uuid, j, "NodeToConnVerticalWire_" + schEditNode.name)
                         x = 0
                         y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
                         (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
@@ -212,7 +228,7 @@ class _KiSchEditWireCont:
                 # End NodeToConnVerticalWire
 
                 # Begin ConnVerticalWire
-                wire = _KiSchEditWire("ConnVerticalWire_"+schEditConn.name)
+                wire = _KiSchEditWire(self.uuid, 0, "ConnVerticalWire_"+schEditConn.name)
                 x = KiConst.schEdit["wirexGap"]
                 y = (schEditConn.idx * KiConst.schEdit["connyGap"]) + \
                 (KiConst.globalLabel["height"] * (schEditConn.schEditNodes[0].idx + totalNode)) + \
@@ -222,14 +238,14 @@ class _KiSchEditWireCont:
                 self.wires.append(wire)
                 # End ConnVerticalWire
 
-                wire = _KiSchEditWire("Endpoint_"+schEditConn.name)
+                wire = _KiSchEditWire(self.uuid, 0, "__prepareLeftWireMultiNode_Endpoint_"+schEditConn.name)
                 y = y + len/2
                 len = KiConst.schEdit["wirexGap"]
                 wire.prepareForLayout(x, y, 'h', len)
                 self.wires.append(wire)
 
                 endPoint = {
-                        "name" : schEditConn.name,
+                        "uuid" : schEditConn.uuid,
                         "x" : x + len,
                         "y" : y
                 }
@@ -265,7 +281,7 @@ class _KiSchEditWireCont:
                     (KiConst.globalLabel["height"] * (schEditNode.idx + totalNode)) + \
                     (KiConst.globalLabel["height"] / 2)
 
-                wire = _KiSchEditWire("Endpoint_" + schEditNode.name)
+                wire = _KiSchEditWire(self.uuid, 0, "__prepareWireSingleNode_Endpoint_" + schEditNode.name)
                 wire.prepareForLayout(x, y, 'h', len)
                 self.wires.append(wire)
 
@@ -273,7 +289,7 @@ class _KiSchEditWireCont:
                         x = x + len
 
                 endPoint = {
-                        "name" : schEditConn.name,
+                        "uuid" : schEditConn.uuid,
                         "x" : x,
                         "y" : y
                 }
@@ -324,6 +340,7 @@ class _KiSchEditModule:
                 self.name = ""
                 self.symEditSym = None
                 self.libName = ""
+                self.uuid = ""
 
                 self.schEditConns = {
                         "left" : [],
@@ -359,6 +376,7 @@ class _KiSchEditModule:
                 self.symEditSym = symEditSym
                 self.name = symEditSym.sym.name
                 self.libName = libName
+                self.uuid = symEditSym.sym.uuid
                 connIdx = {
                         "left" : 0,
                         "right" : 0
@@ -382,7 +400,7 @@ class _KiSchEditModule:
                 for pos in KiConst.availPinPoss:
                         if self.numOfSchEditConns[pos] != 0:
                                 self.schEditWireCont[pos] = _KiSchEditWireCont()
-                                self.schEditWireCont[pos].parse(self.schEditConns[pos])
+                                self.schEditWireCont[pos].parse(self.uuid, self.schEditConns[pos])
 
         def __getMaxNodeNameLen(self):
                 maxNodeNameLen = {
@@ -449,9 +467,9 @@ class _KiSchEditModule:
                                 for j in range(self.schEditWireCont[pos].numOfEndPoints):
                                         endPoint = self.schEditWireCont[pos].endPoints[j]
                                         # nothing to connect if their names dont match
-                                        if endPoint["name"] != symEditPin.pin.conn.name:
+                                        if endPoint["uuid"] != symEditPin.pin.conn.uuid:
                                                 continue
-                                        wire = _KiSchEditWire("Final_" + symEditPin.pin.conn.name)
+                                        wire = _KiSchEditWire(endPoint["uuid"], j, "Final_" + symEditPin.pin.conn.name)
                                         wire.custom(endPoint["x"],
                                                 endPoint["y"],
                                                 symEditPin.x + self.symx,
@@ -525,6 +543,7 @@ class KiSchEditPrj:
                 self.pageHeight = 0
                 self.logFolderPath = logFolderPath
                 self.showPinNumbers = showPinNumbers
+                self.uuid = ""
 
         def __createSchEditModules(self):
                 for i in range(len(self.symEditLibs)):
@@ -535,9 +554,10 @@ class KiSchEditPrj:
                                 self.schEditModules.append(schEditModule)
                 self.numOfSchEditModules = len(self.schEditModules)
 
-        def parse(self, projectName, symEditLibs, pageWidth, pageHeight):
+        def parse(self, prj, symEditLibs, pageWidth, pageHeight):
                 self.symEditLibs = symEditLibs
-                self.projectName = projectName
+                self.projectName = prj.name
+                self.uuid = prj.uuid
                 self.pageHeight = pageHeight
                 self.pageWidth = pageWidth
 
@@ -573,6 +593,22 @@ class KiSchEditPrj:
                         return False
                 return True
 
+        def __validateUuids(renderedText):
+                lines = renderedText.split("\n")
+                uuids = []
+
+                for line in lines:
+                        if not "uuid" in line:
+                                continue
+                        u = line.split("\"")[1]
+                        uuids.append(u)
+
+                uniqUuids = set(uuids)
+                if len(uuids) != len(uniqUuids):
+                        for u in uniqUuids:
+                                uuids.remove(u)
+                        raise Exception("Uuid is not unique->" + str(uuids))
+
         def gen(self, templateFilePath, outFolderPath):
                 # basic jinja environment setup
                 templateFileName = os.path.basename(templateFilePath)
@@ -584,12 +620,15 @@ class KiSchEditPrj:
                 self.outFileName = templateFileName.replace(KiConst.invertedUniqDict["xproject.name"], self.projectName)
 
                 outFilePath = os.path.join(outFolderPath, self.outFileName)
-                renderedText = template.render(symEditLibs=self.symEditLibs,
+                renderedText = template.render(uuid=self.uuid,
+                                               symEditLibs=self.symEditLibs,
                                                schEditModules = self.schEditModules,
                                                pageWidth=self.pageWidth,
                                                pageHeight=self.pageHeight,
                                                showPinNumbers=self.showPinNumbers,
                                                loggingEnabled=False)
+                renderedText = KiUtil.removeEmptyLines(renderedText)
+                KiSchEditPrj.__validateUuids(renderedText)
                 with open(outFilePath, 'w') as f:
                         f.write(renderedText)
 
@@ -597,13 +636,15 @@ class KiSchEditPrj:
                 outFolderPath = os.path.join(self.logFolderPath, self.projectName)
                 if not os.path.exists(outFolderPath):
                         os.makedirs(outFolderPath)
-                outFilePath = os.path.join(outFolderPath, "KiSchEdit_" + self.outFileName)
-                renderedText = template.render(symEditLibs=self.symEditLibs,
+                outLogFilePath = os.path.join(outFolderPath, "KiSchEdit_" + self.outFileName)
+                renderedText = template.render(uuid=self.uuid,
+                                               symEditLibs=self.symEditLibs,
                                                schEditModules = self.schEditModules,
                                                pageWidth=self.pageWidth,
                                                pageHeight=self.pageHeight,
                                                loggingEnabled=True,
                                                showPinNumbers=self.showPinNumbers)
-                with open(outFilePath, 'w') as f:
+                renderedText = KiUtil.removeEmptyLines(renderedText)
+                with open(outLogFilePath, 'w') as f:
                         f.write(renderedText)
-                print("Gen: " + str(outFilePath))
+                return [outFilePath]

@@ -249,7 +249,8 @@ class KiSymEditLib:
                 renderedText = template.render(symEditSyms = self.symEditSyms,
                                                lib = self.lib,
                                                showPinNumbers=self.showPinNumbers)
+                renderedText = KiUtil.removeEmptyLines(renderedText)
                 with open(os.path.join(outFolderPath, outFilePath), 'w') as f:
                         f.write(renderedText)
-                print("Gen: " + str(outFilePath))
                 self.__log()
+                return [outFilePath]

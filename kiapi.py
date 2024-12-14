@@ -134,6 +134,9 @@ class KiApi:
                                 apiItemCont,
                                 logFolderPath,
                                 outFolderPath)
+                
+                logFolderPath = os.path.abspath(logFolderPath)
+                outFolderPath = os.path.abspath(outFolderPath)
 
                 if apiItemCont != None:
                         self.__apiItemCont = apiItemCont
@@ -175,8 +178,9 @@ class KiApi:
                 if not os.path.exists(outFolderPath):
                         raise Exception("ERR out folder(" + str(self.__outFolderPath) + ") not exists.")
 
-        def genLib(self):
+        def __genLib(self):
                 symEditLibs = []
+                genPaths = []
                 for i in range(self.__prj.numOfLibs):
                         symEditLib = KiSymEditLib(self.__logFolderPath, self.showPinNumbers)
                         symEditLib.parse(self.__prj.name, self.__prj.libs[i])
@@ -184,36 +188,44 @@ class KiApi:
 
                 for i in range(len(symEditLibs)):
                         absPath = os.path.join(self.__templateDirPath, "e5ea7ba.kicad_sym")
-                        symEditLibs[i].gen(absPath, self.__outFolderPath)
+                        g = symEditLibs[i].gen(absPath, self.__outFolderPath)
+                        genPaths = genPaths + g
 
-                return symEditLibs
+                return symEditLibs, genPaths
         
+        def genLib(self):
+                symEditLibs, genPaths = self.__genLib()
+                return genPaths
+
         def genPrj(self, pageHeight, pageWidth):
-                symEditLibs = self.genLib()
+                symEditLibs, genPaths = self.__genLib()
 
                 absPath = os.path.join(self.__templateDirPath, "f135d3a.kicad_sch")
                 schEditPrj = KiSchEditPrj(self.__logFolderPath, self.showPinNumbers)
-                retVal = schEditPrj.parse(self.__prj.name, symEditLibs, pageWidth, pageHeight)
-                if retVal == False:
-                        print("WARN: Project(" + self.__prj.name + ") did not fit into page.")
-                schEditPrj.gen(absPath, self.__outFolderPath)
+                schEditPrj.parse(self.__prj, symEditLibs, pageWidth, pageHeight)
+                g = schEditPrj.gen(absPath, self.__outFolderPath)
+                genPaths = genPaths + g
 
                 absPath = os.path.join(self.__templateDirPath, "f135d3a.kicad_pro")
                 pro = KiPro(self.__prj.name)
-                pro.gen(absPath, self.__outFolderPath)
+                g = pro.gen(absPath, self.__outFolderPath)
+                genPaths = genPaths + g
 
                 absPath = os.path.join(self.__templateDirPath, "f135d3a.kicad_prl")
                 pro = KiPrl(self.__prj.name)
-                pro.gen(absPath, self.__outFolderPath)
+                g = pro.gen(absPath, self.__outFolderPath)
+                genPaths = genPaths + g
 
                 absPath = os.path.join(self.__outFolderPath, self.__prj.name + ".kicad_pcb")
                 KiUtil.copyPaste(os.path.join(self.__templateDirPath, "f135d3a.kicad_pcb"),
                                 absPath)
-                print("Copy To: " + str(absPath))
+                genPaths.append(absPath)
 
                 absPath = os.path.join(self.__templateDirPath, "sym-lib-table")
                 g_pro = KiSymLibTable(self.__prj)
-                g_pro.gen(absPath, self.__outFolderPath)
+                g = g_pro.gen(absPath, self.__outFolderPath)
+                genPaths = genPaths + g
+                return genPaths
 
         def __parse(self):
                 self.__prj = KiPrj(self.__logFolderPath)
