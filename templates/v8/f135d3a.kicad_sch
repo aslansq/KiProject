@@ -5,15 +5,16 @@
 	(uuid "{{uuid}}")
 	(paper "User" {{pageWidth}} {{pageHeight}})
 	(lib_symbols
-{% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
-		(symbol "{{schEditModule.libName}}:{{schEditModule.symEditSym.sym.name}}"
-{% 	if showPinNumbers == False %}
+{% for symEditLib in symEditLibs %}{# KiSymEditLib type #}
+{% 		for symEditSym in symEditLib.symEditSyms %}{# _KiSymEditSym type #}
+		(symbol "{{symEditLib.lib.name}}:{{symEditSym.sym.name}}"
+{% 			if showPinNumbers == False %}
 			(pin_numbers hide)
-{%	endif %}
+{%			endif %}
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "{{schEditModule.symEditSym.sym.designator}}"
+			(property "Reference" "{{symEditSym.sym.name}}"
 				(at 0.254 -0.508 0)
 				(effects
 					(font
@@ -58,10 +59,10 @@
 					(hide yes)
 				)
 			)
-			(symbol "{{schEditModule.symEditSym.sym.name}}_0_1"
+			(symbol "{{symEditSym.sym.name}}_0_1"
 				(rectangle
-					(start {{'%.2f' % schEditModule.symEditSym.x0}} {{'%.2f' % schEditModule.symEditSym.y0}})
-					(end {{'%.2f' % schEditModule.symEditSym.x1}} {{'%.2f' % schEditModule.symEditSym.y1}})
+					(start {{'%.2f' % symEditSym.x0}} {{'%.2f' % symEditSym.y0}})
+					(end {{'%.2f' % symEditSym.x1}} {{'%.2f' % symEditSym.y1}})
 					(stroke
 						(width 0)
 						(type default)
@@ -71,8 +72,8 @@
 					)
 				)
 			)
-			(symbol "{{schEditModule.symEditSym.sym.name}}_1_1"
-{%		for symEditPin in schEditModule.symEditSym.symEditPins %}{# KiSymEditPin type #}
+			(symbol "{{symEditSym.sym.name}}_1_1"
+{%			for symEditPin in symEditSym.symEditPins %}{# KiSymEditPin type #}
 				(pin {{symEditPin.pin.type}} {{symEditPin.pin.style}}
 					(at {{'%.2f' % symEditPin.x}} {{'%.2f' % symEditPin.y}} {{'%.2f' % symEditPin.deg}})
 					(length 2.54)
@@ -92,10 +93,11 @@
 						)
 					)
 				)
-{%	 	endfor %}{# symEditPins #}
+{%	 		endfor %}{# symEditPins #}
 			)
 		)
-{% endfor %}{# schEditModules #}
+{% 		endfor %}{# _KiSymEditSym type #}
+{% endfor %}{# KiSymEditLib #}
 	)
 {% for schEditModule in schEditModules %}{# _KiSchEditModule type #}
 {% 		if not schEditModule.numOfSchEditConns["left"] == 0 %}
@@ -265,6 +267,9 @@
 			)
 		)
 {%		for symEditPin in schEditModule.symEditSym.symEditPins %}{# KiSymEditPin type #}
+{% 			if loggingEnabled == True %}
+	{{schEditModule.symEditSym.sym.designator}}
+{% 			endif %}
 		(pin "{{symEditPin.pin.name}}"
 			(uuid "{{symEditPin.pin.uuid}}")
 		)

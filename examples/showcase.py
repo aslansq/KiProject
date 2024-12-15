@@ -3,14 +3,14 @@ import sys
 from kiapi import KiApiItem, KiApi, KiApiItemCont
 
 g_lib  ="MyLib"
-g_syms = ["MyIC1", "MyIC2", "MyIC3"]
+g_symDesigs = ["MyIC1", "MyIC2", "MyIC3"]
 g_csvStr = ""
 
 def createItem(symIdx, style, type, pos, pinNum):
         item = KiApiItem()
         item.lib = g_lib
-        item.sym = g_syms[symIdx]
-        item.desig = g_syms[symIdx]
+        item.sym = "MyIC"
+        item.desig = g_symDesigs[symIdx]
         item.pin = type + "_" + style
         item.pinNumber = str(pinNum)
         item.pinPos = pos
@@ -24,7 +24,7 @@ def createItem(symIdx, style, type, pos, pinNum):
 
         return item
 
-g_numSyms = len(g_syms)
+g_numSyms = len(g_symDesigs)
 
 g_apiItemCont = KiApiItemCont()
 g_apiItemCont.name = "showcase"

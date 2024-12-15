@@ -4,6 +4,7 @@ import os
 from kiconst import KiConst
 from kiutil import KiUtil
 import jinja2
+import copy
 
 class _KiSymEditPin:
         def __init__(self):
@@ -197,17 +198,18 @@ class KiSymEditLib:
                 self.lib = None # KiLib type
                 # this one does not have any physical items to be placed
                 self.symEditSyms = [] # class _KiSymEditSym type
+                self.numOfSymEditSyms = 0
                 self.outFileName = "" # just for debugging purposes
                 self.projectName = ""
                 self.logFolderPath = logFolderPath
                 self.showPinNumbers = showPinNumbers
 
         def __prepareForAutoLayout(self):
-                for i in range(self.lib.numOfSymbols):
+                for i in range(self.numOfSymEditSyms):
                         self.symEditSyms[i].prepareForAutoLayout()
 
         def __autoLayout(self):
-                for i in range(self.lib.numOfSymbols):
+                for i in range(self.numOfSymEditSyms):
                         self.symEditSyms[i].autoLayout()
 
         # KiSymEditLib is suppose to contain data from KiPrj
@@ -215,18 +217,47 @@ class KiSymEditLib:
         def parse(self, projectName, lib):
                 self.projectName = projectName
                 self.lib = lib
+                symbolNames = []
                 for i in range(lib.numOfSymbols):
+                        if lib.symbols[i].name in symbolNames:
+                                continue
                         kiSymEditSym = _KiSymEditSym()
+                        symbolNames.append(lib.symbols[i].name)
                         kiSymEditSym.parse(lib.symbols[i])
                         self.symEditSyms.append(kiSymEditSym)
+                self.numOfSymEditSyms = len(self.symEditSyms)
                 self.__prepareForAutoLayout()
                 self.__autoLayout()
+
+        def getSymEditSymFromDesig(self, symName, symDesig):
+                symEditSym = None
+                for i in range(self.numOfSymEditSyms):
+                        if symName == self.symEditSyms[i].sym.name:
+                                symEditSym = copy.deepcopy(self.symEditSyms[i])
+                                break
+
+                sym = None
+                for i in range(self.lib.numOfSymbols):
+                        tempSym = self.lib.symbols[i]
+                        if tempSym.name == symName and tempSym.designator == symDesig:
+                                sym = copy.deepcopy(tempSym)
+                                break
+
+                if sym == None:
+                        raise Exception("getSymEditSym can not find sym name ("+ symName +") desig("+symDesig+") in prj")
+
+                if symEditSym == None:
+                        raise Exception("getSymEditSym can not find(" + symName + ")")
+                symEditSym.sym = sym
+                for i in range(symEditSym.sym.numOfPins):
+                        symEditSym.symEditPins[i].pin = copy.deepcopy(sym.pins[i])
+                return symEditSym
 
         def __log(self):
                 depth = 0
                 pos = 1
                 s = KiUtil.getLogDepthStr(depth, pos) + "LibName: " + self.lib.name + "\n"
-                for i in range(self.lib.numOfSymbols):
+                for i in range(self.numOfSymEditSyms):
                         s = s + self.symEditSyms[i].log(depth + 1, i + 1)
 
                 absOutFolderPath = os.path.join(self.logFolderPath, self.projectName)
