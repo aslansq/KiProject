@@ -15,7 +15,7 @@ if [ -z $KI_PROJECT_HOME ]
 then
     echoerr ERROR: KI_PROJECT_HOME is not defined.
     echoerr Suggestion:
-    echoerr "echo \"export KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
+    echoerr "echo -e \"\\nexport KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
     ungracefulExit
 else
     echo SUCCESS: found KI_PROJECT_HOME environment variable.
@@ -26,7 +26,7 @@ if [ ! -d $KI_PROJECT_HOME ]
 then
     echoerr ERROR: KI_PROJECT_HOME points to unexisting directory.
     echoerr Suggestion:
-    echoerr "echo \"export KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
+    echoerr "echo -e \"\\nexport KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
     ungracefulExit
 else
     echo SUCCESS: KI_PROJECT_HOME points to existing directory.
@@ -38,6 +38,9 @@ if [ $? != 0 ]
 then
     echoerr ERROR: python does not exist.
     echoerr Suggestion
+    echoerr Windows
+    echoerr Install python from https://www.python.org/downloads/
+    echoerr GNU/Linux
     echoerr "sudo apt update; sudo apt install python"
     ungracefulExit
 else
@@ -49,7 +52,7 @@ if [ $? == 127 ]
 then
     echoerr ERROR: kicli not found.
     echoerr Suggestion
-    echoerr "echo \"export PATH=\\\$KI_PROJECT_HOME:\\\$PATH\" >> ~/.bashrc"
+    echoerr "echo -e \"\\nexport PATH=\\\$KI_PROJECT_HOME:\\\$PATH\" >> ~/.bashrc"
     ungracefulExit
 else
     echo SUCCESS: found kicli.
@@ -66,16 +69,6 @@ else
     echo SUCCESS: kicli has execute permission.
 fi
 
-exitStr=$(kicli --help 2>&1)
-if [ $? != 0 ]
-then
-    echoerr ERROR: unknown error
-    echoerr "$exitStr"
-    ungracefulExit
-else
-    echo SUCCESS: kicli is successfully runned
-fi
-
 pythonModuleCheck()
 {
     # is module exist
@@ -89,12 +82,6 @@ pythonModuleCheck()
     fi
 }
 
-pythonModuleCheck jinja2
-# most likely below module comes by default just checking
-pythonModuleCheck copy
-pythonModuleCheck csv
-pythonModuleCheck uuid
-
 python -  > /dev/null 2>&1 << EOF
 import os
 import sys
@@ -105,11 +92,28 @@ except Exception as e:
         raise Exception("KI_PROJECT_HOME environment variable is not found")
 EOF
 
+pythonModuleCheck jinja2
+# most likely below module comes by default just checking
+pythonModuleCheck copy
+pythonModuleCheck csv
+pythonModuleCheck uuid
+
+exitStr=$(kicli --help 2>&1)
+if [ $? != 0 ]
+then
+    echoerr ERROR: unknown error
+    echoerr "$exitStr"
+    ungracefulExit
+else
+    echo SUCCESS: kicli is successfully runned
+fi
+
+
 if [ $? != 0 ]
 then
     echoerr ERROR: python can not find environment variable KI_PROJECT_HOME
     echoerr Suggestion:
-    echoerr "echo \"export KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
+    echoerr "echo -e \"\\nexport KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
     ungracefulExit
 else
     echo SUCCESS: python found environment variable KI_PROJECT_HOME.
@@ -122,7 +126,10 @@ if [ $? != 0 ]
 then
     echoerr ERROR: python can not find kiapi module
     echoerr Suggestion:
-    echoerr "echo \"export PYTHONPATH=$thisDirPath:\\\$PYTHONPATH\" >> ~/.bashrc"
+    echoerr Windows
+    echoerr add to environment variable PYTHONPATH using gui, $thisDirPath
+    echoerr GNU/Linux
+    echoerr "echo -e \"\\nexport PYTHONPATH=$thisDirPath:\\\$PYTHONPATH\" >> ~/.bashrc"
     ungracefulExit
 else
     echo SUCCESS: python found kiapi module
