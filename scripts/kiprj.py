@@ -255,8 +255,6 @@ class KiPrj:
                                 })
                         else:
                                 dict[name]["pin"].append(pin)
-                for key in dict.keys():
-                        dict[key]["pin"].sort()
 
                 dictKeys = sorted(dict.keys())
                 numOfKeys = len(dictKeys)
