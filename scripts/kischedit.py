@@ -548,7 +548,8 @@ class KiSchEditPrj:
         def __createSchEditModules(self):
                 for i in range(len(self.symEditLibs)):
                         for j in range(self.symEditLibs[i].lib.numOfSymbols):
-                                symEditSym = self.symEditLibs[i].symEditSyms[j]
+                                symEditSym = self.symEditLibs[i].getSymEditSymFromDesig(self.symEditLibs[i].lib.symbols[j].name,
+                                                                                        self.symEditLibs[i].lib.symbols[j].designator)
                                 schEditModule = _KiSchEditModule()
                                 schEditModule.parse(self.symEditLibs[i].lib.name, symEditSym)
                                 self.schEditModules.append(schEditModule)

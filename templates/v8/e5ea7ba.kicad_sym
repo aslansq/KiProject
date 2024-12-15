@@ -10,7 +10,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(property "Reference" "{{symEditSym.sym.designator}}"
+		(property "Reference" "{{symEditSym.sym.name}}"
 			(at 0.254 -0.508 0)
 			(effects
 				(font

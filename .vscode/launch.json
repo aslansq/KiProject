@@ -22,5 +22,12 @@
             "console": "integratedTerminal",
             "args": ["./project/v8", "./project/dev"]
         }
+        {
+            "name": "showcase",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "./examples/showcase.py",
+            "console": "integratedTerminal"
+        }
     ]
 }

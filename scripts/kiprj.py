@@ -72,7 +72,7 @@ class _KiPin:
                         self.conn.parse(self.uuid, pin, self.idx)
 
         def log(self, depth, pos):
-                s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Pos: " + self.pos + " Style: " + self.style + " " + "\n"
+                s = KiUtil.getLogDepthStr(depth, pos) + "PinName: " + self.name + " Pos: " + self.pos + " Style: " + self.style + " uuid: " + self.uuid + "\n"
                 s = s + self.conn.log(depth + 1, 1) + "\n"
                 return s
 
@@ -178,38 +178,16 @@ class KiPrj:
                                         raise Exception("Lib(" + libName + ") is not consecutive")
                                 libNames.append(libName)
 
-        def __isSymNamesUniq(self, rowList):
-                # purposes of this function not to have same symbol name in different libraries
-                libSymNames = []
-                for i in range(len(rowList)):
-                        # ?? because I dont think anyone will put questions marks in their symbol or library names
-                        libSymName = rowList[i][KiConst.csv["lib"]] + "??" + rowList[i][KiConst.csv["sym"]]
-                        if not libSymName in libSymNames:
-                                libSymNames.append(libSymName)
-
-                symNames = []
-                for i in range(len(libSymNames)):
-                        symNames.append(libSymNames[i].split("??")[1])
-
-                isUniq = len(symNames) == len(set(symNames))
-                if isUniq == False:
-                        for i in range(len(symNames)):
-                                for j in range(i, len(symNames)):
-                                        if symNames[i] == symNames[j]:
-                                                raise Exception("ERR: symbol name is not uniq->" + symNames[i])
-
         def __isSymsConsecutive(self, rowList):
-                self.__isSymNamesUniq(rowList)
-
-                symNDesigNames = []
-                lastSymNDesigName = ""
+                names = []
+                lastName = ""
                 for i in range(len(rowList)):
-                        symNDesigName = rowList[i][KiConst.csv["sym"]] + "_" + rowList[i][KiConst.csv["sym"]]
-                        if symNDesigName != lastSymNDesigName:
-                                lastSymNDesigName = symNDesigName
-                                if symNDesigName in symNDesigNames:
-                                        raise Exception("ERR symbol name is not consecutive->" + symNDesigName)
-                                symNDesigNames.append(symNDesigName)
+                        name = rowList[i][KiConst.csv["lib"]] + "_" + rowList[i][KiConst.csv["sym"]] + "_" + rowList[i][KiConst.csv["desig"]]
+                        if name != lastName:
+                                lastName = name
+                                if name in names:
+                                        raise Exception("ERR symbol name is not consecutive->" + name)
+                                names.append(name)
 
         def __isPinNumbersNumeric(self, rowList):
                 for i in range(len(rowList)):
@@ -219,7 +197,7 @@ class KiPrj:
         def __isPinNumbersUniqInSymbol(self, rowList):
                 dict = {}
                 for i in range(len(rowList)):
-                        name = rowList[i][KiConst.csv["sym"]] + "_" + rowList[i][KiConst.csv["desig"]]
+                        name = rowList[i][KiConst.csv["lib"]] + "_" + rowList[i][KiConst.csv["sym"]] + "_" + rowList[i][KiConst.csv["desig"]]
                         pinNumber = rowList[i][KiConst.csv["pinNumber"]]
                         if not name in dict:
                                 dict.update({name : [pinNumber]})
@@ -248,6 +226,50 @@ class KiPrj:
                                 s = s + str(rowList[i])
                                 raise Exception(s)
 
+
+
+        def __isAllInstanceOfSymbolSame(self, rowList):
+                dict = {
+                        #lib_symbol_desig : {
+                                # lib_symbol : name
+                                # pins : []
+                        #}
+                }
+                for i in range(len(rowList)):
+                        name = rowList[i][KiConst.csv["lib"]] + "_" + \
+                               rowList[i][KiConst.csv["sym"]] + "_" + \
+                               rowList[i][KiConst.csv["desig"]]
+                        libSymbol = rowList[i][KiConst.csv["lib"]] + "_" + \
+                                    rowList[i][KiConst.csv["sym"]] + "_"
+                        pin = rowList[i][KiConst.csv["pin"]] + "_" + \
+                              rowList[i][KiConst.csv["pinNumber"]] + "_" + \
+                              rowList[i][KiConst.csv["pinPos"]] + "_" + \
+                              rowList[i][KiConst.csv["pinType"]] + "_" + \
+                              rowList[i][KiConst.csv["pinStyle"]] + "_"
+                        if not name in dict:
+                                dict.update({
+                                        name : {
+                                                "lib_symbol" : libSymbol,
+                                                "pin" : [pin]
+                                        }
+                                })
+                        else:
+                                dict[name]["pin"].append(pin)
+                for key in dict.keys():
+                        dict[key]["pin"].sort()
+
+                dictKeys = sorted(dict.keys())
+                numOfKeys = len(dictKeys)
+                for i in range(numOfKeys):
+                        keyI = dictKeys[i]
+                        for j in range(i+1, numOfKeys):
+                                keyJ = dictKeys[j]
+                                if dict[keyI]["lib_symbol"] == dict[keyJ]["lib_symbol"]:
+                                        if dict[keyI]["pin"] != dict[keyJ]["pin"]:
+                                                s = "ERROR same symbol type has difference between designators\n"
+                                                s = s + keyI + " " + keyJ + "\n"
+                                                raise Exception(s)
+
         def __validate(self, rowList):
                 for i in range(len(rowList)):
                         #at least it should have until nodes
@@ -272,6 +294,8 @@ class KiPrj:
                 self.__isPinTypeSupported(rowList)
 
                 self.__isPinStyleSupported(rowList)
+
+                self.__isAllInstanceOfSymbolSame(rowList)
 
         def __getRowList(self, s):
                 f = StringIO(s)
