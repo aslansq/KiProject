@@ -168,7 +168,7 @@ class KiApi:
                         raise Exception("ERR no input is given to KiApi")
 
                 if apiItemCont == None and not os.path.exists(csvFilePath):
-                        raise Exception("ERR csv file(" + str(self.__csvFilePath) + ") not exists.")
+                        raise Exception("ERR csv file(" + str(csvFilePath) + ") not exists.")
 
                 if apiItemCont != None:
                         apiItemCont._validity()
@@ -180,10 +180,10 @@ class KiApi:
                         raise Exception("ERR no out folder is given to KiApi")
 
                 if not os.path.exists(logFolderPath):
-                        raise Exception("ERR log folder(" + str(self.__logFolderPath) + ") not exist.")
+                        raise Exception("ERR log folder(" + str(logFolderPath) + ") not exist.")
 
                 if not os.path.exists(outFolderPath):
-                        raise Exception("ERR out folder(" + str(self.__outFolderPath) + ") not exists.")
+                        raise Exception("ERR out folder(" + str(outFolderPath) + ") not exists.")
 
         def __genLib(self):
                 symEditLibs = []
