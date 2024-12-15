@@ -130,17 +130,18 @@ class _KiLib:
                 self.idx = idx
                 self.name = lib[0][KiConst.csv["lib"]]
 
-                lastSymbolName = ""
+                lastSymbolNDesigName = "" # this should be uniq in project
                 lastLibIdx = []
                 # deducing entry and exit boundary of symbol in the library
                 for i in range(len(lib)):
+                        symbolNDesigName = lib[i][KiConst.csv["sym"]] + "_" + lib[i][KiConst.csv["desig"]]
                         # creating new library for every different symbol name found in the library
-                        if lib[i][KiConst.csv["sym"]] != lastSymbolName:
+                        if symbolNDesigName != lastSymbolNDesigName:
                                 kiSymbol = _KiSymbol()
                                 self.symbols.append(kiSymbol)
                                 # storing idx that I found different symbol name
                                 lastLibIdx.append(i)
-                                lastSymbolName = lib[i][KiConst.csv["sym"]]
+                                lastSymbolNDesigName = symbolNDesigName
                 self.numOfSymbols = len(self.symbols)
                 # for loop wont detect last item symbol name change so added myself
                 lastLibIdx.append(len(lib))
@@ -200,15 +201,15 @@ class KiPrj:
         def __isSymsConsecutive(self, rowList):
                 self.__isSymNamesUniq(rowList)
 
-                symNames = []
-                lastSymName = ""
+                symNDesigNames = []
+                lastSymNDesigName = ""
                 for i in range(len(rowList)):
-                        symName = rowList[i][KiConst.csv["sym"]]
-                        if symName != lastSymName:
-                                lastSymName = symName
-                                if symName in symNames:
-                                        raise Exception("ERR symbol name is not consecutive->" + symName)
-                                symNames.append(symName)
+                        symNDesigName = rowList[i][KiConst.csv["sym"]] + "_" + rowList[i][KiConst.csv["sym"]]
+                        if symNDesigName != lastSymNDesigName:
+                                lastSymNDesigName = symNDesigName
+                                if symNDesigName in symNDesigNames:
+                                        raise Exception("ERR symbol name is not consecutive->" + symNDesigName)
+                                symNDesigNames.append(symNDesigName)
 
         def __isPinNumbersNumeric(self, rowList):
                 for i in range(len(rowList)):
@@ -218,7 +219,7 @@ class KiPrj:
         def __isPinNumbersUniqInSymbol(self, rowList):
                 dict = {}
                 for i in range(len(rowList)):
-                        name = rowList[i][KiConst.csv["sym"]]
+                        name = rowList[i][KiConst.csv["sym"]] + "_" + rowList[i][KiConst.csv["desig"]]
                         pinNumber = rowList[i][KiConst.csv["pinNumber"]]
                         if not name in dict:
                                 dict.update({name : [pinNumber]})
