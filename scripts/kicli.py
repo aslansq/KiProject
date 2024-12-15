@@ -17,11 +17,11 @@ g_args = {
     "pageWidth" : 1366,
     "pageHeight": 768,
     "pinNumbers" : False,
-    "fullProject" : False
+    "justLib" : False
 }
 g_argList = sys.argv[1:]
-g_opts = "hpfl:c:o:t:h:w:"
-g_longOpts = ["help", "pinNumbers", "fullProject", "logFolderPath=", "csvFilePath=", "outFolderPath=", "pageHeight=", "pageWidth="]
+g_opts = "hpjl:c:o:t:h:w:"
+g_longOpts = ["help", "pinNumbers", "justLib", "logFolderPath=", "csvFilePath=", "outFolderPath=", "pageHeight=", "pageWidth="]
 g_symEditLibs = []
 g_prj = None
 
@@ -48,8 +48,7 @@ def getCsvFileExample():
                 "--logFolderPath log \\\n"
                 "--pageWidth 384 \\\n"
                 "--pageHeight 216 \\\n"
-                "--pinNumbers \\\n"
-                "--fullProject\n"
+                "--pinNumbers\n"
         )
         s = s + "\n"
 
@@ -92,7 +91,7 @@ try:
                         print("Available options\n"
                         " --help          , -h : Displays this help\n"
                         " --pinNumbers    , -p : Optional. Show pin numbers if this parameter is passed.\n"
-                        " --fullProject   , -f : Optional. Generate project if this parameter is passed. Otherwise just library\n"
+                        " --justLib       , -j : Optional. Generate just library if this parameter is passed. Otherwise full project\n"
                         " --logFolderPath , -l : Mandatory. Where log files are going to be stored.\n"
                         " --csvFilePath   , -c : Mandatory. Csv file path\n"
                         " --outFolderPath , -o : Mandatory. Where generated output files are going to be stored.\n"
@@ -133,8 +132,8 @@ try:
                         g_args["pageHeight"] = int(currentVal)
                 elif currentArg in ("-p", "--pinNumbers"):
                         g_args["pinNumbers"] = True
-                elif currentArg in ("-f", "--fullProject"):
-                        g_args["fullProject"] = True
+                elif currentArg in ("-j", "--justLib"):
+                        g_args["justLib"] = True
 
 except getopt.error as err:
     print("Unrecognized input parameter " + str(err))
@@ -158,10 +157,10 @@ api = KiApi(csvFilePath=g_args["csvFilePath"],
             showPinNumbers=g_args["pinNumbers"])
 
 g_genFiles = None
-if g_args["fullProject"]:
-        g_genFiles = api.genPrj(g_args["pageHeight"], g_args["pageWidth"])
-else:
+if g_args["justLib"]:
         g_genFiles = api.genLib()
+else:
+        g_genFiles = api.genPrj(g_args["pageHeight"], g_args["pageWidth"])
 
 for i in range(len(g_genFiles)):
         print("Gen: " + str(g_genFiles[i]))

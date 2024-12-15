@@ -64,7 +64,7 @@ if [ ! -z "$req" ]
 then
     gen $req
 else
-    gen microchip "--pinNumbers --fullProject"
+    gen microchip "--pinNumbers"
 
     genPython showcase
 

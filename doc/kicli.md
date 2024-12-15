@@ -3,7 +3,7 @@ $ kicli --help
 Available options
  --help          , -h : Displays this help
  --pinNumbers    , -p : Optional. Show pin numbers if this parameter is passed.
- --fullProject   , -f : Optional. Generate project if this parameter is passed. Otherwise just library
+ --justLib       , -j : Optional. Generate just library if this parameter is passed. Otherwise full project
  --logFolderPath , -l : Mandatory. Where log files are going to be stored.
  --csvFilePath   , -c : Mandatory. Csv file path
  --outFolderPath , -o : Mandatory. Where generated output files are going to be stored.
@@ -37,8 +37,7 @@ kicli \
 --logFolderPath log \
 --pageWidth 384 \
 --pageHeight 216 \
---pinNumbers \
---fullProject
+--pinNumbers
 
 Content of microchip.csv:
 #Library  ,Symbol    ,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes
