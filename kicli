@@ -1,4 +1,11 @@
 thisPath=$(realpath "$0")
 thisDirPath=$(dirname "$thisPath")
 
-python $thisDirPath/scripts/kicli.py "$@"
+py=python
+python3 --help > /dev/null 2>&1
+if [ $? == 0 ]
+then
+    py=python3
+fi
+
+$py $thisDirPath/scripts/kicli.py "$@"

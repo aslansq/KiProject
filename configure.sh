@@ -66,41 +66,48 @@ else
     echo SUCCESS: kiapi.py file found
 fi
 
-# is python exist
-python -c "" > /dev/null 2>&1
-if [ $? != 0 ]
+py=python
+python3 --help > /dev/null 2>&1
+if [ $? == 0 ]
 then
-    echoerr ERROR: python does not exist.
-    echoerr Suggestion
-    echoerr Windows
-    echoerr Install python from https://www.python.org/downloads/
-    echoerr GNU/Linux
-    echoerr "sudo apt update; sudo apt install python"
-    ungracefulExit
-else
-    echo SUCCESS: found python.
+    py=python3
 fi
 
-pythonModuleCheck()
+# is $py exist
+$py --help > /dev/null 2>&1
+if [ $? != 0 ]
+then
+    echoerr ERROR: $py does not exist.
+    echoerr Suggestion
+    echoerr Windows
+    echoerr Install python3 from https://www.python.org/downloads/
+    echoerr GNU/Linux
+    echoerr "sudo apt update; sudo apt install python3"
+    ungracefulExit
+else
+    echo SUCCESS: found $py.
+fi
+
+moduleCheck()
 {
     # is module exist
-    python -c "import $1" > /dev/null 2>&1
+    $py -c "import $1" > /dev/null 2>&1
     if [ $? != 0 ]
     then
-        echoerr ERROR: python could not find $1 module.
+        echoerr ERROR: $py could not find $1 module.
         ungracefulExit
     else
-        echo SUCCESS: python found $1 module.
+        echo SUCCESS: $py found $1 module.
     fi
 }
 
-pythonModuleCheck jinja2
+moduleCheck jinja2
 # most likely below module comes by default just checking
-pythonModuleCheck copy
-pythonModuleCheck csv
-pythonModuleCheck uuid
+moduleCheck copy
+moduleCheck csv
+moduleCheck uuid
 
-python -  > /dev/null 2>&1 << EOF
+$py -  > /dev/null 2>&1 << EOF
 import os
 import sys
 try:
@@ -112,20 +119,20 @@ EOF
 
 if [ $? != 0 ]
 then
-    echoerr ERROR: python can not find environment variable KI_PROJECT_HOME
+    echoerr ERROR: $py can not find environment variable KI_PROJECT_HOME
     echoerr Suggestion:
     echoerr "echo -e \"\\nexport KI_PROJECT_HOME=$thisDirPath\" >> ~/.bashrc"
     ungracefulExit
 else
-    echo SUCCESS: python found environment variable KI_PROJECT_HOME.
+    echo SUCCESS: $py found environment variable KI_PROJECT_HOME.
 fi
 
 tempDir=$(mktemp -d)
 cd $tempDir
-python -c "import kiapi"  > /dev/null 2>&1
+$py -c "import kiapi"  > /dev/null 2>&1
 if [ $? != 0 ]
 then
-    echoerr ERROR: python can not find kiapi module
+    echoerr ERROR: $py can not find kiapi module
     echoerr Suggestion:
     echoerr Windows
     echoerr add to environment variable PYTHONPATH using gui, $thisDirPath
@@ -133,7 +140,7 @@ then
     echoerr "echo -e \"\\nexport PYTHONPATH=$thisDirPath:\\\$PYTHONPATH\" >> ~/.bashrc"
     ungracefulExit
 else
-    echo SUCCESS: python found kiapi module
+    echo SUCCESS: $py found kiapi module
 fi
 rm -r $tempDir
 cd $thisDirPath

@@ -3,6 +3,13 @@ req=$1
 thisDirPath=$(dirname "$thisPath")
 prjDirPath=$thisDirPath/..
 
+py=python
+python3 --help > /dev/null 2>&1
+if [ $? == 0 ]
+then
+    py=python3
+fi
+
 # if everything is okay; dont tell anything to user
 $prjDirPath/configure.sh 1>/dev/null
 
@@ -48,12 +55,12 @@ genPython()
 {
     example=$1
     echo
-    echo python $example.py
+    echo $py $example.py
     echo
     cd $thisDirPath
     mkdir -p out/$example
     mkdir -p log
-    python $example.py
+    $py $example.py
     if [ $? != 0 ]
     then
         exit 1
