@@ -40,8 +40,8 @@ kicli \
 --pinNumbers
 
 Content of microchip.csv:
-#Library  ,Symbol    ,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes
-ATtiny1627,ATtiny3224,ATtiny3224      ,VDD    ,1        ,left  ,input  ,line    ,     
+#Library  ,Symbol    ,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,GlobalLabels
+ATtiny1627,ATtiny3224,ATtiny3224      ,VDD    ,1        ,left  ,input  ,line    ,            
 ```  
 ![PinStyles](./img/pinStyles.PNG "PinStyles")  
 Figure 1. Avaliable pin styles  

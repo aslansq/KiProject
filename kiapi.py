@@ -33,10 +33,10 @@ class KiApiItem:
                 self.pinStyle  = "" # KiConst.availPinStyles
                 self.__nodes     = [] # just list of strings
 
-        def addNode(self, nodeName):
-                if type(nodeName) != str:
-                        raise Exception("Node should be string")
-                self.__nodes.append(nodeName)
+        def addGlobalLabel(self, name):
+                if type(name) != str:
+                        raise Exception("Global label name should be string")
+                self.__nodes.append(name)
 
         def _toStr(self):
                 s = self.lib       + "," + \
@@ -112,7 +112,7 @@ class KiApiItemCont:
                 return csvStr
 
         def _getHeader():
-                return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes"
+                return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,GlobalLabels"
 
 class KiApi:
         def __init__(self,

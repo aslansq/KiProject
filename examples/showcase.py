@@ -18,9 +18,9 @@ def createItem(symIdx, style, type, pos, pinNum):
         item.pinStyle = style
         if pos == "left":
                 for i in range(symIdx):
-                        item.addNode(item.pin + str(i))
+                        item.addGlobalLabel(item.pin + str(i))
         elif (symIdx % 2) == 0:
-                item.addNode(item.pin)
+                item.addGlobalLabel(item.pin)
 
         return item
 

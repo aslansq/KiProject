@@ -12,18 +12,18 @@ class KiApiItem: # fill below structure elements
                 self.pinStyle  = "" # KiConst.availPinStyles
 
         """
-        Use this function to add a node
+        Use this function to add a global label
 
         Parameters
         ----------
-        nodeName (str) : name of the node
+        name (str) : name of the label
 
         Returns
         -------
         (void)
 
         """
-        def addNode(self, nodeName):
+        def addGlobalLabel(self, name):
 
 class KiApiItemCont: # fill below structure element
         def __init__(self):

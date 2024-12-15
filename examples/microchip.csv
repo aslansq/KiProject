@@ -1,4 +1,4 @@
-#Library    ,Symbol,        SymbolDesignator,   PinName,            PinNumber,      PinPos,     PinType,        PinStyle,   Nodes
+#Library    ,Symbol,        SymbolDesignator,   PinName,            PinNumber,      PinPos,     PinType,        PinStyle,   GlobalLabels
 ATtiny1627  ,ATtiny3224,    ATtiny3224,         VDD,                1,              left,       input,          line,
 ATtiny1627  ,ATtiny3224,    ATtiny3224,         PA4,                2,              left,       bidirectional,  line,
 ATtiny1627  ,ATtiny3224,    ATtiny3224,         PA5,                3,              left,       bidirectional,  line,
