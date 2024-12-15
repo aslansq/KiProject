@@ -55,25 +55,25 @@ else
     echo SUCCESS: found kicli.
 fi
 
-retval=$(kicli --help 2>&1)
-if [ $? != 0 ]
+kicli --help > /dev/null 2>&1
+if [ $? == 126 ]
 then
-    python -  > /dev/null 2>&1 << EOF
-if "denied" in "$retval":
-    exit(10)
-EOF
-    if [ $? == 10 ]
-    then
-        echoerr ERROR: kicli has NO execute permission.
-        echoerr Suggestion
-        echoerr "chmod +x $KI_PROJECT_HOME/kicli"
-        ungracefulExit
-    else
-        echoerr "$retval"
-        ungracefulExit
-    fi
+    echoerr ERROR: kicli has NO execute permission.
+    echoerr Suggestion
+    echoerr "chmod +x $KI_PROJECT_HOME/kicli"
+    ungracefulExit
 else
     echo SUCCESS: kicli has execute permission.
+fi
+
+exitStr=$(kicli --help 2>&1)
+if [ $? != 0 ]
+then
+    echoerr ERROR: unknown error
+    echoerr "$exitStr"
+    ungracefulExit
+else
+    echo SUCCESS: kicli is successfully runned
 fi
 
 pythonModuleCheck()
