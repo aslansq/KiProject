@@ -1,0 +1,4 @@
+thisPath=$(realpath "$0")
+thisDirPath=$(dirname "$thisPath")
+
+python $thisDirPath/scripts/kicli.py "$@"
