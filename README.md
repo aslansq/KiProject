@@ -33,3 +33,11 @@ There are two ways to interface with KiProject.
 
 ### [kiapi](./doc/kiapi.md)
 
+[comment]: <> (SEO optimizations)
+[comment]: <> (generate KiCAD symbols from csv)
+[comment]: <> (generate symbols csv)
+[comment]: <> (generate KiCAD project from csv)
+[comment]: <> (generate KiCAD library from csv)
+[comment]: <> (generate KiCAD libraries from csv)
+
+

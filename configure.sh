@@ -21,6 +21,18 @@ else
     echo SUCCESS: found KI_PROJECT_HOME environment variable.
 fi
 
+# does it point to current directory
+if [ $KI_PROJECT_HOME != $thisDirPath ]
+then
+    echoerr ERROR: KI_PROJECT_HOME points to different location $KI_PROJECT_HOME
+    echoerr Suggestion:
+    echoerr "Please update KI_PROJECT_HOME and PYTHONPATH to $thisDirPath to use this version."
+    ungracefulExit
+else
+    echo SUCCESS: KI_PROJECT_HOME points to this version
+fi
+
+
 # is environment points to existing directory
 if [ ! -d $KI_PROJECT_HOME ]
 then
@@ -30,6 +42,28 @@ then
     ungracefulExit
 else
     echo SUCCESS: KI_PROJECT_HOME points to existing directory.
+fi
+
+# is repo broken
+if [ ! -f $KI_PROJECT_HOME/kicli ]
+then
+    echoerr ERROR: KI_PROJECT_HOME points to broken repo. Not found $KI_PROJECT_HOME/kicli
+    echoerr Suggestion:
+    echoerr "cd $thisDirPath; git status"
+    ungracefulExit
+else
+    echo SUCCESS: kicli file found
+fi
+
+# is repo broken
+if [ ! -f $KI_PROJECT_HOME/kiapi.py ]
+then
+    echoerr ERROR: KI_PROJECT_HOME points to broken repo. Not found $KI_PROJECT_HOME/kiapi.py
+    echoerr Suggestion:
+    echoerr "cd $thisDirPath; git status"
+    ungracefulExit
+else
+    echo SUCCESS: kiapi.py file found
 fi
 
 # is python exist
@@ -47,28 +81,6 @@ else
     echo SUCCESS: found python.
 fi
 
-kicli --help > /dev/null 2>&1
-if [ $? == 127 ]
-then
-    echoerr ERROR: kicli not found.
-    echoerr Suggestion
-    echoerr "echo -e \"\\nexport PATH=\\\$KI_PROJECT_HOME:\\\$PATH\" >> ~/.bashrc"
-    ungracefulExit
-else
-    echo SUCCESS: found kicli.
-fi
-
-kicli --help > /dev/null 2>&1
-if [ $? == 126 ]
-then
-    echoerr ERROR: kicli has NO execute permission.
-    echoerr Suggestion
-    echoerr "chmod +x $KI_PROJECT_HOME/kicli"
-    ungracefulExit
-else
-    echo SUCCESS: kicli has execute permission.
-fi
-
 pythonModuleCheck()
 {
     # is module exist
@@ -82,6 +94,12 @@ pythonModuleCheck()
     fi
 }
 
+pythonModuleCheck jinja2
+# most likely below module comes by default just checking
+pythonModuleCheck copy
+pythonModuleCheck csv
+pythonModuleCheck uuid
+
 python -  > /dev/null 2>&1 << EOF
 import os
 import sys
@@ -91,23 +109,6 @@ try:
 except Exception as e:
         raise Exception("KI_PROJECT_HOME environment variable is not found")
 EOF
-
-pythonModuleCheck jinja2
-# most likely below module comes by default just checking
-pythonModuleCheck copy
-pythonModuleCheck csv
-pythonModuleCheck uuid
-
-exitStr=$(kicli --help 2>&1)
-if [ $? != 0 ]
-then
-    echoerr ERROR: unknown error
-    echoerr "$exitStr"
-    ungracefulExit
-else
-    echo SUCCESS: kicli is successfully runned
-fi
-
 
 if [ $? != 0 ]
 then
@@ -136,6 +137,38 @@ else
 fi
 rm -r $tempDir
 cd $thisDirPath
+
+kicli --help > /dev/null 2>&1
+if [ $? == 127 ]
+then
+    echoerr ERROR: kicli not found.
+    echoerr Suggestion
+    echoerr "echo -e \"\\nexport PATH=\\\$KI_PROJECT_HOME:\\\$PATH\" >> ~/.bashrc"
+    ungracefulExit
+else
+    echo SUCCESS: found kicli.
+fi
+
+kicli --help > /dev/null 2>&1
+if [ $? == 126 ]
+then
+    echoerr ERROR: kicli has NO execute permission.
+    echoerr Suggestion
+    echoerr "chmod +x $KI_PROJECT_HOME/kicli"
+    ungracefulExit
+else
+    echo SUCCESS: kicli has execute permission.
+fi
+
+exitStr=$(kicli --help 2>&1)
+if [ $? != 0 ]
+then
+    echoerr ERROR: unknown error
+    echoerr "$exitStr"
+    ungracefulExit
+else
+    echo SUCCESS: kicli is successfully runned
+fi
 
 echo '```bash' > $thisDirPath/doc/kicli.md
 echo '$ kicli --help' >> $thisDirPath/doc/kicli.md
