@@ -31,7 +31,12 @@ class KiApiItem:
                 self.pinPos    = "" # KiConst.availPinPoss
                 self.pinType   = "" # KiConst.availPinTypes
                 self.pinStyle  = "" # KiConst.availPinStyles
-                self.nodes     = [] # just list of strings
+                self.__nodes     = [] # just list of strings
+
+        def addNode(self, nodeName):
+                if type(nodeName) != str:
+                        raise Exception("Node should be string")
+                self.__nodes.append(nodeName)
 
         def _toStr(self):
                 s = self.lib       + "," + \
@@ -42,9 +47,9 @@ class KiApiItem:
                     self.pinPos    + "," + \
                     self.pinType   + "," + \
                     self.pinStyle  + ","
-                numOfNodes = len(self.nodes)
+                numOfNodes = len(self.__nodes)
                 for i in range(numOfNodes):
-                    s = s + self.nodes[i]
+                    s = s + self.__nodes[i]
                     if i != (numOfNodes-1):
                             s = s + "-"
                 return s
@@ -84,12 +89,13 @@ class KiApiItemCont:
         availPinTypes  = KiConst.availPinTypes
         availPinPoss   = KiConst.availPinPoss
 
-        def __init__(self,
-                     autoFill=True):
+        def __init__(self):
                 self.name = None
                 self.__apiItems = []
 
         def add(self, apiItem):
+                if type(apiItem) != KiApiItem:
+                        raise Exception("apiItem should have KiApiItem type")
                 self.__apiItems.append(copy.copy(apiItem))
 
         def _validity(self):
@@ -100,28 +106,29 @@ class KiApiItemCont:
 
         def _getCsvStr(self):
                 numOfApiItems = len(self.__apiItems)
-                csvStr = KiApiItemCont.__getHeader() + "\n"
+                csvStr = KiApiItemCont._getHeader() + "\n"
                 for i in range(numOfApiItems):
                         csvStr = csvStr + self.__apiItems[i]._toStr() + "\n"
                 return csvStr
 
-        def __getHeader():
+        def _getHeader():
                 return "#Library,Symbol,SymbolDesignator,PinName,PinNumber,PinPos,PinType,PinStyle,Nodes"
 
 class KiApi:
         def __init__(self,
-                    csvFilePath=None, #  kiApiItems and csvFilePath is mutually exclusive.
-                    apiItemCont=None,  #  only one is mandatory
+                    csvFilePath=None, #  apiItemCont and csvFilePath is mutually exclusive.
+                    apiItemCont=None,
                     logFolderPath=None, # mandatory
                     outFolderPath=None, # mandatory
-                    kicadVersion=g_latestKicadVersion, # optional, if not given: latest supported used
                     showPinNumbers=False): # optional
                 self.__csvFilePath = None
                 self.__apiItemCont = None
                 self.__logFolderPath = None
                 self.__outFolderPath = None
-                self.__kicadVersion = kicadVersion
-                self.showPinNumbers = showPinNumbers
+                # for now there is only one kicad version supported
+                # maybe in the future, we will get as argument
+                self.__kicadVersion = g_latestKicadVersion
+                self.__showPinNumbers = showPinNumbers
                 # start filled by __setTemplateDirPath
                 self.__equivalentKicadVersion = ""
                 self.__templateDirPath = None
@@ -182,7 +189,7 @@ class KiApi:
                 symEditLibs = []
                 genPaths = []
                 for i in range(self.__prj.numOfLibs):
-                        symEditLib = KiSymEditLib(self.__logFolderPath, self.showPinNumbers)
+                        symEditLib = KiSymEditLib(self.__logFolderPath, self.__showPinNumbers)
                         symEditLib.parse(self.__prj.name, self.__prj.libs[i])
                         symEditLibs.append(symEditLib)
 
@@ -201,7 +208,7 @@ class KiApi:
                 symEditLibs, genPaths = self.__genLib()
 
                 absPath = os.path.join(self.__templateDirPath, "f135d3a.kicad_sch")
-                schEditPrj = KiSchEditPrj(self.__logFolderPath, self.showPinNumbers)
+                schEditPrj = KiSchEditPrj(self.__logFolderPath, self.__showPinNumbers)
                 schEditPrj.parse(self.__prj, symEditLibs, pageWidth, pageHeight)
                 g = schEditPrj.gen(absPath, self.__outFolderPath)
                 genPaths = genPaths + g

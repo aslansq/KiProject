@@ -1,19 +1,8 @@
-import os
-import sys
-
-import os
-try:
-        home = os.environ['KI_PROJECT_HOME']
-        sys.path.append(home)
-except Exception as e:
-        raise Exception("KI_PROJECT_HOME environment variable is not found")
-
 from kiapi import KiApiItem, KiApi, KiApiItemCont
 
 apiItemCont = KiApiItemCont()
 apiItemCont.name = "SimpleProject"
 
-# begin of symbol 1
 apiItem = KiApiItem()
 apiItem.lib = "SimpleLib"
 apiItem.sym = "SimpleSym1"

@@ -1,13 +1,5 @@
 import os
 import sys
-
-import os
-try:
-        home = os.environ['KI_PROJECT_HOME']
-        sys.path.append(home)
-except Exception as e:
-        raise Exception("KI_PROJECT_HOME environment variable is not found")
-
 from kiapi import KiApiItem, KiApi, KiApiItemCont
 
 g_lib  ="MyLib"
@@ -26,9 +18,9 @@ def createItem(symIdx, style, type, pos, pinNum):
         item.pinStyle = style
         if pos == "left":
                 for i in range(symIdx):
-                        item.nodes.append(item.pin)
+                        item.addNode(item.pin + str(i))
         elif (symIdx % 2) == 0:
-                item.nodes.append(item.pin)
+                item.addNode(item.pin)
 
         return item
 
