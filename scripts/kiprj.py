@@ -100,7 +100,7 @@ class _KiSymbol:
                 self.uuid = KiUtil.getUuid("_KiSymbol" +
                                            parentUuid +
                                            self.name +
-                                           str(self.idx))
+                                           self.designator)
 
                 for i in range(self.numOfPins):
                         # create a pin and parse it
@@ -147,8 +147,7 @@ class _KiLib:
 
                 self.uuid = KiUtil.getUuid("_KiLib" +
                                            parentUuid +
-                                           self.name +
-                                           str(self.idx))
+                                           self.name)
                 for i in range(self.numOfSymbols):
                         # parsing symbols with entry and exist boundary
                         self.symbols[i].parse(self.uuid, lib[lastLibIdx[i] : lastLibIdx[i+1]], i)
