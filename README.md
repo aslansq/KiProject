@@ -11,6 +11,12 @@ Figure 1. Simple Generated KiCAD Project example. [Click to see this example](./
 Figure 2. Showcase Generated KiCAD Project's Plot. [Click to see this example](./examples/showcase.py)
   
 ## Setup
+
+### Windows
+1. [Download git bash for windows](https://git-scm.com/downloads/win)
+2. Follow instructions at GNU/Linux heading
+
+### GNU/Linux  
 Open terminal follow below instructions:  
 ```bash
 $ git clone https://github.com/aslansq/KiProject.git
